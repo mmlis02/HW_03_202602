@@ -161,7 +161,11 @@ evaluacion:
 motor:
   # Defensa 1 (sin IA): si la similitud del mejor fragmento es menor que esto, se abstiene
   # SIN llamar al LLM. Calibrado con eval/barrido_umbral.py y eval/opciones_umbral.py (ver README, Fase 3).
-  umbral_similitud: 0.800
+  # Un umbral POR MODELO: cada modelo de embeddings tiene su propia escala de similitud
+  # (e5-small: 0.75-0.92; text-embedding-3-small: 0.15-0.74). Se usa el del modelo activo.
+  umbral_similitud:
+    local: 0.800     # barrido + opciones con IA (Fase 3)
+    openai: 0.472    # misma regla: legítima más baja (0.4771) - 0.005 (Fase 4); no validado con IA
   k_contexto: 5        # fragmentos que se entregan al LLM
   # Cómo se muestra cada cita [Fn] en la respuesta final: "(<cita corta>, pág. N)"
   citas_cortas:

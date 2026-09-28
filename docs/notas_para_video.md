@@ -167,3 +167,33 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 - **D13 (Pladicop):** la IA no siempre elige el mejor fragmento para citar.
 
 **Costo real:** 44 llamadas, **US$0,0072 en total**. Una pregunta cuesta unos US$0,00017 (menos de un milésimo de sol). Lo sé porque cada llamada queda anotada en `logs/costos_llm.csv` con sus tokens y su precio.
+
+---
+
+## Tarea 1 · Fase 4 — Comparar el modelo local con el de OpenAI
+
+**Qué hice**
+- Armé un segundo índice con el modelo de OpenAI (`text-embedding-3-small`), usando **exactamente los mismos pedazos de texto**. Solo cambia el modelo, y cambiarlo es una línea en `config.yaml`.
+- Indexar todo con OpenAI costó **US$0,0029** (147.090 tokens). Quedó anotado en el log de costos.
+
+**Resultados (para mostrar en una tabla)**
+- **Buscador:** empate técnico.
+  - OpenAI trae la página correcta entre las 5 primeras en 15 de 15 preguntas; el local, en 14 de 15.
+  - El local la pone **primera** más veces (12 frente a 10).
+  - Son diferencias de 1 o 2 preguntas.
+- **Velocidad:** el local responde en 14 milisegundos y OpenAI en 303 (21 veces más lento), porque cada pregunta viaja por internet.
+- **Precio:** con OpenAI, un millón de preguntas costaría unos US$0,43. Es el 0,25 % de lo que cuesta la respuesta de la IA. **Por eso el precio no sirve para decidir: los dos son casi gratis.**
+- **Umbral:** cada modelo tiene su propia escala. En el local todo sale entre 0,75 y 0,92; en OpenAI, entre 0,15 y 0,74. El umbral no se puede copiar de un modelo a otro, así que ahora hay uno por modelo en la configuración.
+
+**Por qué elegí el local**
+- Funciona **sin internet**: el buscador y la primera defensa siguen andando.
+- **Privacidad:** las preguntas que el umbral detiene nunca salen de la computadora. Las que pasan sí van a OpenAI para redactar la respuesta, así que la ventaja es parcial, y hay que decirlo.
+- Es **más rápido** y no cambia con el tiempo. Un modelo de API puede actualizarse o retirarse, y eso obliga a reindexar y a recalibrar.
+- **Contras:** pesa 471 MB más PyTorch, y entiende un poco peor el lenguaje cotidiano. Por ejemplo, OpenAI sí encontró la pregunta de "3 mil soles".
+
+**Qué mide cada métrica**
+- **Recall@k** mide el buscador.
+- **La abstención por umbral** mide la primera defensa.
+- **La abstención final** mide todo el sistema.
+
+Las dos primeras se calculan sin llamar a la IA, **gratis**, así que pude probar 5 tamaños de pedazo y 33 umbrales sin gastar nada.

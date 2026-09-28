@@ -23,7 +23,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.config import BASE, cargar_config  # noqa: E402
+from src.config import BASE, cargar_config, umbral_activo  # noqa: E402
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
     ap.add_argument("--alias", default=cfg["embeddings"]["modelos"][cfg["embeddings"]["modelo_activo"]]["alias"])
     args = ap.parse_args()
     res = BASE / cfg["evaluacion"]["resultados"]
-    umbral_elegido = cfg["motor"]["umbral_similitud"]
+    umbral_elegido = umbral_activo(cfg)
 
     preguntas = {p["id"]: p for p in csv.DictReader(open(BASE / cfg["evaluacion"]["preguntas"], encoding="utf-8"))}
     filas = list(csv.DictReader(open(res / f"recuperacion_{args.alias}_{args.fragmentos}.csv", encoding="utf-8")))

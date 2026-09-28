@@ -1,0 +1,70 @@
+{
+  "configuracion_fragmentos": "c500_s150",
+  "fragmentos": 1039,
+  "preguntas": 25,
+  "modelos": {
+    "local": {
+      "modelo": "intfloat/multilingual-e5-small",
+      "dimension": 384,
+      "segundos_indexacion": 22.8,
+      "costo_indexacion_usd": 0.0,
+      "tokens_indexacion": null,
+      "recall@1": 0.8,
+      "recall@3": 0.867,
+      "recall@5": 0.933,
+      "mrr@5": 0.847,
+      "latencia_consulta_media_s": 0.0138,
+      "latencia_consulta_p90_s": 0.0164,
+      "tokens_consultas": null,
+      "costo_consultas_usd": 0.0,
+      "costo_por_consulta_usd": 0.0,
+      "sim_top1_dentro": [
+        0.845,
+        0.9245
+      ],
+      "sim_top1_fuera": [
+        0.754,
+        0.8787
+      ],
+      "auc_dentro_fuera": 0.887,
+      "fuera_sobre_legitima_mas_baja": [
+        "F02",
+        "F03",
+        "F06"
+      ],
+      "abst_umbral_del_modelo": "4/10 fuera, 0/15 dentro"
+    },
+    "openai": {
+      "modelo": "text-embedding-3-small",
+      "dimension": 1536,
+      "segundos_indexacion": 15.2,
+      "costo_indexacion_usd": 0.002942,
+      "tokens_indexacion": 147090,
+      "recall@1": 0.667,
+      "recall@3": 0.933,
+      "recall@5": 1.0,
+      "mrr@5": 0.802,
+      "latencia_consulta_media_s": 0.3533,
+      "latencia_consulta_p90_s": 0.3968,
+      "tokens_consultas": 534,
+      "costo_consultas_usd": 1.1e-05,
+      "costo_por_consulta_usd": 4.3e-07,
+      "sim_top1_dentro": [
+        0.4771,
+        0.7369
+      ],
+      "sim_top1_fuera": [
+        0.1526,
+        0.5559
+      ],
+      "auc_dentro_fuera": 0.953,
+      "fuera_sobre_legitima_mas_baja": [
+        "F01",
+        "F02",
+        "F03",
+        "F06"
+      ],
+      "abst_umbral_del_modelo": "6/10 fuera, 0/15 dentro"
+    }
+  }
+}

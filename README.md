@@ -458,6 +458,75 @@ Y cuando el corpus responde solo en parte, el sistema **responde** y declara lo 
 - **Log de costos:** cada llamada al LLM se registra en [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv) con fecha y hora UTC, modelo, tokens de entrada, caché y salida, latencia, costo en USD, franja, éxito o fracaso y error.
 - **Costo real de la Fase 3:** **44 llamadas, US$0,0072 en total** (1 prueba + 18 de la corrida v1 + 25 del diagnóstico v2). Una pregunta típica cuesta **≈ US$0,00017**: en promedio 1.209 tokens de entrada y 98 de salida, según las 25 llamadas del diagnóstico v2 en el log.
 
+## Tarea 1 — Fase 4: evaluación y comparación de embeddings
+
+```bash
+cd tarea1_rag_normativo
+python eval/evaluar_recuperacion.py        # Recall@1/3/5 y MRR (sin LLM, costo 0)
+python eval/barrido_umbral.py              # abstención por umbral para cada umbral (sin LLM, costo 0)
+python eval/evaluar_motor.py               # abstención por umbral con el umbral elegido (sin LLM, costo 0)
+python eval/comparar_embeddings.py         # local vs. OpenAI (el índice OpenAI se paga UNA vez y se reutiliza)
+```
+
+### Qué etapa evalúa cada métrica y por qué importa que sea gratis
+
+| Métrica | Etapa del pipeline que evalúa | Llama al LLM |
+|---|---|---|
+| **Recall@k** / MRR | **Recuperación** (fragmentos + embeddings + índice): ¿llega la página correcta entre los k fragmentos que se entregan al LLM? | No |
+| **Abstención por umbral** (correcta / incorrecta) | **Defensa 1** (decisión previa al LLM): ¿se detiene lo ajeno sin bloquear lo legítimo? | No |
+| **Abstención final** (correcta / incorrecta) y acierto de cita | **Motor completo** (defensa 1 + LLM + citas) | Sí (Fase 3) |
+
+Recall@k y la abstención por umbral se calculan **sin llamar al modelo de generación**, así que cuestan cero. Eso permite repetirlas cada vez que cambia algo (limpieza, tamaño de fragmento, solapamiento, modelo de embeddings, umbral). Así se compararon las 5 configuraciones de fragmentos y los 33 umbrales del barrido. Además separa responsabilidades: si el Recall@k es bajo, el problema está en el buscador y ningún prompt lo arregla. Pasó con D02 y D12 en la Fase 3.
+
+### Comparación: modelo local vs. `text-embedding-3-small`
+
+Ambos índices usan **exactamente los mismos 1,039 fragmentos** (configuración `c500_s150`) y el mismo texto de entrada. Solo cambia el modelo, que se elige en `config.yaml > embeddings.modelo_activo` (interfaz común `Embedder` en `src/embeddings.py`, con dos implementaciones).
+
+| | Local: `intfloat/multilingual-e5-small` | API: `text-embedding-3-small` |
+|---|---|---|
+| Recall@1 | **0.80** (12/15) | 0.67 (10/15) |
+| Recall@3 | 0.87 (13/15) | **0.93** (14/15) |
+| Recall@5 | 0.93 (14/15) | **1.00** (15/15) |
+| MRR@5 | **0.85** | 0.80 |
+| Tiempo de indexación (1.039 fragmentos) | 22.8 s (CPU de la laptop) | **15.2 s** (red) |
+| Costo de indexación | US$0 | US$0.0029 (147,090 tokens) |
+| Latencia media por consulta | **14 ms** | 353 ms (p90 397 ms) |
+| Costo por consulta | US$0 | US$0.0000004 |
+| Dimensión del vector | **384** | 1536 |
+| Similitud top-1: dentro / fuera | 0.845–0.9245 / 0.754–0.8787 | 0.4771–0.7369 / 0.1526–0.5559 |
+| AUC dentro/fuera | 0.887 | **0.953** |
+| Preguntas fuera por encima de la legítima más baja | F02, F03, F06 | F01, F02, F03, F06 |
+| Umbral propio (misma regla) → abstención sin IA | 0.800 → 4/10 fuera, 0/15 dentro | 0.472 → 6/10 fuera, 0/15 dentro |
+| Funciona sin internet | **sí** | no |
+| Las preguntas salen de la computadora | **no** (al buscar) | sí, cada pregunta va a OpenAI |
+| Espacio en disco / instalación | 471 MB de modelo + PyTorch (~1,9 GB el entorno) | ninguno extra |
+
+Diferencias por pregunta ([`recuperacion_e5small_c500_s150.csv`](tarea1_rag_normativo/eval/resultados/recuperacion_e5small_c500_s150.csv) y [`recuperacion_oai3small_c500_s150.csv`](tarea1_rag_normativo/eval/resultados/recuperacion_oai3small_c500_s150.csv)):
+- **OpenAI encuentra D02** ("algo chiquito, de unos 3 mil soles", en 2.º lugar), que el modelo local no recupera: entiende mejor el lenguaje cotidiano.
+- **El modelo local pone primero** la respuesta de D01, D10 y D12 (OpenAI: 2.º, 2.º y 3.º).
+- Con 15 preguntas, **cada diferencia es de 1 o 2 preguntas** (6,7 puntos cada una).
+
+**El umbral no se traslada entre modelos.** Las escalas son distintas: e5-small comprime todo entre 0,75 y 0,92, y OpenAI va de 0,15 a 0,74. Con el umbral 0,800 del modelo local, OpenAI se abstendría en las 25 preguntas. Por eso el umbral se guarda **por modelo** en `config.yaml` y cambiar de modelo sigue siendo un cambio de configuración. El umbral de OpenAI (0,472) se calculó con la misma regla, pero **no se validó con la IA**. El trampeo del Reglamento aparece **en los dos modelos** (4 preguntas en OpenAI), así que la defensa 2 hace falta con cualquiera.
+
+### El precio, calculado (y por qué no basta para decidir)
+
+- **Indexar todo el corpus** con OpenAI cuesta **US$0.0029**, y reindexarlo cada vez que cambie un documento, lo mismo.
+- **Una consulta** cuesta US$0.0000004: 1.000 consultas ≈ US$0.0004 y **1 millón ≈ US$0.43**.
+- Frente a la respuesta del LLM (≈ US$0,00017 por pregunta, Fase 3), el embedding por API es el **0.25 %** del costo de cada pregunta.
+
+Conclusión: **el precio no distingue a los modelos**, porque ambos son prácticamente gratis a esta escala. La decisión depende de lo demás.
+
+### Decisión: modelo local (`multilingual-e5-small`)
+
+1. **Recuperación equivalente con esta muestra.** OpenAI gana en Recall@5 (15 frente a 14) y AUC; el local, en Recall@1 y MRR. Son diferencias de 1–2 preguntas, dentro del ruido.
+2. **Latencia 21 veces menor** (14 ms frente a 303 ms), sin depender de la red. En la demo en vivo, el buscador responde al instante.
+3. **Privacidad.** Con el modelo local, la búsqueda ocurre en la computadora. Las preguntas que la defensa 1 detiene (4 de 10 fuera del corpus en la evaluación) **nunca salen de la máquina**; con embeddings por API, **todas** las preguntas se envían a OpenAI. **Matiz honesto:** las preguntas que pasan el umbral igual se envían al LLM de OpenAI para redactar la respuesta, así que la ventaja es parcial.
+4. **Funcionamiento sin internet.** Sin conexión, el buscador local sigue funcionando: la defensa 1 se abstiene y la app puede mostrar los fragmentos relevantes con su página, aunque no haya respuesta redactada. Con embeddings por API, sin internet no funciona nada. Si falla la API del LLM, el motor devuelve el error **junto con** las fuentes recuperadas.
+5. **Reproducibilidad y dependencia.** El modelo local queda fijo (snapshot descargado): mismos vectores hoy y en un año. Un modelo de API puede cambiar de versión o retirarse, y obligaría a reindexar y recalibrar el umbral.
+6. **Umbral ya calibrado y validado con IA** para el modelo local (Fase 3).
+
+**Contras del modelo local:** ocupa 471 MB más PyTorch, usa CPU, hace más pesada la instalación en Windows y recupera peor algunas preguntas en lenguaje cotidiano, como D02. Si el set de evaluación creciera y la ventaja de OpenAI en Recall@5 se confirmara, convendría reconsiderar la decisión. El cambio es una línea en `config.yaml` más reconstruir el índice.
+
 ## Estructura
 
 ```

@@ -18,7 +18,7 @@ import re
 import time
 from dataclasses import asdict, dataclass, field
 
-from src.config import cargar_config
+from src.config import cargar_config, umbral_activo
 from src.costos import ahora_utc, calcular_costo, registrar_llamada
 from src.embeddings import crear_embedder
 from src.indice import abrir_coleccion, buscar
@@ -154,7 +154,7 @@ class Motor:
     def responder(self, pregunta: str, aplicar_umbral: bool = True) -> ResultadoRAG:
         """aplicar_umbral=False solo lo usa la evaluación diagnóstica (eval/evaluar_motor.py --sin-umbral)."""
         m = self.cfg["mensajes"]
-        umbral = self.cfg["motor"]["umbral_similitud"]
+        umbral = umbral_activo(self.cfg)
         r = ResultadoRAG(pregunta=pregunta, umbral=umbral)
         if not pregunta or not pregunta.strip():
             r.error = m["pregunta_vacia"]

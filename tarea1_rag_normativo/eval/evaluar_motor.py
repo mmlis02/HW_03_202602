@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from eval.evaluar_recuperacion import paginas_validas  # noqa: E402
-from src.config import BASE, cargar_config  # noqa: E402
+from src.config import BASE, cargar_config, umbral_activo  # noqa: E402
 from src.costos import ahora_utc, calcular_costo  # noqa: E402
 from src.indice import buscar  # noqa: E402
 from src.motor import Fuente, Motor  # noqa: E402
@@ -51,7 +51,7 @@ def main():
     salida = BASE / cfg["evaluacion"]["resultados"]
     preguntas = list(csv.DictReader(open(BASE / cfg["evaluacion"]["preguntas"], encoding="utf-8")))
     motor = Motor(cfg)
-    umbral = cfg["motor"]["umbral_similitud"]
+    umbral = umbral_activo(cfg)
 
     # ---------------- DEFENSA 1: umbral (sin IA) ----------------
     filas = []

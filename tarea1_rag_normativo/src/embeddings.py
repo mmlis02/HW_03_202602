@@ -54,7 +54,7 @@ class EmbedderLocal(Embedder):
 class EmbedderOpenAI(Embedder):
     """text-embedding-3-small por API. Cada llamada cuesta dinero: se usa solo en la Fase 4."""
 
-    def __init__(self, mcfg: dict):
+    def __init__(self, mcfg: dict, cfg: dict):
         from dotenv import load_dotenv
         from openai import OpenAI
         import tiktoken
@@ -64,13 +64,31 @@ class EmbedderOpenAI(Embedder):
         self.cliente = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
         self.tokenizador = tiktoken.get_encoding("cl100k_base")
         self.dimension = 1536
+        self.cfg = cfg
         self.tokens_usados = 0
+        self.costo_usd = 0.0
 
     def _llamar(self, textos):
-        inicio = time.time()
-        r = self.cliente.embeddings.create(model=self.nombre, input=textos)
-        self.tokens_usados += r.usage.total_tokens
+        """Cada llamada se registra en el log de costos (logs/costos_llm.csv), con éxito o error."""
+        from src.costos import ahora_utc, calcular_costo, registrar_llamada
+
+        momento, inicio = ahora_utc(), time.time()
+        fila = {"fecha_hora_utc": momento.isoformat(timespec="seconds"), "modelo": self.nombre,
+                "pregunta": f"[embeddings] lote de {len(textos)} textos"}
+        try:
+            r = self.cliente.embeddings.create(model=self.nombre, input=textos)
+        except Exception as ex:
+            fila.update(latencia_s=round(time.time() - inicio, 3), exito=False, error=f"{type(ex).__name__}: {str(ex)[:200]}")
+            registrar_llamada(self.cfg, fila)
+            raise
         self.ultima_latencia = time.time() - inicio
+        tokens = r.usage.total_tokens
+        costo, franja = calcular_costo(self.cfg, self.nombre, momento, tokens, 0)
+        self.tokens_usados += tokens
+        self.costo_usd += costo
+        fila.update(tokens_entrada=tokens, tokens_salida=0, latencia_s=round(self.ultima_latencia, 3),
+                    costo_usd=f"{costo:.8f}", franja=franja, exito=True)
+        registrar_llamada(self.cfg, fila)
         return np.array([d.embedding for d in r.data], dtype=np.float32)
 
     def embed_pasajes(self, textos):
@@ -90,5 +108,5 @@ def crear_embedder(cfg: dict, modelo: str | None = None) -> Embedder:
     if mcfg["tipo"] == "sentence_transformers":
         return EmbedderLocal(mcfg)
     if mcfg["tipo"] == "openai":
-        return EmbedderOpenAI(mcfg)
+        return EmbedderOpenAI(mcfg, cfg)
     raise ValueError(f"Tipo de embeddings desconocido: {mcfg['tipo']}")
