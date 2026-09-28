@@ -13,8 +13,15 @@ import json
 import re
 from pathlib import Path
 
-ENCABEZADO_ARTICULO = re.compile(r"^[“\"]?\s*(Artículo\s+\d+)\.")
+ORDINAL = r"(?:PRIMERA|SEGUNDA|TERCERA|CUARTA|QUINTA|SEXTA|SÉPTIMA|OCTAVA|NOVENA|DÉCIMA|UNDÉCIMA|DUODÉCIMA|VIGÉSIMA|ÚNICA)"
+# "Artículo 85." o encabezado de disposición: "PRIMERA.", "VIGÉSIMA NOVENA.", "DECIMOTERCERA." (D.S.)
+ENCABEZADO_ARTICULO = re.compile(
+    rf"^[“\"]?\s*(Artículo\s+\d+|{ORDINAL}(?:\s+[A-ZÁÉÍÓÚ]+)?|DECIMO[A-ZÁÉÍÓÚ]+|VIGESIMO[A-ZÁÉÍÓÚ]+)\.")
 ETIQUETA_VIGENTE = re.compile(r"\[Texto vigente — [^\]]*? por (?P<norma>.+?), publicada el (?P<fecha>[^\]]+)\]")
+
+
+def _etiqueta_unidad(encabezado: str) -> str:
+    return encabezado if encabezado.startswith("Artículo") else f"Disposición {encabezado}"
 
 
 def _cortar_parrafo_largo(parrafo: str, tamano: int) -> list[str]:
@@ -65,7 +72,8 @@ def fragmentar_documento(doc_cfg: dict, carpeta_processed: Path, tamano: int, so
     articulo_vigente = ""  # último "Artículo N" visto; se arrastra a la página siguiente
     for reg in registros:
         for n, texto in enumerate(fragmentar_pagina(reg["texto"], tamano, solape)):
-            encontrados = [m.group(1) for par in texto.split("\n\n") if (m := ENCABEZADO_ARTICULO.match(par))]
+            encontrados = [_etiqueta_unidad(m.group(1)) for par in texto.split("\n\n")
+                           if (m := ENCABEZADO_ARTICULO.match(par))]
             empieza_con_articulo = bool(ENCABEZADO_ARTICULO.match(texto))
             articulo_inicio = encontrados[0] if empieza_con_articulo else articulo_vigente
             if encontrados:

@@ -1,0 +1,26 @@
+id,tipo,pregunta,sim_top1,abst_umbral
+D01,dentro,"Recién formalicé mi negocio, ¿qué trámite tengo que hacer para poder venderle al Estado?",0.845,False
+D02,dentro,"Si una municipalidad quiere comprarme algo chiquito, de unos 3 mil soles, ¿igual tiene que hacer licitación?",0.8579,False
+D03,dentro,"Ya entregué todo y me dieron el visto bueno, ¿cuánto se pueden demorar en pagarme?",0.8755,False
+D04,dentro,"La entidad se está atrasando con mi pago, ¿puedo cobrarles algo extra por la demora?",0.8562,False
+D05,dentro,"Perdí una licitación y creo que fue injusto. Si soy pequeña empresa, ¿cuánta plata tengo que dejar para reclamar?",0.8651,False
+D06,dentro,¿El Estado me puede dar parte del pago por adelantado para comprar los materiales? ¿Cuánto como máximo?,0.8584,False
+D07,dentro,¿Pueden las micro y pequeñas empresas emitir facturas negociables al contratar con el Estado y por qué plazo máximo?,0.9043,False
+D08,dentro,¿Procede una medida cautelar para paralizar la ejecución de una obra de infraestructura hidráulica?,0.8931,False
+D09,dentro,"¿Qué norma incorporó la infraestructura hidráulica entre las obras en que no proceden medidas cautelares, y con qué finalidad?",0.888,False
+D10,dentro,"Según la modificación del Reglamento, ¿quién revisa los requisitos de calificación en los procedimientos evaluados por jurados?",0.8935,False
+D11,dentro,¿Cuál es el tope de penalidades en un contrato menor?,0.8625,False
+D12,dentro,¿Qué formación mínima se exige para certificarse como comprador público?,0.873,False
+D13,dentro,¿Qué es la Pladicop?,0.8568,False
+D14,dentro,¿Cuándo se declara desierto un procedimiento de selección?,0.9245,False
+D15,dentro,¿Qué contracautela puede ofrecer una micro o pequeña empresa que solicita una medida cautelar?,0.8794,False
+F01,fuera,¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto?,0.8393,True
+F02,fuera,¿Cómo se calcula la penalidad diaria por mora en un contrato de bienes?,0.8601,False
+F03,fuera,"Ya entregué los productos, ¿cuántos días tienen para revisarlos y darme el ok?",0.8575,False
+F04,fuera,¿Cómo saco mi RUC en la SUNAT para mi negocio?,0.8238,True
+F05,fuera,¿Cómo se prepara un ceviche?,0.7922,True
+F06,fuera,"Me dieron la buena pro, ¿en cuántos días tengo que presentar los papeles para firmar el contrato?",0.8787,False
+F07,fuera,¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo?,0.8264,True
+F08,fuera,¿Cuál es la capital de Australia?,0.754,True
+F09,fuera,¿Cada cuántos kilómetros hay que cambiarle el aceite al carro?,0.7945,True
+F10,fuera,¿Qué equipo ganó la Copa América 2024?,0.7639,True

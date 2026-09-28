@@ -1,0 +1,8 @@
+[OK ] umbral (ceviche): abstuvo=True motivo=umbral llamo_llm=False error=False costo=0.000000
+[OK ] respuesta con cita: abstuvo=False motivo=None llamo_llm=True error=False costo=0.000250
+[OK ] fuera de corpus (IA): abstuvo=True motivo=fuera_de_corpus llamo_llm=True error=False costo=0.000250
+[OK ] error de API: abstuvo=False motivo=None llamo_llm=True error=True costo=0.000000
+[OK ] sin citas: abstuvo=True motivo=sin_citas llamo_llm=True error=False costo=0.000250
+[OK ] pregunta vacía: abstuvo=False motivo=None llamo_llm=False error=True costo=0.000000
+[OK ] precio por hora: 03:00 UTC -> 1.0 USD, 15:00 UTC -> 2.0 USD (1M tokens)
+TODAS LAS PRUEBAS OK

@@ -61,3 +61,164 @@
 2026-09-27T22:34:37    {'documento': 'dl1715', 'total': 6, 'ya_estaban': 6, 'insertados_o_actualizados': 0, 'borrados': 0}
 2026-09-27T22:34:37    total en la colección: 255 | tiempo: 0.0 s
 2026-09-27T22:34:37 Resumen de fragmentos escrito en /Users/michelle.li/Documents/HW_03_202602/tarea1_rag_normativo/data/processed/fragmentos_e5small.json
+2026-09-27T22:43:33 == Índice e5small/c500_s0 (tamaño 500, solape 0) ==
+2026-09-27T22:43:34    ley32069: 64/555 fragmentos guardados
+2026-09-27T22:43:35    ley32069: 128/555 fragmentos guardados
+2026-09-27T22:43:36    ley32069: 192/555 fragmentos guardados
+2026-09-27T22:43:37    ley32069: 256/555 fragmentos guardados
+2026-09-27T22:43:39    ley32069: 320/555 fragmentos guardados
+2026-09-27T22:43:40    ley32069: 384/555 fragmentos guardados
+2026-09-27T22:43:41    ley32069: 448/555 fragmentos guardados
+2026-09-27T22:43:42    ley32069: 512/555 fragmentos guardados
+2026-09-27T22:43:42    ley32069: 555/555 fragmentos guardados
+2026-09-27T22:43:43    ds001_2026_ef: 64/277 fragmentos guardados
+2026-09-27T22:43:44    ds001_2026_ef: 128/277 fragmentos guardados
+2026-09-27T22:43:45    ds001_2026_ef: 192/277 fragmentos guardados
+2026-09-27T22:43:46    ds001_2026_ef: 256/277 fragmentos guardados
+2026-09-27T22:43:47    ds001_2026_ef: 277/277 fragmentos guardados
+2026-09-27T22:43:47    dl1715: 20/20 fragmentos guardados
+2026-09-27T22:43:47    {'documento': 'ley32069', 'total': 555, 'ya_estaban': 0, 'insertados_o_actualizados': 555, 'borrados': 0}
+2026-09-27T22:43:47    {'documento': 'ds001_2026_ef', 'total': 277, 'ya_estaban': 0, 'insertados_o_actualizados': 277, 'borrados': 0}
+2026-09-27T22:43:47    {'documento': 'dl1715', 'total': 20, 'ya_estaban': 0, 'insertados_o_actualizados': 20, 'borrados': 0}
+2026-09-27T22:43:47    total en la colección: 852 | tiempo: 14.0 s
+2026-09-27T22:43:47 Resumen de fragmentos escrito en /Users/michelle.li/Documents/HW_03_202602/tarea1_rag_normativo/data/processed/fragmentos_e5small.json
+2026-09-27T22:43:59 == Índice e5small/c500_s150 (tamaño 500, solape 150) ==
+2026-09-27T22:44:00    ley32069: 64/686 fragmentos guardados
+2026-09-27T22:44:01    ley32069: 128/686 fragmentos guardados
+2026-09-27T22:44:03    ley32069: 192/686 fragmentos guardados
+2026-09-27T22:44:04    ley32069: 256/686 fragmentos guardados
+2026-09-27T22:44:04    ley32069: 320/686 fragmentos guardados
+2026-09-27T22:44:05    ley32069: 384/686 fragmentos guardados
+2026-09-27T22:44:06    ley32069: 448/686 fragmentos guardados
+2026-09-27T22:44:08    ley32069: 512/686 fragmentos guardados
+2026-09-27T22:44:09    ley32069: 576/686 fragmentos guardados
+2026-09-27T22:44:10    ley32069: 640/686 fragmentos guardados
+2026-09-27T22:44:11    ley32069: 686/686 fragmentos guardados
+2026-09-27T22:44:12    ds001_2026_ef: 64/331 fragmentos guardados
+2026-09-27T22:44:13    ds001_2026_ef: 128/331 fragmentos guardados
+2026-09-27T22:44:14    ds001_2026_ef: 192/331 fragmentos guardados
+2026-09-27T22:44:15    ds001_2026_ef: 256/331 fragmentos guardados
+2026-09-27T22:44:16    ds001_2026_ef: 320/331 fragmentos guardados
+2026-09-27T22:44:17    ds001_2026_ef: 331/331 fragmentos guardados
+2026-09-27T22:44:17    dl1715: 22/22 fragmentos guardados
+2026-09-27T22:44:17    {'documento': 'ley32069', 'total': 686, 'ya_estaban': 0, 'insertados_o_actualizados': 686, 'borrados': 0}
+2026-09-27T22:44:17    {'documento': 'ds001_2026_ef', 'total': 331, 'ya_estaban': 0, 'insertados_o_actualizados': 331, 'borrados': 0}
+2026-09-27T22:44:17    {'documento': 'dl1715', 'total': 22, 'ya_estaban': 0, 'insertados_o_actualizados': 22, 'borrados': 0}
+2026-09-27T22:44:17    total en la colección: 1039 | tiempo: 17.9 s
+2026-09-27T22:44:17 Resumen de fragmentos escrito en /Users/michelle.li/Documents/HW_03_202602/tarea1_rag_normativo/data/processed/fragmentos_e5small.json
+2026-09-27T22:51:59 == Índice e5small/c500 (tamaño 500, solape 75) ==
+2026-09-27T22:52:00    ley32069: 64/619 fragmentos guardados
+2026-09-27T22:52:01    ley32069: 128/619 fragmentos guardados
+2026-09-27T22:52:02    ley32069: 192/619 fragmentos guardados
+2026-09-27T22:52:03    ley32069: 256/619 fragmentos guardados
+2026-09-27T22:52:03    ley32069: 320/619 fragmentos guardados
+2026-09-27T22:52:04    ley32069: 384/619 fragmentos guardados
+2026-09-27T22:52:05    ley32069: 448/619 fragmentos guardados
+2026-09-27T22:52:06    ley32069: 512/619 fragmentos guardados
+2026-09-27T22:52:07    ley32069: 576/619 fragmentos guardados
+2026-09-27T22:52:08    ley32069: 619/619 fragmentos guardados
+2026-09-27T22:52:10    ds001_2026_ef: 64/303 fragmentos guardados
+2026-09-27T22:52:11    ds001_2026_ef: 128/303 fragmentos guardados
+2026-09-27T22:52:12    ds001_2026_ef: 192/303 fragmentos guardados
+2026-09-27T22:52:13    ds001_2026_ef: 256/303 fragmentos guardados
+2026-09-27T22:52:14    ds001_2026_ef: 303/303 fragmentos guardados
+2026-09-27T22:52:15    dl1715: 20/20 fragmentos guardados
+2026-09-27T22:52:15    {'documento': 'ley32069', 'total': 619, 'ya_estaban': 0, 'insertados_o_actualizados': 619, 'borrados': 0}
+2026-09-27T22:52:15    {'documento': 'ds001_2026_ef', 'total': 303, 'ya_estaban': 0, 'insertados_o_actualizados': 303, 'borrados': 0}
+2026-09-27T22:52:15    {'documento': 'dl1715', 'total': 20, 'ya_estaban': 0, 'insertados_o_actualizados': 20, 'borrados': 0}
+2026-09-27T22:52:15    total en la colección: 942 | tiempo: 15.8 s
+2026-09-27T22:52:15 == Índice e5small/c1000 (tamaño 1000, solape 150) ==
+2026-09-27T22:52:17    ley32069: 64/307 fragmentos guardados
+2026-09-27T22:52:19    ley32069: 128/307 fragmentos guardados
+2026-09-27T22:52:20    ley32069: 192/307 fragmentos guardados
+2026-09-27T22:52:23    ley32069: 256/307 fragmentos guardados
+2026-09-27T22:52:24    ley32069: 307/307 fragmentos guardados
+2026-09-27T22:52:26    ds001_2026_ef: 64/154 fragmentos guardados
+2026-09-27T22:52:28    ds001_2026_ef: 128/154 fragmentos guardados
+2026-09-27T22:52:29    ds001_2026_ef: 154/154 fragmentos guardados
+2026-09-27T22:52:29    dl1715: 11/11 fragmentos guardados
+2026-09-27T22:52:29    {'documento': 'ley32069', 'total': 307, 'ya_estaban': 0, 'insertados_o_actualizados': 307, 'borrados': 0}
+2026-09-27T22:52:29    {'documento': 'ds001_2026_ef', 'total': 154, 'ya_estaban': 0, 'insertados_o_actualizados': 154, 'borrados': 0}
+2026-09-27T22:52:29    {'documento': 'dl1715', 'total': 11, 'ya_estaban': 0, 'insertados_o_actualizados': 11, 'borrados': 0}
+2026-09-27T22:52:29    total en la colección: 472 | tiempo: 14.0 s
+2026-09-27T22:52:29 == Índice e5small/c1800 (tamaño 1800, solape 250) ==
+2026-09-27T22:52:32    ley32069: 64/168 fragmentos guardados
+2026-09-27T22:52:35    ley32069: 128/168 fragmentos guardados
+2026-09-27T22:52:37    ley32069: 168/168 fragmentos guardados
+2026-09-27T22:52:41    ds001_2026_ef: 64/81 fragmentos guardados
+2026-09-27T22:52:42    ds001_2026_ef: 81/81 fragmentos guardados
+2026-09-27T22:52:43    dl1715: 6/6 fragmentos guardados
+2026-09-27T22:52:43    {'documento': 'ley32069', 'total': 168, 'ya_estaban': 0, 'insertados_o_actualizados': 168, 'borrados': 0}
+2026-09-27T22:52:43    {'documento': 'ds001_2026_ef', 'total': 81, 'ya_estaban': 0, 'insertados_o_actualizados': 81, 'borrados': 0}
+2026-09-27T22:52:43    {'documento': 'dl1715', 'total': 6, 'ya_estaban': 0, 'insertados_o_actualizados': 6, 'borrados': 0}
+2026-09-27T22:52:43    total en la colección: 255 | tiempo: 13.6 s
+2026-09-27T22:52:43 == Índice e5small/c500_s0 (tamaño 500, solape 0) ==
+2026-09-27T22:52:44    ley32069: 64/555 fragmentos guardados
+2026-09-27T22:52:45    ley32069: 128/555 fragmentos guardados
+2026-09-27T22:52:46    ley32069: 192/555 fragmentos guardados
+2026-09-27T22:52:47    ley32069: 256/555 fragmentos guardados
+2026-09-27T22:52:47    ley32069: 320/555 fragmentos guardados
+2026-09-27T22:52:48    ley32069: 384/555 fragmentos guardados
+2026-09-27T22:52:49    ley32069: 448/555 fragmentos guardados
+2026-09-27T22:52:50    ley32069: 512/555 fragmentos guardados
+2026-09-27T22:52:51    ley32069: 555/555 fragmentos guardados
+2026-09-27T22:52:51    ds001_2026_ef: 64/277 fragmentos guardados
+2026-09-27T22:52:52    ds001_2026_ef: 128/277 fragmentos guardados
+2026-09-27T22:52:54    ds001_2026_ef: 192/277 fragmentos guardados
+2026-09-27T22:52:54    ds001_2026_ef: 256/277 fragmentos guardados
+2026-09-27T22:52:55    ds001_2026_ef: 277/277 fragmentos guardados
+2026-09-27T22:52:55    dl1715: 20/20 fragmentos guardados
+2026-09-27T22:52:55    {'documento': 'ley32069', 'total': 555, 'ya_estaban': 0, 'insertados_o_actualizados': 555, 'borrados': 0}
+2026-09-27T22:52:55    {'documento': 'ds001_2026_ef', 'total': 277, 'ya_estaban': 0, 'insertados_o_actualizados': 277, 'borrados': 0}
+2026-09-27T22:52:55    {'documento': 'dl1715', 'total': 20, 'ya_estaban': 0, 'insertados_o_actualizados': 20, 'borrados': 0}
+2026-09-27T22:52:55    total en la colección: 852 | tiempo: 12.3 s
+2026-09-27T22:52:55 == Índice e5small/c500_s150 (tamaño 500, solape 150) ==
+2026-09-27T22:52:56    ley32069: 64/686 fragmentos guardados
+2026-09-27T22:52:57    ley32069: 128/686 fragmentos guardados
+2026-09-27T22:52:58    ley32069: 192/686 fragmentos guardados
+2026-09-27T22:52:59    ley32069: 256/686 fragmentos guardados
+2026-09-27T22:53:00    ley32069: 320/686 fragmentos guardados
+2026-09-27T22:53:00    ley32069: 384/686 fragmentos guardados
+2026-09-27T22:53:01    ley32069: 448/686 fragmentos guardados
+2026-09-27T22:53:02    ley32069: 512/686 fragmentos guardados
+2026-09-27T22:53:03    ley32069: 576/686 fragmentos guardados
+2026-09-27T22:53:04    ley32069: 640/686 fragmentos guardados
+2026-09-27T22:53:05    ley32069: 686/686 fragmentos guardados
+2026-09-27T22:53:06    ds001_2026_ef: 64/331 fragmentos guardados
+2026-09-27T22:53:07    ds001_2026_ef: 128/331 fragmentos guardados
+2026-09-27T22:53:08    ds001_2026_ef: 192/331 fragmentos guardados
+2026-09-27T22:53:09    ds001_2026_ef: 256/331 fragmentos guardados
+2026-09-27T22:53:10    ds001_2026_ef: 320/331 fragmentos guardados
+2026-09-27T22:53:10    ds001_2026_ef: 331/331 fragmentos guardados
+2026-09-27T22:53:11    dl1715: 22/22 fragmentos guardados
+2026-09-27T22:53:11    {'documento': 'ley32069', 'total': 686, 'ya_estaban': 0, 'insertados_o_actualizados': 686, 'borrados': 0}
+2026-09-27T22:53:11    {'documento': 'ds001_2026_ef', 'total': 331, 'ya_estaban': 0, 'insertados_o_actualizados': 331, 'borrados': 0}
+2026-09-27T22:53:11    {'documento': 'dl1715', 'total': 22, 'ya_estaban': 0, 'insertados_o_actualizados': 22, 'borrados': 0}
+2026-09-27T22:53:11    total en la colección: 1039 | tiempo: 15.7 s
+2026-09-27T22:53:11 Resumen de fragmentos escrito en /Users/michelle.li/Documents/HW_03_202602/tarea1_rag_normativo/data/processed/fragmentos_e5small.json
+2026-09-27T22:53:34 == Índice e5small/c500 (tamaño 500, solape 75) ==
+2026-09-27T22:53:35    {'documento': 'ley32069', 'total': 619, 'ya_estaban': 619, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'ds001_2026_ef', 'total': 303, 'ya_estaban': 303, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'dl1715', 'total': 20, 'ya_estaban': 20, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    total en la colección: 942 | tiempo: 0.6 s
+2026-09-27T22:53:35 == Índice e5small/c1000 (tamaño 1000, solape 150) ==
+2026-09-27T22:53:35    {'documento': 'ley32069', 'total': 307, 'ya_estaban': 307, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'ds001_2026_ef', 'total': 154, 'ya_estaban': 154, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'dl1715', 'total': 11, 'ya_estaban': 11, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    total en la colección: 472 | tiempo: 0.1 s
+2026-09-27T22:53:35 == Índice e5small/c1800 (tamaño 1800, solape 250) ==
+2026-09-27T22:53:35    {'documento': 'ley32069', 'total': 168, 'ya_estaban': 168, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'ds001_2026_ef', 'total': 81, 'ya_estaban': 81, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    {'documento': 'dl1715', 'total': 6, 'ya_estaban': 6, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:35    total en la colección: 255 | tiempo: 0.1 s
+2026-09-27T22:53:35 == Índice e5small/c500_s0 (tamaño 500, solape 0) ==
+2026-09-27T22:53:36    {'documento': 'ley32069', 'total': 555, 'ya_estaban': 555, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    {'documento': 'ds001_2026_ef', 'total': 277, 'ya_estaban': 277, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    {'documento': 'dl1715', 'total': 20, 'ya_estaban': 20, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    total en la colección: 852 | tiempo: 0.3 s
+2026-09-27T22:53:36 == Índice e5small/c500_s150 (tamaño 500, solape 150) ==
+2026-09-27T22:53:36    {'documento': 'ley32069', 'total': 686, 'ya_estaban': 686, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    {'documento': 'ds001_2026_ef', 'total': 331, 'ya_estaban': 331, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    {'documento': 'dl1715', 'total': 22, 'ya_estaban': 22, 'insertados_o_actualizados': 0, 'borrados': 0}
+2026-09-27T22:53:36    total en la colección: 1039 | tiempo: 0.1 s
+2026-09-27T22:53:36 Resumen de fragmentos escrito en /Users/michelle.li/Documents/HW_03_202602/tarea1_rag_normativo/data/processed/fragmentos_e5small.json

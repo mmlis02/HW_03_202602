@@ -7,7 +7,8 @@ Garantías del proceso de construcción:
 - Aislado por documento: al (re)indexar un documento solo se leen y borran IDs con
   `documento == <ese id>`; los fragmentos de otros documentos no se tocan.
 """
-from pathlib import Path
+import hashlib
+import json
 
 import chromadb
 
@@ -37,6 +38,13 @@ def abrir_coleccion(cfg: dict, alias_modelo: str, conf_fragmentos: str, crear: b
 
 def indexar_documento(coleccion, embedder, fragmentos: list[dict], documento: str,
                       nombres_cortos: dict, lote: int, log=print) -> dict:
+    # La huella cubre TODO lo que afecta al índice: texto, encabezado del embedding y metadatos.
+    # Si cualquiera cambia, el fragmento se vuelve a calcular; si no, se salta.
+    for f in fragmentos:
+        md = {k: v for k, v in f["metadatos"].items() if k != "hash"}
+        base = texto_para_embedding(f, nombres_cortos) + json.dumps(md, sort_keys=True, ensure_ascii=False)
+        f["metadatos"]["hash"] = hashlib.sha1(base.encode("utf-8")).hexdigest()[:16]
+
     existentes = coleccion.get(where={"documento": documento}, include=["metadatas"])
     hash_existente = {i: m["hash"] for i, m in zip(existentes["ids"], existentes["metadatas"])}
     nuevos_ids = {f["id"] for f in fragmentos}

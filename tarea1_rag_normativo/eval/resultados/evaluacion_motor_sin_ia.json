@@ -1,0 +1,9 @@
+{
+  "umbral": 0.84,
+  "defensa1_sin_ia": {
+    "abstenciones_correctas": "7/10",
+    "tasa_abstencion_correcta": 0.7,
+    "abstenciones_incorrectas": "0/15",
+    "tasa_abstencion_incorrecta": 0.0
+  }
+}

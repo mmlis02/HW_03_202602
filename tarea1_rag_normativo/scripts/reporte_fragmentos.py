@@ -7,6 +7,7 @@ Escribe data/processed/reporte_fragmentos.md y distribucion_fragmentos.png
 
 Uso: python scripts/reporte_fragmentos.py
 """
+import csv
 import json
 import sys
 from pathlib import Path
@@ -29,17 +30,23 @@ def main():
     docs = [d["id"] for d in cfg["documentos"] if d["incluir"]]
     confs = list(cfg["fragmentos"]["configuraciones"])
 
+    def auc(conf):
+        filas = list(csv.DictReader(open(BASE / cfg["evaluacion"]["resultados"] / f"recuperacion_{alias}_{conf}.csv", encoding="utf-8")))
+        d = [float(f["sim_top1"]) for f in filas if f["tipo"] == "dentro"]
+        o = [float(f["sim_top1"]) for f in filas if f["tipo"] == "fuera"]
+        return sum((a > b) + 0.5 * (a == b) for a in d for b in o) / (len(d) * len(o))
+
     L = ["# Fragmentos e índice (Tarea 1, Fase 2)", "",
          f"Modelo local: `{cfg['embeddings']['modelos']['local']['nombre']}` "
          f"(límite {cfg['embeddings']['modelos']['local']['max_tokens']} tokens). Configuración elegida: **{elegida}**.", "",
          "## Comparación de configuraciones (eval/preguntas.csv, 15 preguntas dentro del corpus)", "",
-         "| Config. | Tamaño / solape (chars) | Fragmentos | Recall@1 | Recall@3 | Recall@5 | MRR@5 | Tokens mediana / máx. | Sobre el límite |",
-         "|---|---|---|---|---|---|---|---|---|"]
+         "| Config. | Tamaño / solape (chars) | Fragmentos | Recall@1 | Recall@3 | Recall@5 | MRR@5 | AUC dentro/fuera | Tokens mediana / máx. | Sobre el límite |",
+         "|---|---|---|---|---|---|---|---|---|---|"]
     for c in confs:
         f, r = frag[c], rec[f"{alias}_{c}"]
         marca = " ✅" if c == elegida else ""
         L.append(f"| {c}{marca} | {f['tamano']} / {f['solape']} | {f['fragmentos_total']} | {r['recall@1']:.2f} | {r['recall@3']:.2f} | "
-                 f"{r['recall@5']:.2f} | {r['mrr@5']:.2f} | {f['tokens']['mediana']} / {f['tokens']['max']} | {f['tokens']['sobre_limite']} |")
+                 f"{r['recall@5']:.2f} | {r['mrr@5']:.2f} | {auc(c):.3f} | {f['tokens']['mediana']} / {f['tokens']['max']} | {f['tokens']['sobre_limite']} |")
     L += ["", "## Fragmentos por documento", "", "| Documento | " + " | ".join(confs) + " |", "|---|" + "---|" * len(confs)]
     for d in docs:
         L.append(f"| {d} | " + " | ".join(str(frag[c]["fragmentos_por_documento"][d]) for c in confs) + " |")
@@ -51,7 +58,7 @@ def main():
           "![Distribución](distribucion_fragmentos.png)"]
     (ruta(cfg, "processed") / "reporte_fragmentos.md").write_text("\n".join(L) + "\n", encoding="utf-8")
 
-    fig, ejes = plt.subplots(1, len(confs), figsize=(4 * len(confs), 3.2), sharey=False)
+    fig, ejes = plt.subplots(1, len(confs), figsize=(3.6 * len(confs), 3.2), sharey=False)
     for ax, c in zip(ejes, confs):
         ax.hist(frag[c]["tokens_lista"], bins=25, color="#4C78A8")
         ax.axvline(frag[c]["tokens"]["limite"], color="#E45756", linestyle="--", label="límite 512")

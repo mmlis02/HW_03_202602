@@ -101,3 +101,39 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 - Las similitudes de este modelo están muy apretadas: todas entre 0,75 y 0,89.
 - El ceviche saca 0,80, igual que en la prueba del profesor.
 - Las trampas del Reglamento sacan hasta 0,87, más que algunas preguntas legítimas (0,84). Un solo umbral no alcanza para separarlas; en la Fase 3 hay que calibrarlo con datos y agregar otra defensa.
+
+**Corrección posterior (importante para el video)**
+- "500" son **caracteres**, no tokens (500 caracteres ≈ 120 tokens).
+- Después también comparé el **solapamiento**: dejé fijo el tamaño en 500 y probé solapes de 0, 75 y 150 caracteres. Luego corregí un detalle de las etiquetas de artículos, recalculé todo y **ganó 500 con solape 150**. Pone la respuesta entre los 5 primeros en 14 de 15 preguntas y es la que mejor ordena (MRR 0,85).
+- Hay que decirlo con honestidad: con 15 preguntas, cada una vale 6,7 %. Las diferencias entre configuraciones son de 1 o 2 preguntas, así que elegí mirando varios criterios juntos, no un solo número.
+
+---
+
+## Tarea 1 · Fase 3 — El motor, el umbral y las dos defensas
+
+**Qué hice**
+- **El motor** (`src/motor.py`) es una sola función: `responder(pregunta)`. La app y la línea de comandos solo llaman a esa función. El motor no sabe nada de pantallas y nunca abre los PDFs: solo lee el índice.
+- **Defensa 1, el umbral (gratis, sin IA).** Si el mejor pedazo encontrado se parece poco a la pregunta (menos de 0,840), el sistema dice "no tengo información" **sin llamar a la IA**.
+  - Así se detienen, gratis, 7 de las 10 preguntas de fuera: ceviche, capital de Australia, RUC, REMYPE…
+  - No se detiene ninguna de las 15 legítimas.
+- **Defensa 2, la IA.** Para las preguntas que pasan, la IA recibe los 5 pedazos. Tiene prohibido usar lo que "sabe" y debe marcar "fuera del corpus" si los pedazos solo *mencionan* el tema sin responderlo.
+- **Por qué hacen falta dos defensas (tabla para el video):** hay 3 preguntas del Reglamento que se parecen **más** a nuestros documentos que algunas preguntas legítimas:
+  - "¿en cuántos días presento los papeles para firmar el contrato?" = 0,879;
+  - la legítima "recién formalicé mi negocio…" = 0,845.
+
+  Si subiera el umbral para frenar esas trampas, también frenaría preguntas buenas. Por eso el umbral frena lo claramente ajeno y la IA frena lo cercano.
+- **Cómo elegí 0,840 (barrido):** probé todos los umbrales entre 0,74 y 0,90, y el gráfico muestra qué pasa con cada uno. Elegí el más alto que no bloquea ninguna pregunta legítima, con un pequeño margen.
+  - A 0,86 bloquearía 5 de 15 legítimas.
+  - A 0,78 (el umbral "intuitivo" del enunciado) dejaría pasar el ceviche, que saca 0,79, igual que en la prueba del profesor.
+- **Las páginas las pone el sistema, no la IA.** La IA escribe "[F2]" y el programa lo reemplaza por "(D.S. 001-2026-EF, pág. 4)" usando los datos guardados del pedazo. Así la IA no puede inventar una página.
+- **Nota de versión automática:** si el pedazo citado fue modificado, el sistema agrega "Texto vigente: modificado por el D.Leg. 1715, publicada el 04 febrero 2026". Si cita el D.S. 001-2026-EF, avisa que solo trae algunos artículos del Reglamento.
+- **Errores:** si la API falla, el resultado trae el campo "error" y la app lo mostrará en rojo. Nunca se disfraza de respuesta.
+- **Costos:**
+  - Modelo: gpt-6-luna, verificado el 27/09/2026 a US$0,10 por millón de tokens de entrada y US$0,50 por millón de salida.
+  - Tabla de precios por hora en `config.yaml`: OpenAI cobra igual a toda hora, pero el programa ya elige el precio según la hora de cada llamada, y lo probé con una tabla inventada de día/noche.
+  - Cada llamada queda anotada en `logs/costos_llm.csv`.
+- **Probé todo sin gastar** con una "IA falsa" que imita las respuestas de OpenAI: abstención por umbral, respuesta con cita, fuera del corpus, error de la API, respuesta sin citas y pregunta vacía.
+
+**Qué mide cada tasa (para el video)**
+- **Abstención por umbral (sin IA):** 7/10 correctas, 0/15 incorrectas. Cuesta 0.
+- **Abstención final (con IA):** pendiente de la corrida autorizada.

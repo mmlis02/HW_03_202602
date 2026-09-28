@@ -1,5 +1,5 @@
-[reanudable] tras el 'corte': 153 de 307 fragmentos de la ley
-[reanudable] segunda corrida: ya_estaban=153, insertados=154, total=307
-[aislado] dl1715 agregado (11 fragmentos); fragmentos de la ley sin cambios: True (307 IDs)
-[idempotente] reindexar todo otra vez: total antes=318, después=318
-[IDs] únicos: True (472 IDs); idénticos al volver a fragmentar: True
+[reanudable] tras el 'corte': 343 de 686 fragmentos de la ley
+[reanudable] segunda corrida: ya_estaban=343, insertados=343, total=686
+[aislado] dl1715 agregado (22 fragmentos); fragmentos de la ley sin cambios: True (686 IDs)
+[idempotente] reindexar todo otra vez: total antes=708, después=708
+[IDs] únicos: True (1039 IDs); idénticos al volver a fragmentar: True

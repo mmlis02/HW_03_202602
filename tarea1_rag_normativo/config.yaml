@@ -106,12 +106,16 @@ limpieza:
 # ---------------------------------------------------------------------------
 fragmentos:
   # Configuraciones comparadas con eval/preguntas.csv (tamaño y solape en caracteres).
+  # Tamaño y solape en CARACTERES (no tokens). Se comparan tamaños (con solape ~15 %) y,
+  # con el tamaño elegido fijo, tres solapes distintos.
   configuraciones:
     c500:  {tamano: 500,  solape: 75}
     c1000: {tamano: 1000, solape: 150}
     c1800: {tamano: 1800, solape: 250}
+    c500_s0:   {tamano: 500, solape: 0}
+    c500_s150: {tamano: 500, solape: 150}
   # Configuración elegida para el índice principal (ver README, sección Fase 2).
-  elegida: c500
+  elegida: c500_s150
   # Texto corto que se antepone a cada fragmento al calcular su embedding (no cambia el texto citado).
   nombres_cortos:
     ley32069: "Ley 32069, Ley General de Contrataciones Públicas (versión actualizada)"
@@ -147,3 +151,89 @@ evaluacion:
   preguntas: eval/preguntas.csv
   k_valores: [1, 3, 5]
   resultados: eval/resultados
+  barrido: {desde: 0.74, hasta: 0.90, paso: 0.005}
+
+# ---------------------------------------------------------------------------
+# Fase 3: motor RAG
+# ---------------------------------------------------------------------------
+motor:
+  # Defensa 1 (sin IA): si la similitud del mejor fragmento es menor que esto, se abstiene
+  # SIN llamar al LLM. Calibrado con eval/barrido_umbral.py (ver README, Fase 3).
+  umbral_similitud: 0.840
+  k_contexto: 5        # fragmentos que se entregan al LLM
+  # Cómo se muestra cada cita [Fn] en la respuesta final: "(<cita corta>, pág. N)"
+  citas_cortas:
+    ley32069: "Ley 32069 actualizada"
+    ds001_2026_ef: "D.S. 001-2026-EF"
+    dl1715: "D.Leg. 1715"
+
+llm:
+  proveedor: openai
+  modelo: gpt-6-luna
+  reasoning_effort: none      # sin razonamiento oculto: costo predecible y menor latencia
+  max_tokens_salida: 700
+  timeout_segundos: 60
+
+# Precios del modelo de generación y del modelo de embeddings por API.
+# Fuente: https://developers.openai.com/api/docs/pricing (verificado el 2026-09-27, tarifa Standard).
+# OpenAI NO cobra distinto según la hora: se deja una sola franja 00:00-24:00, pero el código
+# elige la franja según la hora de cada llamada, así que otro proveedor con tarifas por hora
+# (p. ej. descuento nocturno) solo requiere agregar franjas aquí.
+precios:
+  fuente: "https://developers.openai.com/api/docs/pricing"
+  fecha_verificacion: "2026-09-27"
+  zona_horaria: "UTC"          # las franjas se interpretan en esta zona horaria
+  modelos:
+    gpt-6-luna:
+      franjas:
+        - {desde: "00:00", hasta: "24:00", entrada: 0.10, entrada_cache: 0.01, salida: 0.50}   # USD por 1M tokens
+    text-embedding-3-small:
+      franjas:
+        - {desde: "00:00", hasta: "24:00", entrada: 0.02, entrada_cache: 0.02, salida: 0.0}
+  log_llamadas: logs/costos_llm.csv
+
+prompts:
+  sistema: |
+    Eres un asistente que explica normas de contratación pública del Perú a dueños de micro y
+    pequeñas empresas (MYPE). Respondes SOLO con lo que dicen los FRAGMENTOS que se te entregan.
+    Reglas obligatorias:
+    1. No uses conocimiento propio ni información que no esté en los fragmentos. Si los fragmentos
+       no contienen la respuesta, marca "fuera_de_corpus": true. No adivines ni completes con lo
+       que "suele" decir la norma.
+    2. Cuidado con los fragmentos que solo MENCIONAN un tema sin resolverlo: si la ley dice que algo
+       "lo establece el reglamento" o cita un numeral del Reglamento sin reproducir su contenido, eso
+       NO es la respuesta: marca "fuera_de_corpus": true y explica en "explicacion_limite" qué dice el
+       corpus y qué parte falta (por ejemplo, que el Reglamento completo no está indexado).
+    3. Cada afirmación de "respuesta" debe llevar su cita con el número de fragmento entre corchetes,
+       por ejemplo [F2]. No escribas números de página: el sistema los pone a partir del fragmento.
+    4. Versiones: si un fragmento dice "[Texto vigente — ... modificado por X, publicada el F]", usa ese
+       texto y menciona qué norma lo modificó y cuándo. El D.S. 001-2026-EF solo trae los artículos del
+       Reglamento que modifica: no lo presentes como si fuera el Reglamento completo.
+    5. Escribe en español claro y sencillo, sin jerga innecesaria, en 2 a 6 oraciones.
+  usuario: |
+    PREGUNTA:
+    {pregunta}
+
+    FRAGMENTOS:
+    {fragmentos}
+
+mensajes:
+  abstencion_umbral: >-
+    No encontré en los documentos indexados (Ley N.° 32069 actualizada, D.S. N.° 001-2026-EF y
+    D.Leg. N.° 1715) información suficientemente relacionada con tu pregunta, así que prefiero no
+    responder antes que improvisar.
+  abstencion_fuera_de_corpus: >-
+    Tu pregunta está relacionada con contrataciones públicas, pero la respuesta no está en los
+    documentos indexados.
+  abstencion_sin_citas: >-
+    El modelo generó una respuesta sin citar ningún fragmento; por seguridad no se muestra.
+  pregunta_vacia: "Escribe una pregunta."
+  error_api: "No se pudo obtener respuesta del modelo de lenguaje. Intenta de nuevo en unos minutos."
+  nota_ds_parcial: >-
+    El D.S. N.° 001-2026-EF modifica solo algunos artículos del Reglamento de la Ley N.° 32069
+    (D.S. N.° 009-2025-EF). El Reglamento completo no está en el corpus: esta respuesta muestra
+    únicamente el texto modificado, no el artículo completo del Reglamento.
+  nota_modificado: "Texto vigente: modificado por {norma}, publicada el {fecha}."
+  nota_dl1715: >-
+    El D.Leg. N.° 1715 (04/02/2026) es la norma que modificó el literal e) del numeral 85.1 del
+    artículo 85 de la Ley N.° 32069; ese texto ya está incorporado en la versión actualizada de la ley.

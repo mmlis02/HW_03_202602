@@ -4,7 +4,7 @@
     "recall@3": 0.8,
     "recall@5": 0.867,
     "mrr@5": 0.817,
-    "latencia_media_s": 0.0354,
+    "latencia_media_s": 0.0319,
     "sim_top1_dentro_min": 0.8398,
     "sim_top1_fuera_max": 0.8712
   },
@@ -13,7 +13,7 @@
     "recall@3": 0.8,
     "recall@5": 0.8,
     "mrr@5": 0.767,
-    "latencia_media_s": 0.0115,
+    "latencia_media_s": 0.0148,
     "sim_top1_dentro_min": 0.845,
     "sim_top1_fuera_max": 0.8628
   },
@@ -22,8 +22,26 @@
     "recall@3": 0.867,
     "recall@5": 0.933,
     "mrr@5": 0.772,
-    "latencia_media_s": 0.0109,
+    "latencia_media_s": 0.0125,
     "sim_top1_dentro_min": 0.84,
     "sim_top1_fuera_max": 0.8589
+  },
+  "e5small_c500_s0": {
+    "recall@1": 0.733,
+    "recall@3": 0.8,
+    "recall@5": 0.8,
+    "mrr@5": 0.767,
+    "latencia_media_s": 0.0216,
+    "sim_top1_dentro_min": 0.8417,
+    "sim_top1_fuera_max": 0.8772
+  },
+  "e5small_c500_s150": {
+    "recall@1": 0.8,
+    "recall@3": 0.867,
+    "recall@5": 0.933,
+    "mrr@5": 0.847,
+    "latencia_media_s": 0.0113,
+    "sim_top1_dentro_min": 0.845,
+    "sim_top1_fuera_max": 0.8787
   }
 }
