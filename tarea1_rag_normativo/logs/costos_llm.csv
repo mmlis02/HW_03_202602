@@ -140,3 +140,9 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-28T04:36:36+00:00,gpt-6-luna,1303,0,47,1.016,0.00015380,00:00-24:00,True,,¿Qué equipo ganó la Copa América 2024?
 2026-09-28T04:37:11+00:00,gpt-6-luna,,,,0.964,,,False,"AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-[oculta]. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invali",¿Cuándo se declara desierto un procedimiento de selección?
 2026-09-28T04:37:42+00:00,gpt-6-luna,,,,0.992,,,False,"AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-[oculta]. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': ",¿Cuándo se declara desierto un procedimiento?
+2026-09-28T04:50:04+00:00,gpt-6-luna,1270,0,79,3.65,0.00016650,00:00-24:00,True,,¿En cuántos días me tienen que pagar después de la conformidad?
+2026-09-28T04:50:37+00:00,gpt-6-luna,1070,0,45,1.694,0.00012950,00:00-24:00,True,,"hola!
+"
+2026-09-28T04:51:45+00:00,gpt-6-luna,1216,0,130,3.828,0.00018660,00:00-24:00,True,,"¿Cuánto tiempo tiene el Estado para pagarme después de entregar?
+
+"

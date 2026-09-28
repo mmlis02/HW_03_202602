@@ -227,3 +227,29 @@ Las dos primeras se calculan sin llamar a la IA, **gratis**, así que pude proba
 **Costo total de toda la Tarea 1:** 141 llamadas, **US$0,0148**, menos de 6 céntimos de sol.
 
 **Diagrama del pipeline:** está en el README y en `docs/pipeline.md`. Hay que mostrarlo al inicio del video, **antes de cualquier código**.
+
+---
+
+## Tarea 1 · Cierre — Prueba de la app por la usuaria y cómo mostrarla en el video
+
+**Cómo abrir la app para la demo en vivo** (terminal de VS Code):
+```bash
+cd /Users/michelle.li/Documents/HW_03_202602
+source .venv/bin/activate
+cd tarea1_rag_normativo
+streamlit run app.py
+```
+Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes** de grabar y hacer una pregunta de calentamiento, porque la primera carga el modelo y tarda unos segundos.
+
+**Guion sugerido para la demo (Tarea 1)**
+1. **Una pregunta que responde:** "¿Cuánto tiempo tiene el Estado para pagarme después de entregar?" Mostrar la cita (pág. 32), el costo (~US$0,0002) y los fragmentos.
+2. **Una pregunta con versión:** el botón de la obra hidráulica. Mostrar la **nota de versión** del D.Leg. 1715.
+3. **Una trampa del Reglamento:** el botón de subcontratación. **La IA** se abstiene y explica que el porcentaje está en el Reglamento.
+4. **El ceviche:** se abstiene **sin llamar a la IA**. Costo US$0; mostrar que la similitud (0,792) está bajo el umbral (0,800).
+5. **Las pestañas** de calidad de extracción, evaluación y costos.
+
+**Lo que encontré con tu prueba (vale la pena contarlo)**
+- Hiciste 3 preguntas y quedaron registradas en el log de costos: la de "¿en cuántos días me pagan?", una con tus propias palabras y un "hola!".
+- **El "hola!" pasó el umbral.** Los saludos cortos se parecen "demasiado" a todo con este modelo ("hola" 0,804, "gracias" 0,834). La IA igual no respondió nada inventado; la segunda defensa lo frenó. Pero costó una llamada (US$0,00013).
+- **Por qué pasa:** es el precio de haber bajado el umbral de 0,840 a 0,800 para tener margen en la demo. Es un buen ejemplo en vivo de por qué hacen falta **dos defensas**.
+- **Mejora posible (no hecha):** un filtro previo que ignore saludos o textos demasiado cortos.
