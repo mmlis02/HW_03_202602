@@ -39,3 +39,7 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-28T04:37:54+00:00,gpt-6-luna,1500,0,200,0.0,0.00025000,00:00-24:00,True,,¿Qué porcentaje máximo de mi contrato puedo subcontratar?
 2026-09-28T04:37:54+00:00,gpt-6-luna,,,,0.0,,,False,TimeoutError: simulado,¿Cuándo se declara desierto un procedimiento de selección?
 2026-09-28T04:37:54+00:00,gpt-6-luna,1500,0,200,0.0,0.00025000,00:00-24:00,True,,¿Cuándo se declara desierto un procedimiento de selección?
+2026-09-28T23:17:44+00:00,gpt-6-luna,1500,0,200,0.0,0.00025000,00:00-24:00,True,,¿Procede una medida cautelar para paralizar una obra de infraestructura hidráulica?
+2026-09-28T23:17:44+00:00,gpt-6-luna,1500,0,200,0.0,0.00025000,00:00-24:00,True,,¿Qué porcentaje máximo de mi contrato puedo subcontratar?
+2026-09-28T23:17:44+00:00,gpt-6-luna,,,,0.0,,,False,TimeoutError: simulado,¿Cuándo se declara desierto un procedimiento de selección?
+2026-09-28T23:17:44+00:00,gpt-6-luna,1500,0,200,0.0,0.00025000,00:00-24:00,True,,¿Cuándo se declara desierto un procedimiento de selección?

@@ -1,0 +1,10 @@
+2026-09-28T18:20:12    256/20,101 procesos guardados
+2026-09-28T18:20:33    2,816/20,101 procesos guardados
+2026-09-28T18:20:53    5,376/20,101 procesos guardados
+2026-09-28T18:21:12    7,936/20,101 procesos guardados
+2026-09-28T18:21:33    10,496/20,101 procesos guardados
+2026-09-28T18:21:54    13,056/20,101 procesos guardados
+2026-09-28T18:22:15    15,616/20,101 procesos guardados
+2026-09-28T18:25:29    18,176/20,101 procesos guardados
+2026-09-28T18:25:54 Índice t2_procesos_e5small: {'a_indexar': 20101, 'ya_estaban': 0, 'insertados_o_actualizados': 20101, 'borrados': 0, 'total': 20101} | 349.4 s
+2026-09-28T18:34:25 Índice t2_procesos_e5small: {'a_indexar': 20101, 'ya_estaban': 20101, 'insertados_o_actualizados': 0, 'borrados': 0, 'total': 20101} | 7.4 s

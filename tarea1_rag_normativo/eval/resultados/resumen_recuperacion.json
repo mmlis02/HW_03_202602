@@ -40,7 +40,7 @@
     "recall@3": 0.867,
     "recall@5": 0.933,
     "mrr@5": 0.847,
-    "latencia_media_s": 0.0113,
+    "latencia_media_s": 0.0347,
     "sim_top1_dentro_min": 0.845,
     "sim_top1_fuera_max": 0.8787
   }

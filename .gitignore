@@ -19,3 +19,6 @@ tarea2_radar/data/raw/*
 
 # Tarea 2: tabla intermedia regenerable (idéntica a procesos.parquet cuando no hay repetidos)
 tarea2_radar/data/processed/procesos_por_mes.parquet
+
+# Tarea 2: índice vectorial (se regenera con build_index.py)
+tarea2_radar/data/index/

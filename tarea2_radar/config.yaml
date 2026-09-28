@@ -88,3 +88,51 @@ mapa:
   geojson: data/outputs/departamentos.geojson
   tolerancia_simplificacion_grados: 0.01   # ~1 km: suficiente para un mapa de departamentos
   decimales: 4
+
+# ---------------------------------------------------------------------------
+# Fase 3: RAG híbrido (reutiliza comun/: embeddings, costos por hora y llamada al LLM)
+# ---------------------------------------------------------------------------
+embeddings:
+  modelo_activo: local
+  modelos:
+    local:                                  # el MISMO modelo local de la Tarea 1
+      tipo: sentence_transformers
+      nombre: intfloat/multilingual-e5-small
+      prefijo_consulta: "query: "
+      prefijo_pasaje: "passage: "
+      max_tokens: 512
+      lote: 32
+      alias: e5small
+
+indice:
+  carpeta: data/index/chroma                # fuera de git; se regenera con build_index.py
+  coleccion: t2_procesos_e5small
+  lote_insercion: 256
+
+llm:
+  proveedor: openai
+  modelo: gpt-6-luna
+  reasoning_effort: none
+  max_tokens_salida: 700
+  timeout_segundos: 60
+
+precios:                                    # mismos precios verificados que la Tarea 1
+  fuente: "https://developers.openai.com/api/docs/pricing"
+  fecha_verificacion: "2026-09-27"
+  zona_horaria: "UTC"
+  modelos:
+    gpt-6-luna:
+      franjas:
+        - {desde: "00:00", hasta: "24:00", entrada: 0.10, entrada_cache: 0.01, salida: 0.50}
+  log_llamadas: logs/costos_llm.csv
+
+motor:
+  k_resultados: 8                           # procesos que se entregan al LLM
+  umbral_similitud: 0.800                   # heredado de la Tarea 1; se verifica con eval/barrido_umbral.py
+
+evaluacion:
+  definiciones: eval/definiciones.yaml
+  relevantes: eval/relevantes.json
+  resultados: eval/resultados
+  k_valores: [1, 3, 5, 8]
+  barrido: {desde: 0.74, hasta: 0.92, paso: 0.005}

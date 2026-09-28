@@ -13,13 +13,11 @@ Flujo de `responder(pregunta)`:
      (el LLM nunca escribe números de página) y agrega la nota de versión.
   6. Registra la llamada (tokens, latencia, costo según la hora, éxito o error).
 """
-import json
 import re
-import time
 from dataclasses import asdict, dataclass, field
 
-from src.config import cargar_config, umbral_activo
-from src.costos import ahora_utc, calcular_costo, limpiar_error, registrar_llamada
+from comun.llm import cliente_openai, llamar_llm_json
+from src.config import BASE, cargar_config, umbral_activo
 from src.embeddings import crear_embedder
 from src.indice import abrir_coleccion, buscar
 
@@ -86,32 +84,11 @@ class Motor:
         self.coleccion = abrir_coleccion(self.cfg, self.embedder.alias, conf, crear=False)  # nunca reconstruye
         self._cliente = cliente_llm  # se puede inyectar un cliente falso para pruebas sin costo
 
-    # ---------- LLM ----------
+    # ---------- LLM (llamada compartida con la Tarea 2: comun/llm.py) ----------
     def _cliente_llm(self):
         if self._cliente is None:
-            import os
-
-            from dotenv import load_dotenv
-            from openai import OpenAI
-
-            load_dotenv()
-            self._cliente = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"),
-                                   timeout=self.cfg["llm"]["timeout_segundos"])
+            self._cliente = cliente_openai(self.cfg)
         return self._cliente
-
-    def _llamar_llm(self, pregunta: str, fragmentos_txt: str):
-        lcfg = self.cfg["llm"]
-        return self._cliente_llm().chat.completions.create(
-            model=lcfg["modelo"],
-            reasoning_effort=lcfg["reasoning_effort"],
-            max_completion_tokens=lcfg["max_tokens_salida"],
-            response_format={"type": "json_schema", "json_schema": ESQUEMA_RESPUESTA},
-            messages=[
-                {"role": "system", "content": self.cfg["prompts"]["sistema"]},
-                {"role": "user", "content": self.cfg["prompts"]["usuario"].format(
-                    pregunta=pregunta, fragmentos=fragmentos_txt)},
-            ],
-        )
 
     # ---------- utilidades ----------
     def _formatear_fragmentos(self, fuentes: list[Fuente]) -> str:
@@ -174,29 +151,18 @@ class Motor:
             r.abstuvo, r.motivo_abstencion, r.respuesta = True, "umbral", m["abstencion_umbral"]
             return r
 
-        # Llamada al LLM
+        # Llamada al LLM (costo según la hora, log y errores: comun/llm.py)
         r.llamo_llm, r.modelo = True, self.cfg["llm"]["modelo"]
-        momento, inicio = ahora_utc(), time.time()
-        fila_log = {"fecha_hora_utc": momento.isoformat(timespec="seconds"), "modelo": r.modelo,
-                    "pregunta": pregunta[:200]}
-        try:
-            resp = self._llamar_llm(pregunta, self._formatear_fragmentos(r.fuentes))
-            r.latencia_s = round(time.time() - inicio, 3)
-            uso = resp.usage
-            cache = getattr(getattr(uso, "prompt_tokens_details", None), "cached_tokens", 0) or 0
-            r.tokens_entrada, r.tokens_salida = uso.prompt_tokens, uso.completion_tokens
-            r.costo_usd, franja = calcular_costo(self.cfg, r.modelo, momento, r.tokens_entrada, r.tokens_salida, cache)
-            fila_log.update(tokens_entrada=r.tokens_entrada, tokens_entrada_cache=cache, tokens_salida=r.tokens_salida,
-                            latencia_s=r.latencia_s, costo_usd=f"{r.costo_usd:.8f}", franja=franja)
-            datos = json.loads(resp.choices[0].message.content)
-        except Exception as ex:  # errores de API o respuesta inválida: se devuelven como ERROR
-            r.latencia_s = round(time.time() - inicio, 3)
-            r.error = f"{m['error_api']} ({limpiar_error(ex)})"
-            fila_log.update(latencia_s=r.latencia_s, exito=False, error=limpiar_error(ex))
-            registrar_llamada(self.cfg, fila_log)
+        mensajes = [{"role": "system", "content": self.cfg["prompts"]["sistema"]},
+                    {"role": "user", "content": self.cfg["prompts"]["usuario"].format(
+                        pregunta=pregunta, fragmentos=self._formatear_fragmentos(r.fuentes))}]
+        ll = llamar_llm_json(self._cliente_llm(), self.cfg, BASE, mensajes, ESQUEMA_RESPUESTA, pregunta)
+        r.tokens_entrada, r.tokens_salida = ll["tokens_entrada"], ll["tokens_salida"]
+        r.costo_usd, r.latencia_s = ll["costo_usd"], ll["latencia_s"]
+        if ll["error"]:  # errores de API o respuesta inválida: se devuelven como ERROR
+            r.error = f"{m['error_api']} ({ll['error']})"
             return r
-        fila_log["exito"] = True
-        registrar_llamada(self.cfg, fila_log)
+        datos = ll["datos"]
 
         # DEFENSA 2: el LLM detectó que los fragmentos no responden la pregunta
         r.explicacion_limite = datos.get("explicacion_limite", "")

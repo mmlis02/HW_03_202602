@@ -1,0 +1,83 @@
+# Preguntas de evaluación de la Tarea 2 y CÓMO se armó cada respuesta correcta.
+# Los procesos relevantes se identifican FILTRANDO la tabla validada (solo incluir_en_analisis) con
+# los filtros estructurados de la pregunta y buscando palabras clave en la descripción (regex, sin
+# tildes ni mayúsculas); luego se leyó una muestra de descripciones para depurar falsos positivos
+# (campo `excluir`). NO se usó el buscador semántico para armarlas.
+# filtros: departamento, categoria (Bienes/Servicios/Obras), monto_min, monto_max, fecha_desde, fecha_hasta
+dentro:
+  - id: Q01
+    pregunta: "Obras de agua potable y saneamiento en Cusco por más de un millón de soles"
+    filtros: {departamento: CUSCO, categoria: Obras, monto_min: 1000000}
+    incluir: 'AGUA POTABLE|SANEAMIENTO|ALCANTARILLAD|DESAGUE'
+    nota: "ejemplo del enunciado; las 9 descripciones leídas son obras de agua/alcantarillado/UBS"
+  - id: Q02
+    pregunta: "¿Qué medicamentos están comprando las entidades de Cajamarca?"
+    filtros: {departamento: CAJAMARCA}
+    incluir: 'MEDICAMENT|PRODUCTOS FARMAC'
+    nota: "Loreto no tenía ninguno en el periodo; se eligió Cajamarca (11)"
+  - id: Q03
+    pregunta: "Contratos de mantenimiento de carreteras o caminos vecinales en Puno"
+    filtros: {departamento: PUNO}
+    incluir: 'MANTENIMIENTO.{0,60}(VIAL|CAMINO|CARRETER|TROCHA)|(VIAL|CAMINO VECINAL).{0,30}MANTENIMIENTO'
+    excluir: '^(CONTRATACION DE SUMINISTRO DE BIENES, )?ADQUISICION|SUMINISTRO DE COMBUSTIBLE'
+    nota: "se excluyen compras de diésel 'para mantenimiento' (son bienes, no el mantenimiento); se conserva la supervisión del mantenimiento"
+  - id: Q04
+    pregunta: "Compras de computadoras o laptops en Lima por menos de 200 mil soles"
+    filtros: {departamento: LIMA, categoria: Bienes, monto_max: 200000}
+    incluir: 'COMPUTADORA|LAPTOP|EQUIPOS? DE COMPUTO|COMPUTO PORTATIL|ESTACION(ES)? DE TRABAJO'
+  - id: Q05
+    pregunta: "¿Qué servicios de limpieza contrataron las entidades de Arequipa?"
+    filtros: {departamento: AREQUIPA, categoria: Servicios}
+    incluir: 'LIMPIEZA'
+    nota: "incluye limpieza de locales, de cauce de río y de desechos turísticos: todos son servicios de limpieza"
+  - id: Q06
+    pregunta: "Compras de alimentos en Ayacucho"
+    filtros: {departamento: AYACUCHO, categoria: Bienes}
+    incluir: 'VIVERES|ALIMENTOS'
+  - id: Q07
+    pregunta: "Obras en colegios o instituciones educativas de Cajamarca"
+    filtros: {departamento: CAJAMARCA, categoria: Obras}
+    incluir: 'INSTITUCION EDUCATIVA|I\.E\.|COLEGIO|EDUCATIV'
+  - id: Q08
+    pregunta: "Compras de combustible diésel o gasolina en Junín"
+    filtros: {departamento: JUNIN, categoria: Bienes}
+    incluir: 'COMBUSTIBLE|COMBUTIBLE|DIESEL|GASOLIN|PETROLEO'
+    nota: "se agregó 'COMBUTIBLE' (errata real en una descripción leída)"
+  - id: Q09
+    pregunta: "Compras de uniformes publicadas en junio de 2026"
+    filtros: {fecha_desde: "2026-06-01", fecha_hasta: "2026-06-30"}
+    incluir: 'UNIFORME'
+  - id: Q10
+    pregunta: "Servicios de seguridad y vigilancia en Piura"
+    filtros: {departamento: PIURA, categoria: Servicios}
+    incluir: 'VIGILANCIA|SEGURIDAD PRIVADA'
+    excluir: 'VIGILANCIA PSICOLOG|VIGILANCIA EPIDEMIOLOG|VIGILANCIA SANITARIA'
+    nota: "se excluyó 'vigilancia psicológica ocupacional' (no es seguridad)"
+  - id: Q11
+    pregunta: "Obras de electrificación rural o redes eléctricas"
+    filtros: {categoria: Obras}
+    incluir: 'ELECTRIFICACION|REDES? ELECTRIC|SUMINISTRO ELECTRICO DOMICILIARIO'
+  - id: Q12
+    pregunta: "Consultorías para elaborar expedientes técnicos en Áncash"
+    filtros: {departamento: ANCASH}
+    incluir: 'EXPEDIENTE TECNICO'
+  - id: Q13
+    pregunta: "¿Qué entidades están comprando ambulancias?"
+    filtros: {}
+    incluir: 'ADQUISICION.{0,40}AMBULANCIA'
+    excluir: 'MANTENIMIENTO'
+    nota: "solo compras: se excluyen mantenimiento y alquiler de ambulancias"
+  - id: Q14
+    pregunta: "Servicios de fumigación o desratización en Lima"
+    filtros: {departamento: LIMA, categoria: Servicios}
+    incluir: 'FUMIGACI|DESRATIZ|DESINSECT'
+    nota: "se quitó 'desinfección' porque traía mantenimiento de autoclaves y filtros"
+fuera:
+  - {id: F01, pregunta: "¿Cuántos días tiene la entidad para pagarme después de la conformidad?", porque: "pregunta normativa (Tarea 1), no sobre procesos"}
+  - {id: F02, pregunta: "¿Cómo se prepara un ceviche?", porque: "ajena al dominio"}
+  - {id: F03, pregunta: "Compra de aviones de combate F-35", porque: "ningún proceso compra aviones de combate; la regex 'AVION|F-35' encuentra 26 cercanos (aviónica de flotas, avión ambulancia, 'gaviones') que se leyeron: trampa cercana"}
+  - {id: F04, pregunta: "¿Cuál es la capital de Australia?", porque: "ajena al dominio"}
+  - {id: F05, pregunta: "¿Qué equipo ganó la Copa América 2024?", porque: "ajena al dominio"}
+  - {id: F06, pregunta: "Venta de departamentos de playa en Miami", porque: "ajena al dominio (el Estado no vende departamentos en Miami)"}
+  - {id: F07, pregunta: "Compra de submarinos nucleares", porque: "ningún proceso compra submarinos; la regex 'SUBMARIN' encuentra 4 (mantenimiento de unidades submarinas de la Marina y un seguro de dron submarino): trampa cercana"}
+  - {id: F08, pregunta: "¿Qué requisitos pide el RNP para inscribirme como proveedor?", porque: "pregunta normativa (Tarea 1), no sobre procesos"}

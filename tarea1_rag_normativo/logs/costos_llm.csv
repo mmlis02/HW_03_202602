@@ -146,3 +146,4 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-28T04:51:45+00:00,gpt-6-luna,1216,0,130,3.828,0.00018660,00:00-24:00,True,,"¿Cuánto tiempo tiene el Estado para pagarme después de entregar?
 
 "
+2026-09-28T23:18:37+00:00,gpt-6-luna,,,,0.847,,,False,"AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-[oculta]. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': ",¿Cuándo se declara desierto un procedimiento?
