@@ -4,6 +4,9 @@
 # tildes ni mayúsculas); luego se leyó una muestra de descripciones para depurar falsos positivos
 # (campo `excluir`). NO se usó el buscador semántico para armarlas.
 # filtros: departamento, categoria (Bienes/Servicios/Obras), monto_min, monto_max, fecha_desde, fecha_hasta
+# REGLA de la hoja de respuestas (fijada antes de evaluar con IA): la categoría es filtro SOLO si la
+# pregunta nombra la categoría ("obras", "servicios", "bienes"). "Compras de..." no fija categoría,
+# porque también se compran servicios. (Q04, Q06 y Q08 tenían categoría Bienes y se corrigieron.)
 dentro:
   - id: Q01
     pregunta: "Obras de agua potable y saneamiento en Cusco por más de un millón de soles"
@@ -23,8 +26,10 @@ dentro:
     nota: "se excluyen compras de diésel 'para mantenimiento' (son bienes, no el mantenimiento); se conserva la supervisión del mantenimiento"
   - id: Q04
     pregunta: "Compras de computadoras o laptops en Lima por menos de 200 mil soles"
-    filtros: {departamento: LIMA, categoria: Bienes, monto_max: 200000}
+    filtros: {departamento: LIMA, monto_max: 200000}
     incluir: 'COMPUTADORA|LAPTOP|EQUIPOS? DE COMPUTO|COMPUTO PORTATIL|ESTACION(ES)? DE TRABAJO'
+    excluir: 'ALQUILER|ARRENDAMIENTO|MANTENIMIENTO'
+    nota: "sin categoría (regla); se excluye el alquiler de equipos de cómputo (no es compra)"
   - id: Q05
     pregunta: "¿Qué servicios de limpieza contrataron las entidades de Arequipa?"
     filtros: {departamento: AREQUIPA, categoria: Servicios}
@@ -32,17 +37,20 @@ dentro:
     nota: "incluye limpieza de locales, de cauce de río y de desechos turísticos: todos son servicios de limpieza"
   - id: Q06
     pregunta: "Compras de alimentos en Ayacucho"
-    filtros: {departamento: AYACUCHO, categoria: Bienes}
+    filtros: {departamento: AYACUCHO}
     incluir: 'VIVERES|ALIMENTOS'
+    excluir: 'EJECUCION|REPARACION DE AMBIENTE'
+    nota: "sin categoría (regla); se excluye una obra de 'ambiente de preparación de alimentos'"
   - id: Q07
     pregunta: "Obras en colegios o instituciones educativas de Cajamarca"
     filtros: {departamento: CAJAMARCA, categoria: Obras}
     incluir: 'INSTITUCION EDUCATIVA|I\.E\.|COLEGIO|EDUCATIV'
   - id: Q08
     pregunta: "Compras de combustible diésel o gasolina en Junín"
-    filtros: {departamento: JUNIN, categoria: Bienes}
+    filtros: {departamento: JUNIN}
     incluir: 'COMBUSTIBLE|COMBUTIBLE|DIESEL|GASOLIN|PETROLEO'
-    nota: "se agregó 'COMBUTIBLE' (errata real en una descripción leída)"
+    excluir: 'GAS LICUADO'
+    nota: "sin categoría (regla); se agregó 'COMBUTIBLE' (errata real); se excluye gas licuado (no es diésel ni gasolina)"
   - id: Q09
     pregunta: "Compras de uniformes publicadas en junio de 2026"
     filtros: {fecha_desde: "2026-06-01", fecha_hasta: "2026-06-30"}
@@ -72,6 +80,25 @@ dentro:
     filtros: {departamento: LIMA, categoria: Servicios}
     incluir: 'FUMIGACI|DESRATIZ|DESINSECT'
     nota: "se quitó 'desinfección' porque traía mantenimiento de autoclaves y filtros"
+  # Filtros ESTRICTOS: dejan muy pocos procesos; verifican que el umbral (aplicado DESPUÉS de filtrar)
+  # no bloquee preguntas legítimas.
+  - id: Q15
+    pregunta: "Obras de puentes en Madre de Dios por más de un millón de soles"
+    filtros: {departamento: MADRE DE DIOS, categoria: Obras, monto_min: 1000000}
+    incluir: 'PUENTE'
+    nota: "los filtros dejan solo 6 procesos; 2 son renovación de puentes (leídos)"
+  - id: Q16
+    pregunta: "Obras de caminos vecinales en Moquegua por más de un millón de soles"
+    filtros: {departamento: MOQUEGUA, categoria: Obras, monto_min: 1000000}
+    incluir: 'CAMINO VECINAL'
+    nota: "los filtros dejan solo 5 procesos; 2 son el mejoramiento del camino vecinal MO-513 (leídos)"
+# Preguntas cuyos filtros dejan CERO procesos: la respuesta correcta es "no hay procesos que cumplan
+# esas condiciones" (sin_resultados=True), distinta de una abstención por estar fuera del tema.
+sin_resultados:
+  - id: Z01
+    pregunta: "Obras en Tumbes por más de 10 millones de soles"
+    filtros: {departamento: TUMBES, categoria: Obras, monto_min: 10000000}
+    nota: "verificado: 0 procesos cumplen los tres filtros"
 fuera:
   - {id: F01, pregunta: "¿Cuántos días tiene la entidad para pagarme después de la conformidad?", porque: "pregunta normativa (Tarea 1), no sobre procesos"}
   - {id: F02, pregunta: "¿Cómo se prepara un ceviche?", porque: "ajena al dominio"}

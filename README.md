@@ -788,6 +788,40 @@ Los **montos totales** del tablero suman solo los procesos con monto válido, y 
 
 **Fuente de los límites:** Instituto Geográfico Nacional (IGN), vía la Plataforma Nacional de Datos Abiertos (datosabiertos.gob.pe): `DEPARTAMENTOS_LIMITES.zip` y `DISTRITOS_LIMITES.zip` (atributos UBIGEO, DEPARTAMEN, PROVINCIA, DISTRITO; fuente INEI). Es la misma fuente declarada en el Issue 2. El portal responde HTTP 418 sin un User-Agent de navegador.
 
+## Tarea 2 — Fase 3: RAG híbrido (en curso)
+
+### Reglas de evaluación con IA (fijadas y subidas ANTES de ver los resultados)
+
+Esta sección se escribió y se subió al repositorio **antes** de programar y ejecutar la evaluación con IA; la fecha del commit lo demuestra.
+
+**1. Qué cuenta como filtro bien extraído.** Se compara el JSON de filtros que devuelve la IA con los `filtros` de la hoja de respuestas (`eval/definiciones.yaml`), campo por campo:
+
+| Campo | Correcto si… | Error si… |
+|---|---|---|
+| `departamento` | coincide exactamente con el nombre oficial del IGN (comparado sin tildes: Junín = JUNIN), o ambos están vacíos | la IA pone un departamento que la hoja no tiene (filtro de más), omite el de la hoja (filtro faltante) o pone otro |
+| `monto_min` | ambos vacíos, o ambos con valor y diferencia ≤ 1 % ("un millón" = 1.000.000) | falta, sobra o difiere más de 1 %; un monto en el campo equivocado (mínimo en vez de máximo) es error en **ambos** campos |
+| `monto_max` | igual que `monto_min` | igual que `monto_min` |
+| `fecha_desde` | ambas vacías, o el mismo día exacto (AAAA-MM-DD); "junio de 2026" = 2026-06-01 | falta, sobra o es otro día |
+| `fecha_hasta` | ambas vacías, o el mismo día exacto; "junio de 2026" = 2026-06-30 | falta, sobra o es otro día |
+| `categoria` | coincide exactamente (Bienes / Servicios / Obras), o ambas vacías | falta, sobra o es otra. Por la regla de la hoja, **"compras de…" no fija categoría**: si la IA pone "Bienes" ahí, es un filtro de más |
+
+- Se reporta el **% de acierto por campo** y el **% de preguntas con todos los campos correctos**. El texto de búsqueda semántica que devuelve la IA no se evalúa.
+- **Regla de la hoja de respuestas:** la categoría solo es filtro si la pregunta **nombra** la categoría ("obras", "servicios", "bienes"). Se corrigieron Q04, Q06 y Q08, que tenían "Bienes" por decir "compras", antes de esta evaluación. Los procesos que entraron por el cambio se leyeron y se excluyeron cuando no respondían la pregunta (alquiler de cómputo, una obra de cocina, gas licuado).
+- **Preguntas fuera del tema:** la hoja no tiene filtros; si la IA inventa filtros, cuenta como error.
+
+**2. Recall@k de dos formas:** (a) con los **filtros correctos** de la hoja de respuestas, que mide solo el buscador; (b) con los **filtros que extrajo la IA**, que mide la extracción más el buscador. La diferencia es el costo de los errores de extracción.
+
+**3. El umbral se aplica DESPUÉS de filtrar.** La similitud top-1 se calcula solo entre los procesos que cumplen los filtros (`where` de ChromaDB). Para comprobar que un filtro estricto no bloquea preguntas legítimas se agregaron **Q15** ("puentes en Madre de Dios, más de 1 millón": los filtros dejan **6** procesos) y **Q16** ("caminos vecinales en Moquegua, más de 1 millón": **5** procesos). Sin IA, con los filtros correctos: Q15 = 0,8475 y Q16 = 0,8670, ambas **sobre el umbral 0,830**. Q15 es la pregunta legítima con menor similitud.
+
+**4. Cero procesos ≠ fuera del tema.** Si los filtros dejan **cero** procesos, el motor responde "no hay procesos que cumplan esas condiciones", con `sin_resultados = True`, `estado = "sin_resultados"` y `abstuvo = False`. No llama a la IA para redactar. Es distinto de una abstención (`abstuvo = True`, `estado = "abstencion_umbral"` o `"abstencion_ia"`). Pregunta de control: **Z01** ("obras en Tumbes por más de 10 millones": 0 procesos). Es correcta solo si `sin_resultados = True`.
+
+**5. Abstención (igual que en la Tarea 1; solo cuenta el campo estructurado):**
+- Pregunta **dentro**: `abstuvo = True` es **abstención incorrecta**.
+- Pregunta **fuera**: es **abstención correcta** solo si `abstuvo = True` (umbral o IA). Si en cambio termina en `sin_resultados` (la IA inventó filtros que no dejan procesos), se reporta aparte como "no respondió, pero por el motivo equivocado", y **no** cuenta como abstención correcta.
+- Se reportan por separado la **abstención por umbral (sin IA)** y la **abstención final (con IA)**, para cada umbral candidato, como en la Tarea 1.
+
+**6. Citas por `ocid`:** una respuesta es válida solo si cita al menos un `ocid` y **todos** los `ocid` citados están entre los procesos recuperados. Se reporta además cuántas respuestas citan al menos un proceso **relevante** según la hoja.
+
 ## Estructura
 
 ```

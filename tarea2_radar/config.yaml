@@ -128,7 +128,7 @@ precios:                                    # mismos precios verificados que la 
 
 motor:
   k_resultados: 8                           # procesos que se entregan al LLM
-  umbral_similitud: 0.800                   # heredado de la Tarea 1; se verifica con eval/barrido_umbral.py
+  umbral_similitud: 0.830                   # recalibrado para este corpus (el 0.800 de la Tarea 1 no transfiere; ver README)
 
 evaluacion:
   definiciones: eval/definiciones.yaml

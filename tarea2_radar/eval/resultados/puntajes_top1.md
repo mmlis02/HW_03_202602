@@ -14,11 +14,13 @@
 | 12 | Q11 | dentro | 0.8770 | Obras de electrificación rural o redes eléctricas |
 | 13 | Q12 | dentro | 0.8744 | Consultorías para elaborar expedientes técnicos en Áncash |
 | 14 | F06 | fuera | 0.8711 | Venta de departamentos de playa en Miami |
-| 15 | Q02 | dentro | 0.8659 | ¿Qué medicamentos están comprando las entidades de Cajamarca? |
-| 16 | Q05 | dentro | 0.8509 | ¿Qué servicios de limpieza contrataron las entidades de Arequipa? |
-| 17 | Q13 | dentro | 0.8476 | ¿Qué entidades están comprando ambulancias? |
-| 18 | F08 | fuera | 0.8402 | ¿Qué requisitos pide el RNP para inscribirme como proveedor? |
-| 19 | F02 | fuera | 0.8369 | ¿Cómo se prepara un ceviche? |
-| 20 | F01 | fuera | 0.8357 | ¿Cuántos días tiene la entidad para pagarme después de la conformidad? |
-| 21 | F05 | fuera | 0.8067 | ¿Qué equipo ganó la Copa América 2024? |
-| 22 | F04 | fuera | 0.7829 | ¿Cuál es la capital de Australia? |
+| 15 | Q16 | dentro | 0.8670 | Obras de caminos vecinales en Moquegua por más de un millón de soles |
+| 16 | Q02 | dentro | 0.8659 | ¿Qué medicamentos están comprando las entidades de Cajamarca? |
+| 17 | Q05 | dentro | 0.8509 | ¿Qué servicios de limpieza contrataron las entidades de Arequipa? |
+| 18 | Q13 | dentro | 0.8476 | ¿Qué entidades están comprando ambulancias? |
+| 19 | Q15 | dentro | 0.8475 | Obras de puentes en Madre de Dios por más de un millón de soles |
+| 20 | F08 | fuera | 0.8402 | ¿Qué requisitos pide el RNP para inscribirme como proveedor? |
+| 21 | F02 | fuera | 0.8369 | ¿Cómo se prepara un ceviche? |
+| 22 | F01 | fuera | 0.8357 | ¿Cuántos días tiene la entidad para pagarme después de la conformidad? |
+| 23 | F05 | fuera | 0.8067 | ¿Qué equipo ganó la Copa América 2024? |
+| 24 | F04 | fuera | 0.7829 | ¿Cuál es la capital de Australia? |

@@ -55,6 +55,12 @@ def main():
                       "como_se_armo": f"filtros {q.get('filtros') or {}} + incluir /{q['incluir']}/"
                                       + (f" − excluir /{q['excluir']}/" if q.get("excluir") else "")
                                       + (f". {q['nota']}" if q.get("nota") else "")})
+    for q in defs.get("sin_resultados", []):
+        x = filtrar(d, q["filtros"])
+        relevantes[q["id"]] = []
+        filas.append({"id": q["id"], "tipo": "sin_resultados", "pregunta": q["pregunta"],
+                      "filtros": json.dumps(q["filtros"], ensure_ascii=False), "procesos_tras_filtros": len(x),
+                      "relevantes": 0, "como_se_armo": f"filtros {q['filtros']} dejan {len(x)} procesos. {q.get('nota', '')}"})
     for q in defs["fuera"]:
         relevantes[q["id"]] = []
         filas.append({"id": q["id"], "tipo": "fuera", "pregunta": q["pregunta"], "filtros": "{}",
