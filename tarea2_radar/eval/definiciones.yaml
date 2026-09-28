@@ -73,8 +73,8 @@ dentro:
     pregunta: "¿Qué entidades están comprando ambulancias?"
     filtros: {}
     incluir: 'ADQUISICION.{0,40}AMBULANCIA'
-    excluir: 'MANTENIMIENTO'
-    nota: "solo compras: se excluyen mantenimiento y alquiler de ambulancias"
+    excluir: 'MANTENIMIENTO|COMBUSTIBLE|DIESEL'
+    nota: "solo compras de ambulancias: se excluyen mantenimiento, alquiler y (CORRECCIÓN posterior a la corrida con IA) 6 compras de combustible para ambulancias que la regex atrapaba por error; la IA lo detectó al responder"
   - id: Q14
     pregunta: "Servicios de fumigación o desratización en Lima"
     filtros: {departamento: LIMA, categoria: Servicios}

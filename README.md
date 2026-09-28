@@ -788,7 +788,7 @@ Los **montos totales** del tablero suman solo los procesos con monto válido, y 
 
 **Fuente de los límites:** Instituto Geográfico Nacional (IGN), vía la Plataforma Nacional de Datos Abiertos (datosabiertos.gob.pe): `DEPARTAMENTOS_LIMITES.zip` y `DISTRITOS_LIMITES.zip` (atributos UBIGEO, DEPARTAMEN, PROVINCIA, DISTRITO; fuente INEI). Es la misma fuente declarada en el Issue 2. El portal responde HTTP 418 sin un User-Agent de navegador.
 
-## Tarea 2 — Fase 3: RAG híbrido (en curso)
+## Tarea 2 — Fase 3: RAG híbrido
 
 ### Reglas de evaluación con IA (fijadas y subidas ANTES de ver los resultados)
 
@@ -821,6 +821,81 @@ Esta sección se escribió y se subió al repositorio **antes** de programar y e
 - Se reportan por separado la **abstención por umbral (sin IA)** y la **abstención final (con IA)**, para cada umbral candidato, como en la Tarea 1.
 
 **6. Citas por `ocid`:** una respuesta es válida solo si cita al menos un `ocid` y **todos** los `ocid` citados están entre los procesos recuperados. Se reporta además cuántas respuestas citan al menos un proceso **relevante** según la hoja.
+
+
+### Cómo funciona el motor (`src/motor.py`)
+
+```bash
+cd tarea2_radar
+python build_index.py                         # OFFLINE: indexa 20.101 descripciones (≈ 6 min; 2.a corrida 7 s)
+python eval/construir_verdad.py               # hoja de respuestas desde eval/definiciones.yaml (sin buscador)
+python eval/evaluar_recuperacion.py           # Recall@k con filtros correctos vs solo embeddings (sin IA)
+python eval/barrido_umbral.py                 # barrido del umbral (sin IA)
+python eval/evaluar_motor.py --con-ia         # evaluación completa con IA (cuesta ≈ US$0,008)
+python eval/evaluar_motor.py --desde-csv      # recalcula métricas con la hoja actual SIN llamar a la IA
+python scripts/probar_motor_sin_costo.py      # 11 caminos del motor con un LLM falso
+```
+
+- **Reutiliza la Tarea 1** a través del paquete compartido [`comun/`](comun/): el **mismo modelo local** (e5-small), la misma llamada al LLM con esquema JSON y el mismo cálculo de costo por hora y log. La Tarea 1 se refactorizó para usarlo y sus pruebas dan los mismos resultados. La lógica de dos defensas es la misma.
+- **Índice:** la descripción limpia de cada proceso (lo único que se compara por significado), más los **metadatos** `ocid`, `departamento`, `monto_pen`, `fecha_int`, `categoria`, `comprador`, `metodo`, `estados` y `n_postores`. ID = `ocid`. Solo entran procesos con `incluir_en_analisis`.
+- **Flujo por pregunta:**
+  1. la IA **extrae los filtros** (esquema JSON estricto; el departamento se restringe a los 25 del IGN), que luego se validan;
+  2. se combinan con la barra lateral (**intersección**);
+  3. si quedan **0 procesos** → `sin_resultados`;
+  4. búsqueda semántica **solo entre los que cumplen los filtros**;
+  5. **defensa 1:** umbral **después de filtrar**;
+  6. la IA redacta citando `ocid`; **defensa 2:** `fuera_de_tema`;
+  7. se validan los `ocid` citados: un `ocid` que no está entre los recuperados se elimina del texto y se reporta.
+- **Costo:** 2 llamadas por pregunta (extraer y redactar), ≈ US$0,0003. Si la pregunta termina en `sin_resultados` o en abstención por umbral, solo se hace la de extracción.
+
+### Por qué las condiciones numéricas y territoriales son FILTROS y no embeddings
+
+Un embedding resume el **significado** de un texto en un vector. No sabe que 200 mil es menor que 1 millón, ni que Cusco no es Puno: "obras en Cusco por más de 1 millón" y "obras en Puno por 50 mil" se parecen mucho en significado. Además, el departamento y el monto **no están en la descripción**, sino en campos aparte. Evidencia (16 preguntas, filtros correctos, sin IA):
+
+| | Con filtros | Solo embeddings |
+|---|---|---|
+| Recall@5 | **0,94** | 0,63 |
+| Precisión@5 | **0,53** | 0,26 |
+| De los 5 primeros, % que cumple departamento, monto, fecha y categoría pedidos | **100 %** | **33 %** |
+
+### Resultados con IA (corrida del 28/09/2026, 25 preguntas, 49 llamadas, US$0.0080)
+
+**Filtros extraídos por la IA** (regla fijada antes): **25/25 preguntas con todos los campos correctos**. Por campo: departamento 25/25, categoría 25/25, monto mínimo 25/25, monto máximo 25/25, fecha desde 25/25, fecha hasta 25/25. Incluye no inventar filtros en las 8 preguntas fuera del tema y **no poner "Bienes" en "compras de…"**.
+
+**Recall@k de dos formas** (16 preguntas dentro del corpus):
+
+| | Recall@1 | Recall@3 | Recall@5 | Recall@8 |
+|---|---|---|---|---|
+| Filtros correctos (hoja de respuestas) | 0.75 | 0.94 | 0.94 | 0.94 |
+| Filtros extraídos por la IA | 0.88 | 0.88 | 0.88 | 0.88 |
+
+Como los filtros de la IA fueron idénticos a los correctos, la diferencia viene del **texto de búsqueda**: la IA quita del texto los lugares, montos y fechas.
+- **Ayuda en el primer lugar:** Recall@1 sube de 0,75 a 0,88, porque el texto queda más limpio.
+- **Falla en Q13:** "entidades que están comprando ambulancias" trae compras de combustible para ambulancias en vez de ambulancias.
+- **Q04** (computadoras en Lima) falla con ambos: es un problema del buscador.
+
+**Abstención por umbral (sin IA) y final (con IA), por umbral** (8 preguntas fuera, 16 dentro):
+
+| Umbral | Umbral sin IA: correctas / incorrectas | Final con IA: correctas / incorrectas | Dentro perdidas | Fuera respondidas | Llamadas de redacción (de 25) |
+|---|---|---|---|---|---|
+| 0.8 | 1/8 / 0/16 | 6/8 / 0/16 | ninguna | F03 F07 | 23 |
+| 0.81 | 2/8 / 0/16 | 6/8 / 0/16 | ninguna | F03 F07 | 22 |
+| 0.82 | 2/8 / 0/16 | 6/8 / 0/16 | ninguna | F03 F07 | 22 |
+| **0.83 ✅** | 2/8 / 0/16 | 6/8 / 0/16 | ninguna | F03 F07 | 22 |
+| 0.84 | 4/8 / 0/16 | 6/8 / 0/16 | ninguna | F03 F07 | 20 |
+| 0.85 | 5/8 / 2/16 | 7/8 / 1/16 | Q16 | F03 | 17 |
+
+- **Umbral 0.830:** se mantiene. **Ninguna pregunta legítima se pierde**, incluidas **Q15 y Q16**, las de filtros estrictos (6 y 5 procesos; similitud después de filtrar 0,851 y 0,849 con la IA). Detiene gratis Australia y la Copa América.
+- **Frente a 0.84:** detendría 2 más gratis, pero con menos margen (0,008).
+- **En 0.85:** ya se pierde Q16, la de filtros estrictos. Eso confirma que un umbral alto castiga a las preguntas con pocos procesos.
+- **Sin resultados:** Z01 terminó en `sin_resultados` (1/1), y ninguna pregunta fuera del tema terminó ahí por filtros inventados.
+- **Citas por `ocid`:** 0 `ocid` inventados; 14/16 respuestas citan al menos un proceso relevante (fallan Q04 y Q13, por el buscador).
+
+**Fallas de la defensa 2 (F03 y F07, las trampas cercanas).** Para "aviones de combate F-35" y "submarinos nucleares", la IA respondió **con honestidad en el texto**: "No se identifica… una compra de aviones de combate F-35. El proceso más cercano es… una aeronave Learjet". Pero marcó `fuera_de_tema = false`. Según la regla fijada, **cuentan como falla**: el sistema muestra una respuesta, aunque diga que no hay lo pedido.
+
+**Corrección posterior a la corrida (declarada):**
+- **Q13:** la regex de Q13 incluía por error 6 compras de **combustible para ambulancias**. Lo detectó la IA al responder. Se corrigió la hoja (17 relevantes) y se recalcularon las métricas **sin nuevas llamadas** (`--desde-csv`). Antes de la corrección, Recall con filtros de la IA = 0,94 y citas relevantes = 15/16.
+- **Bug corregido:** el valor interno "sin monto" (−1) llegaba al prompt y aparecía como "S/ −1.00" en una respuesta. Ahora se muestra "sin monto publicado".
 
 ## Estructura
 

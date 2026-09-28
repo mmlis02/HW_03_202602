@@ -298,3 +298,21 @@ Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes
 - **El mapa:** pasé el mapa oficial del IGN (5,4 MB) a un archivo liviano de 0,11 MB, con los mismos nombres de departamento que uso en los datos.
 
 **Números para el video:** 20.476 procesos, **100 % ubicados** en los 25 departamentos, 0 filas borradas y 2 excluidas con motivo (el mismo proceso registrado dos veces).
+
+## Tarea 2 · Fase 3 — Búsqueda híbrida: filtros + significado
+
+**Qué hice**
+- **Reutilicé el motor de la Tarea 1:** junté las piezas comunes en una carpeta compartida (`comun/`) que usan las dos tareas. Es el mismo modelo local, el mismo cálculo de costos y la misma llamada a la IA.
+- **Indexé las 20.101 descripciones en unos 6 minutos.** El departamento, el monto, la fecha y la categoría van como **datos aparte (metadatos)**, no dentro del texto.
+- **Por qué filtros y no embeddings (clave para el video):**
+  - El modelo de significado no sabe que 200 mil es menos que 1 millón, ni que Cusco no es Puno.
+  - Sin filtros, **2 de cada 3 resultados no cumplían** lo pedido.
+  - Con filtros, el 100 % cumple, y el proceso correcto aparece entre los 5 primeros en el 94 % de las preguntas.
+- **La IA extrae los filtros de la pregunta** y la app los mostrará para que el usuario los revise. Acertó todos los campos en las 25 preguntas.
+- **Cero resultados ≠ fuera del tema:** si los filtros no dejan ningún proceso, el sistema dice "no hay procesos que cumplan esas condiciones" y lo marca con un campo propio (`sin_resultados`).
+- **El umbral de la Tarea 1 (0,800) no sirvió aquí:** el ceviche sacaba 0,837. Recalibré a **0,830** con los datos.
+  - Verifiqué que el umbral se calcula **después** de filtrar, y que no bloquea preguntas con muy pocos procesos: probé una con solo 6.
+- **Fallas honestas:**
+  - Para "aviones de combate F-35" y "submarinos nucleares", la IA dijo en el texto "no hay compras de eso", pero no marcó la casilla de "fuera de tema". Con la regla que fijé antes, cuenta como error.
+  - Mi hoja de respuestas tenía un error (contaba "combustible para ambulancias" como compra de ambulancias) y **la IA lo detectó**. Lo corregí y lo declaro.
+- **Costo de toda la evaluación con IA:** US$0,008.

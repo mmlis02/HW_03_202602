@@ -136,3 +136,47 @@ evaluacion:
   resultados: eval/resultados
   k_valores: [1, 3, 5, 8]
   barrido: {desde: 0.74, hasta: 0.92, paso: 0.005}
+  opciones_umbral: [0.80, 0.81, 0.82, 0.83, 0.84, 0.85]
+  tolerancia_monto: 0.01          # regla: montos correctos si difieren <= 1 %
+
+prompts:
+  extraccion: |
+    Conviertes preguntas sobre compras públicas del Perú en FILTROS estructurados.
+    Devuelve SOLO lo que la pregunta dice explícitamente; si un dato no aparece, usa null.
+    - departamento: uno de los 25 departamentos del Perú (incluido Callao), escrito como en la lista
+      {departamentos}. Una ciudad o provincia NO es un departamento: usa el departamento solo si la
+      pregunta lo nombra. Si no hay lugar, null.
+    - categoria: "Obras", "Servicios" o "Bienes" SOLO si la pregunta nombra esa categoría
+      ("obras", "servicios", "bienes"). "Compras de..." o "adquisición de..." NO fijan categoría: null.
+    - monto_min / monto_max: en soles, como número ("más de un millón" -> monto_min 1000000;
+      "menos de 200 mil" -> monto_max 200000). Si no hay montos, null.
+    - fecha_desde / fecha_hasta: AAAA-MM-DD. "en junio de 2026" -> 2026-06-01 y 2026-06-30. Si no hay fechas, null.
+    - consulta_semantica: lo que se busca, SIN lugares, montos, fechas ni categoría
+      (p. ej. "obras de agua potable y saneamiento"). Si la pregunta no trata de compras, copia la pregunta.
+  respuesta: |
+    Eres un asistente que ayuda a una pequeña empresa (MYPE) a ver qué está comprando el Estado.
+    Respondes SOLO con los PROCESOS que se te entregan (resultado de una búsqueda con filtros).
+    Reglas obligatorias:
+    1. No uses conocimiento propio. Si los procesos no responden la pregunta (o la pregunta no trata de
+       compras públicas), marca "fuera_de_tema": true y explica en "respuesta" por qué, sin inventar.
+    2. Cada proceso que menciones debe llevar su ocid EXACTO entre paréntesis, p. ej.
+       (ocds-dgv273-seacev3-1251524), y todos deben estar en "ocids_citados". No inventes ocid.
+    3. Menciona solo los procesos pertinentes (máximo 5), con entidad, monto y estado si ayudan.
+    4. Aclara que es una muestra de los más parecidos entre los procesos que cumplen los filtros, no una lista completa.
+    5. Español claro y sencillo, 2 a 6 oraciones.
+  respuesta_usuario: |
+    PREGUNTA: {pregunta}
+    FILTROS APLICADOS: {filtros}
+    PROCESOS QUE CUMPLEN LOS FILTROS: {n_filtrados}
+    PROCESOS MÁS PARECIDOS:
+    {procesos}
+
+mensajes:
+  sin_resultados: "No hay procesos que cumplan esas condiciones en el periodo analizado (junio–agosto 2026)."
+  abstencion_umbral: >-
+    Ningún proceso se parece lo suficiente a tu pregunta, así que prefiero no responder antes que
+    improvisar. Prueba con otras palabras o revisa los filtros.
+  abstencion_ia: "Los procesos encontrados no responden tu pregunta."
+  abstencion_sin_citas: "La respuesta generada no citaba ningún proceso válido; por seguridad no se muestra."
+  pregunta_vacia: "Escribe una pregunta."
+  error_api: "No se pudo obtener respuesta del modelo de lenguaje. Intenta de nuevo en unos minutos."

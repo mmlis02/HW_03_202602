@@ -1,0 +1,13 @@
+[OK ] cero procesos -> sin_resultados (no es abstención, 1 sola llamada): estado=sin_resultados abstuvo=False sin_resultados=True n_filtrados=0 llamadas=1 sim=None citados=[] invalidos=[]
+[OK ] umbral después de filtrar -> abstención sin la IA que redacta: estado=abstencion_umbral abstuvo=True sin_resultados=False n_filtrados=20101 llamadas=1 sim=0.7829 citados=[] invalidos=[]
+[OK ] respuesta con ocid real; los procesos cumplen los filtros: estado=respondido abstuvo=False sin_resultados=False n_filtrados=42 llamadas=2 sim=0.8839 citados=['ocds-dgv273-seacev3-1238779'] invalidos=[]
+[OK ] ocid inventado se elimina y se reporta: estado=respondido abstuvo=False sin_resultados=False n_filtrados=42 llamadas=2 sim=0.8839 citados=['ocds-dgv273-seacev3-1238779'] invalidos=['ocds-dgv273-seacev3-999999999']
+[OK ] respuesta sin ocid -> abstención sin_citas: estado=abstencion_ia abstuvo=True sin_resultados=False n_filtrados=42 llamadas=2 sim=0.8839 citados=[] invalidos=[]
+[OK ] la IA marca fuera de tema -> abstencion_ia: estado=abstencion_ia abstuvo=True sin_resultados=False n_filtrados=42 llamadas=2 sim=0.8839 citados=[] invalidos=[]
+[OK ] error de API en la extracción -> estado error: estado=error abstuvo=False sin_resultados=False n_filtrados=0 llamadas=1 sim=None citados=[] invalidos=[]
+[OK ] IA dice Cusco y la barra dice Puno -> contradicción = sin_resultados: estado=sin_resultados abstuvo=False sin_resultados=True n_filtrados=0 llamadas=1 sim=None citados=[] invalidos=[]
+[OK ] filtros de la barra se aplican aunque la IA no extraiga nada: estado=respondido abstuvo=False sin_resultados=False n_filtrados=42 llamadas=2 sim=0.8839 citados=['ocds-dgv273-seacev3-1238779'] invalidos=[]
+[OK ] filtros inválidos se descartan con aviso: ['departamento no reconocido: Lima Metropolitana', 'categoría no reconocida: Consultoría', 'monto_max inválido: -5', 'fecha_desde inválida: junio']
+[OK ] 'Junín' se normaliza a JUNIN: {'departamento': 'JUNIN', 'monto_min': 1000000.0}
+
+TODAS LAS PRUEBAS OK

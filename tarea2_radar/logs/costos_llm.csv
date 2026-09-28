@@ -1,0 +1,50 @@
+fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia_s,costo_usd,franja,exito,error,pregunta
+2026-09-28T23:47:41+00:00,gpt-6-luna,630,0,57,2.95,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:47:45+00:00,gpt-6-luna,1586,0,295,2.96,0.00030610,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:47:48+00:00,gpt-6-luna,623,0,55,1.696,0.00008980,00:00-24:00,True,,[filtros] ¿Qué medicamentos están comprando las entidades de Cajamarca?
+2026-09-28T23:47:50+00:00,gpt-6-luna,1583,0,358,4.179,0.00033730,00:00-24:00,True,,¿Qué medicamentos están comprando las entidades de Cajamarca?
+2026-09-28T23:47:54+00:00,gpt-6-luna,627,0,61,1.912,0.00009320,00:00-24:00,True,,[filtros] Contratos de mantenimiento de carreteras o caminos vecinales en Puno
+2026-09-28T23:47:57+00:00,gpt-6-luna,1700,0,241,2.132,0.00029050,00:00-24:00,True,,Contratos de mantenimiento de carreteras o caminos vecinales en Puno
+2026-09-28T23:47:59+00:00,gpt-6-luna,628,0,54,1.187,0.00008980,00:00-24:00,True,,[filtros] Compras de computadoras o laptops en Lima por menos de 200 mil soles
+2026-09-28T23:48:01+00:00,gpt-6-luna,1013,0,139,1.602,0.00017080,00:00-24:00,True,,Compras de computadoras o laptops en Lima por menos de 200 mil soles
+2026-09-28T23:48:02+00:00,gpt-6-luna,625,0,52,1.22,0.00008850,00:00-24:00,True,,[filtros] ¿Qué servicios de limpieza contrataron las entidades de Arequipa?
+2026-09-28T23:48:04+00:00,gpt-6-luna,1323,0,134,1.554,0.00019930,00:00-24:00,True,,¿Qué servicios de limpieza contrataron las entidades de Arequipa?
+2026-09-28T23:48:05+00:00,gpt-6-luna,620,0,53,1.119,0.00008850,00:00-24:00,True,,[filtros] Compras de alimentos en Ayacucho
+2026-09-28T23:48:07+00:00,gpt-6-luna,1355,0,265,3.022,0.00026800,00:00-24:00,True,,Compras de alimentos en Ayacucho
+2026-09-28T23:48:10+00:00,gpt-6-luna,622,0,59,1.103,0.00009170,00:00-24:00,True,,[filtros] Obras en colegios o instituciones educativas de Cajamarca
+2026-09-28T23:48:11+00:00,gpt-6-luna,1751,0,289,3.012,0.00031960,00:00-24:00,True,,Obras en colegios o instituciones educativas de Cajamarca
+2026-09-28T23:48:14+00:00,gpt-6-luna,624,0,58,1.313,0.00009140,00:00-24:00,True,,[filtros] Compras de combustible diésel o gasolina en Junín
+2026-09-28T23:48:16+00:00,gpt-6-luna,1372,0,230,2.268,0.00025220,00:00-24:00,True,,Compras de combustible diésel o gasolina en Junín
+2026-09-28T23:48:18+00:00,gpt-6-luna,625,0,60,1.723,0.00009250,00:00-24:00,True,,[filtros] Compras de uniformes publicadas en junio de 2026
+2026-09-28T23:48:20+00:00,gpt-6-luna,1220,0,258,2.182,0.00025100,00:00-24:00,True,,Compras de uniformes publicadas en junio de 2026
+2026-09-28T23:48:22+00:00,gpt-6-luna,620,0,53,1.19,0.00008850,00:00-24:00,True,,[filtros] Servicios de seguridad y vigilancia en Piura
+2026-09-28T23:48:24+00:00,gpt-6-luna,1415,0,286,2.724,0.00028450,00:00-24:00,True,,Servicios de seguridad y vigilancia en Piura
+2026-09-28T23:48:26+00:00,gpt-6-luna,622,0,57,1.216,0.00009070,00:00-24:00,True,,[filtros] Obras de electrificación rural o redes eléctricas
+2026-09-28T23:48:28+00:00,gpt-6-luna,1667,0,294,2.734,0.00031370,00:00-24:00,True,,Obras de electrificación rural o redes eléctricas
+2026-09-28T23:48:31+00:00,gpt-6-luna,624,0,57,1.203,0.00009090,00:00-24:00,True,,[filtros] Consultorías para elaborar expedientes técnicos en Áncash
+2026-09-28T23:48:32+00:00,gpt-6-luna,1733,0,270,2.389,0.00030830,00:00-24:00,True,,Consultorías para elaborar expedientes técnicos en Áncash
+2026-09-28T23:48:34+00:00,gpt-6-luna,620,0,56,1.208,0.00009000,00:00-24:00,True,,[filtros] ¿Qué entidades están comprando ambulancias?
+2026-09-28T23:48:36+00:00,gpt-6-luna,1175,0,207,2.324,0.00022100,00:00-24:00,True,,¿Qué entidades están comprando ambulancias?
+2026-09-28T23:48:38+00:00,gpt-6-luna,623,0,56,1.214,0.00009030,00:00-24:00,True,,[filtros] Servicios de fumigación o desratización en Lima
+2026-09-28T23:48:40+00:00,gpt-6-luna,1133,0,277,2.512,0.00025180,00:00-24:00,True,,Servicios de fumigación o desratización en Lima
+2026-09-28T23:48:42+00:00,gpt-6-luna,628,0,57,1.117,0.00009130,00:00-24:00,True,,[filtros] Obras de puentes en Madre de Dios por más de un millón de soles
+2026-09-28T23:48:43+00:00,gpt-6-luna,1265,0,192,2.03,0.00022250,00:00-24:00,True,,Obras de puentes en Madre de Dios por más de un millón de soles
+2026-09-28T23:48:45+00:00,gpt-6-luna,630,0,60,1.214,0.00009300,00:00-24:00,True,,[filtros] Obras de caminos vecinales en Moquegua por más de un millón de soles
+2026-09-28T23:48:47+00:00,gpt-6-luna,1194,0,185,2.087,0.00021190,00:00-24:00,True,,Obras de caminos vecinales en Moquegua por más de un millón de soles
+2026-09-28T23:48:49+00:00,gpt-6-luna,626,0,54,1.221,0.00008960,00:00-24:00,True,,[filtros] Obras en Tumbes por más de 10 millones de soles
+2026-09-28T23:48:50+00:00,gpt-6-luna,628,0,65,1.334,0.00009530,00:00-24:00,True,,[filtros] ¿Cuántos días tiene la entidad para pagarme después de la conformidad?
+2026-09-28T23:48:52+00:00,gpt-6-luna,1303,0,77,1.496,0.00016880,00:00-24:00,True,,¿Cuántos días tiene la entidad para pagarme después de la conformidad?
+2026-09-28T23:48:53+00:00,gpt-6-luna,619,0,56,1.226,0.00008990,00:00-24:00,True,,[filtros] ¿Cómo se prepara un ceviche?
+2026-09-28T23:48:54+00:00,gpt-6-luna,1585,0,138,1.607,0.00022750,00:00-24:00,True,,¿Cómo se prepara un ceviche?
+2026-09-28T23:48:56+00:00,gpt-6-luna,621,0,55,1.147,0.00008960,00:00-24:00,True,,[filtros] Compra de aviones de combate F-35
+2026-09-28T23:48:57+00:00,gpt-6-luna,1181,0,136,1.577,0.00018610,00:00-24:00,True,,Compra de aviones de combate F-35
+2026-09-28T23:48:59+00:00,gpt-6-luna,620,0,56,1.152,0.00009000,00:00-24:00,True,,[filtros] ¿Cuál es la capital de Australia?
+2026-09-28T23:49:00+00:00,gpt-6-luna,1736,0,80,1.202,0.00021360,00:00-24:00,True,,¿Cuál es la capital de Australia?
+2026-09-28T23:49:01+00:00,gpt-6-luna,622,0,59,1.33,0.00009170,00:00-24:00,True,,[filtros] ¿Qué equipo ganó la Copa América 2024?
+2026-09-28T23:49:03+00:00,gpt-6-luna,1159,0,72,1.527,0.00015190,00:00-24:00,True,,¿Qué equipo ganó la Copa América 2024?
+2026-09-28T23:49:04+00:00,gpt-6-luna,619,0,55,1.228,0.00008940,00:00-24:00,True,,[filtros] Venta de departamentos de playa en Miami
+2026-09-28T23:49:05+00:00,gpt-6-luna,1078,0,125,1.589,0.00017030,00:00-24:00,True,,Venta de departamentos de playa en Miami
+2026-09-28T23:49:07+00:00,gpt-6-luna,618,0,53,1.04,0.00008830,00:00-24:00,True,,[filtros] Compra de submarinos nucleares
+2026-09-28T23:49:08+00:00,gpt-6-luna,1187,0,136,2.072,0.00018670,00:00-24:00,True,,Compra de submarinos nucleares
+2026-09-28T23:49:10+00:00,gpt-6-luna,625,0,62,1.269,0.00009350,00:00-24:00,True,,[filtros] ¿Qué requisitos pide el RNP para inscribirme como proveedor?
+2026-09-28T23:49:12+00:00,gpt-6-luna,1365,0,91,1.613,0.00018200,00:00-24:00,True,,¿Qué requisitos pide el RNP para inscribirme como proveedor?

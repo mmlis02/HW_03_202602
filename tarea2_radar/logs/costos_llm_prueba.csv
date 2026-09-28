@@ -1,0 +1,29 @@
+fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia_s,costo_usd,franja,exito,error,pregunta
+2026-09-28T23:46:38+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras en Tumbes por más de 10 millones de soles
+2026-09-28T23:46:38+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] ¿Cuál es la capital de Australia?
+2026-09-28T23:46:38+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:38+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:38+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,,,,0.0,,,False,TimeoutError: simulado,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras en Cusco
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:46:39+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:04+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras en Tumbes por más de 10 millones de soles
+2026-09-28T23:50:05+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] ¿Cuál es la capital de Australia?
+2026-09-28T23:50:05+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,,,,0.0,,,False,TimeoutError: simulado,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras en Cusco
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-28T23:50:06+00:00,gpt-6-luna,800,0,80,0.0,0.00012000,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles

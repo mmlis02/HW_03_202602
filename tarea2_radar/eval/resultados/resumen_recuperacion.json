@@ -5,9 +5,9 @@
     "recall@5": 0.938,
     "recall@8": 0.938,
     "precision@1": 0.75,
-    "precision@3": 0.604,
-    "precision@5": 0.512,
-    "precision@8": 0.422,
+    "precision@3": 0.583,
+    "precision@5": 0.5,
+    "precision@8": 0.398,
     "cumplen_condiciones@5": 1.0
   },
   "solo_embeddings": {
@@ -16,9 +16,9 @@
     "recall@5": 0.625,
     "recall@8": 0.75,
     "precision@1": 0.375,
-    "precision@3": 0.312,
-    "precision@5": 0.263,
-    "precision@8": 0.227,
+    "precision@3": 0.292,
+    "precision@5": 0.25,
+    "precision@8": 0.203,
     "cumplen_condiciones@5": 0.333
   }
 }
