@@ -48,6 +48,41 @@ En macOS/Linux los pasos son iguales, con `python3 -m venv .venv` y `source .ven
 
 Los PDFs originales, los archivos mensuales de OECE y los índices vectoriales **no se suben al repositorio**; ver `.gitignore`. Cada tarea tiene un script de descarga (`scripts/`) que los vuelve a bajar y que no repite lo que ya existe. Los detalles se agregarán en cada fase.
 
+## Tarea 1 — Pipeline
+
+Dos procesos separados: **offline** (se corre una vez y produce el índice) y **online** (responde cada pregunta leyendo solo el índice). La página vive en los **metadatos** de cada fragmento desde la extracción, no en el texto. La decisión de no llamar al LLM ocurre en la **defensa 1**, antes de la llamada. También está en [`docs/pipeline.md`](docs/pipeline.md).
+
+```mermaid
+flowchart TB
+    subgraph OFF["OFFLINE — se corre una vez (build_index.py y scripts/)"]
+        A["PDFs oficiales<br/>gob.pe · El Peruano<br/>data/raw/ (no se modifican)"] --> B["Verificación de fuentes<br/>páginas, caracteres, orden de lectura"]
+        B --> C["Extracción PÁGINA POR PÁGINA<br/>+ recorte de normas vecinas<br/>(código de publicación)"]
+        C --> D["Limpieza R1–R7<br/>encabezados, sello, ligaduras,<br/>notas (*) de versión → texto vigente"]
+        D --> E["data/processed/*.jsonl<br/>{documento, pagina, texto}"]
+        E --> F["Fragmentos 500 chars / solape 150<br/>metadatos: documento, versión, PÁGINA,<br/>artículo, modificado_por"]
+        F --> G["Embeddings locales<br/>multilingual-e5-small ('passage: ')"]
+        G --> H[("ChromaDB persistente<br/>data/index/ · IDs estables<br/>idempotente y reanudable")]
+    end
+
+    subgraph ON["ONLINE — en cada pregunta (src/motor.py → responder)"]
+        Q["Pregunta<br/>(app.py o preguntar.py)"] --> R["Embedding de la pregunta ('query: ')"]
+        R --> S["Búsqueda top-5 en el índice"]
+        H -.lectura.-> S
+        S --> T{"DEFENSA 1<br/>similitud máx ≥ umbral 0.800?"}
+        T -- "no" --> U["ABSTENCIÓN por umbral<br/>sin llamar al LLM · costo 0"]
+        T -- "sí" --> V["LLM gpt-6-luna<br/>fragmentos [F1..F5] + esquema JSON"]
+        V --> W{"DEFENSA 2<br/>fuera_de_corpus?"}
+        W -- "sí" --> X["ABSTENCIÓN por la IA<br/>+ explicación del límite"]
+        W -- "no" --> Y["[Fn] → (documento, pág. N)<br/>desde METADATOS + nota de versión"]
+        V -. "error de API" .-> Z["campo error (se muestra en rojo)"]
+        Y --> OUT["Resultado estructurado<br/>respuesta, fuentes, abstuvo, tokens, costo, error"]
+        U --> OUT
+        X --> OUT
+        Z --> OUT
+        V --> LOG["logs/costos_llm.csv<br/>tokens, latencia, costo según la hora"]
+    end
+```
+
 ## Tarea 1 — Fase 1: fuentes, extracción y limpieza
 
 ### Corpus
@@ -343,29 +378,35 @@ Esta regla se escribió y se subió al repositorio **antes** de ejecutar la corr
 
 El campo `respuesta_parcial` (booleano) del resultado del motor es `True` cuando el sistema respondió y además declaró en `explicacion_limite` qué parte no está en el corpus.
 
-### Resultados con IA: prompt v1 frente a prompt v2
+### Resultados con IA: prompts v1, v2 y v3
 
-| | Prompt v1 (umbral 0.840) | Prompt v2 (umbral 0.840)* | **Prompt v2 (umbral 0.800) ✅** |
+| | Prompt v1 (umbral 0.840) | Prompt v2 (umbral 0.800)* | **Prompt v3 (umbral 0.800)* — en uso ✅** |
 |---|---|---|---|
-| Abstención por umbral (sin IA): correctas / incorrectas | 7/10 / 0/15 | 7/10 / 0/15 | **4/10 / 0/15** |
-| **Abstención final (con IA): correctas / incorrectas** | 10/10 / **4/15** (D01, D02, D06, D12) | 10/10 / **2/15** (D02, D12) | **10/10 / 2/15** (D02, D12) |
-| Acierto de cita (respondidas dentro del corpus) | 10/11 (D13 citó la pág. 60, no la 21) | 13/13 | 13/13 |
-| Respuestas parciales (`respuesta_parcial = True`) | — (campo aún no existía) | 10 de 13 respondidas | 10 de 13 respondidas |
+| Abstención por umbral (sin IA): correctas / incorrectas | 7/10 / 0/15 | 4/10 / 0/15 | **4/10 / 0/15** |
+| **Abstención final (con IA): correctas / incorrectas** | 10/10 / **4/15** (D01, D02, D06, D12) | 10/10 / **2/15** (D02, D12) | **10/10 / 3/15** (D02, D06, D12) |
+| Acierto de cita (respondidas dentro del corpus) | 10/11 (D13 citó la pág. 60, no la 21) | 13/13 | 12/12 |
+| Respuestas marcadas como parciales (`respuesta_parcial = True`) | — (campo aún no existía) | **10 de 13** | **2 de 12** (D01, D14) |
 | Preguntas fuera respondidas por error | ninguna | ninguna | ninguna |
-| Llamadas al LLM en la evaluación | 18 | 18 | 21 |
-| Errores de API | 0 | 0 | 0 |
+| Llamadas al LLM por evaluación (25 preguntas) | 18 | 21 | 21 |
+| Costo de la corrida | US$0,0028 (18 llamadas) | US$0,0042 (25, diagnóstico) | US$0,0042 (25, diagnóstico) |
 
-\* Las columnas de v2 se obtienen de **una sola corrida diagnóstica** en la que el LLM vio las 25 preguntas (25 llamadas, US$0.0042). Para cada umbral, la abstención final es "similitud < umbral **o** el LLM se abstuvo". El LLM no es determinista, así que una nueva corrida podría variar en algún caso.
+\* v2 y v3 se evaluaron con **una corrida diagnóstica** cada una, en la que el LLM vio las 25 preguntas. Para cada umbral, la abstención final es "similitud < umbral **o** el LLM se abstuvo". Con el prompt v2, la abstención final a 0.840 era la misma que a 0.800 (10/10 y 2/15), así que el cambio de umbral no altera la comparación v1–v2. El LLM no es determinista: una nueva corrida podría variar en algún caso.
 
 **Qué cambió de v1 a v2.** En v1, D01, D06 y D12 tenían la **página** correcta en primer lugar y aun así el LLM se abstuvo: la regla del prompt ("abstente si solo menciona el tema") era tan amplia que lo hacía abstenerse por cualquier detalle faltante. v2 distingue entre "falta el **dato central**" (abstenerse) y "faltan detalles secundarios" (responder y declarar el límite). Resultado: se recuperaron D01 y D06 sin dejar pasar ninguna trampa.
 
-> ⚠️ **Posible sobreajuste.** El prompt v2 se ajustó **mirando los fallos de estas mismas 25 preguntas de evaluación**. Por eso la mejora de 4/15 a 2/15 abstenciones incorrectas es optimista: no hay un conjunto de prueba separado que la confirme. Una evaluación honesta necesitaría preguntas nuevas, redactadas sin ver los resultados. Queda como trabajo futuro.
+**Qué cambió de v2 a v3 (y por qué se aceptó un resultado peor en la métrica).** Al probar la app, se vio que con v2 la IA llenaba `explicacion_limite` casi siempre (10 de 13 respuestas), incluso con notas de versión que no son un límite. La app mostraba entonces un aviso de "Límite del corpus" en casi todas las respuestas, lo que confunde al usuario. v3 agrega una sola instrucción: *"`explicacion_limite` es SOLO para información que falta; si la respuesta está completa, déjalo vacío"*. Efectos:
+- Las respuestas marcadas como parciales bajan de 10 a 2.
+- **D06 pasa a abstenerse**: 3/15 abstenciones incorrectas en vez de 2/15.
+
+D06 ("¿Cuánto como máximo?" para el adelanto **para materiales**) es un caso límite genuino. El tope del 30 % de la ley es para adelantos **directos**, y el tope del adelanto para materiales **no está en el corpus**. Con v2 la respuesta fue parcial; con v3, abstención. Las dos son defendibles, pero **la etiqueta de D06 no se cambió después de ver los resultados**: según la regla fijada, cuenta como error. Se eligió v3 porque, para quien usa la app, un aviso de límite que aparece siempre deja de ser útil, y porque ante la duda v3 es más conservador. Si se prefiere la métrica, v2 queda documentado y se recupera cambiando una línea del prompt.
+
+> ⚠️ **Posible sobreajuste.** Los prompts v2 y v3 se ajustaron **mirando los resultados de estas mismas 25 preguntas de evaluación**. Por eso la mejora frente a v1 (4/15 → 2/15 o 3/15 abstenciones incorrectas) es optimista: no hay un conjunto de prueba separado que la confirme. Una evaluación honesta necesitaría preguntas nuevas, redactadas sin ver los resultados. Queda como trabajo futuro.
 
 ### Calibración del umbral: barrido y opciones con ambas abstenciones
 
 ![Barrido del umbral](tarea1_rag_normativo/eval/resultados/barrido_umbral_e5small_c500_s150.png)
 
-Umbrales candidatos con el prompt v2 ([`opciones_umbral_prompt_v2.md`](tarea1_rag_normativo/eval/resultados/opciones_umbral_prompt_v2.md)):
+Umbrales candidatos con el prompt v2 ([`opciones_umbral_prompt_v2.md`](tarea1_rag_normativo/eval/resultados/opciones_umbral_prompt_v2.md)). Con v3 el patrón es idéntico: todas las opciones dan 10/10 y 3/15 ([`opciones_umbral_prompt_v3.md`](tarea1_rag_normativo/eval/resultados/opciones_umbral_prompt_v3.md)).
 
 | Umbral | Margen sobre la legítima más baja | Umbral (sin IA): correctas / incorrectas | Final (con IA): correctas / incorrectas | Fuera respondidas por error | Dentro perdidas | Llamadas al LLM (de 25) |
 |---|---|---|---|---|---|---|
@@ -395,7 +436,7 @@ Umbrales candidatos con el prompt v2 ([`opciones_umbral_prompt_v2.md`](tarea1_ra
    - fuente del D.Leg. 1715 → aviso de que es la norma modificatoria.
 4. **Capa 4 (prompt + evaluación):** el prompt exige usar el texto vigente y nombrar la norma modificatoria. D05 y D08–D13 evalúan artículos modificados.
 
-**Ejemplo real (D08, prompt v2):**
+**Ejemplo real (D08, prompt v2; la app con v3 da la misma respuesta y la misma nota):**
 
 > **Pregunta:** ¿Procede una medida cautelar para paralizar la ejecución de una obra de infraestructura hidráulica?
 >
@@ -438,7 +479,7 @@ Y cuando el corpus responde solo en parte, el sistema **responde** y declara lo 
 - **D02 ("algo chiquito, de unos 3 mil soles"): falla del buscador.** La página correcta (pág. 19, art. 34, contratos menores ≤ 8 UIT) no aparece entre los 5 fragmentos recuperados: la pregunta habla de soles y "licitación", y el texto de UIT y "contratos menores". Con esos fragmentos, el LLM hizo bien en abstenerse. Además, el valor de la UIT en soles no está en el corpus.
 - **D12 (formación del comprador público): falla del buscador a nivel de fragmento.** La **página** esperada (D.S. pág. 2) sí se recuperó, por eso cuenta como acierto en Recall@k. Pero el fragmento con la respuesta (`ds001_2026_ef:p2:c4`, numeral 16.1) no estaba entre los 5; llegaron otros dos de la misma página. **El Recall calculado por página es optimista**: puede contar como acierto un caso en que el fragmento útil no llegó al LLM.
 - **D13 ("¿Qué es la Pladicop?"): citas imprecisas.** En v1 citó solo la pág. 60 (disposición transitoria) en vez de la pág. 21 (art. 41.1, la definición). En v2 cita las págs. 21, 22 y 60, pero su `explicacion_limite` dice que "no incluye una definición legal completa", aunque el 41.1 vigente sí la trae. El LLM no siempre reconoce el fragmento más pertinente.
-- **Respuestas parciales frecuentes.** Con v2, 10 de 13 respuestas llevan `explicacion_limite`. El LLM tiende a declarar límites incluso cuando la respuesta es suficiente. Es un sesgo conservador aceptable, pero la interfaz debe mostrar el límite como nota secundaria, no como alerta.
+- **Respuestas parciales:** con v2 el LLM declaraba límites casi siempre (10 de 13). Con v3 bajó a 2 de 12, a costa de que D06, un caso límite, pase a abstención.
 - **Sobreajuste del prompt** (ver arriba) y **muestra pequeña**: 15 + 10 preguntas.
 - **No determinismo:** el mismo prompt puede dar otra decisión en una nueva corrida.
 
@@ -456,7 +497,7 @@ Y cuando el corpus responde solo en parte, el sistema **responde** y declara lo 
 
 - **Precio según la hora:** `config.yaml > precios` tiene **franjas horarias por modelo**, y `src/costos.py` elige la franja según la hora de **cada** llamada, en la zona horaria configurada, con intervalos [desde, hasta) sin huecos. **OpenAI no cobra distinto según la hora**, así que hay una sola franja (00:00–24:00). La prueba sin costo verifica la lógica con una tabla ficticia de dos franjas: 03:00 UTC → tarifa nocturna, 15:00 UTC → tarifa diurna, 08:29:59 → nocturna.
 - **Log de costos:** cada llamada al LLM se registra en [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv) con fecha y hora UTC, modelo, tokens de entrada, caché y salida, latencia, costo en USD, franja, éxito o fracaso y error.
-- **Costo real de la Fase 3:** **44 llamadas, US$0,0072 en total** (1 prueba + 18 de la corrida v1 + 25 del diagnóstico v2). Una pregunta típica cuesta **≈ US$0,00017**: en promedio 1.209 tokens de entrada y 98 de salida, según las 25 llamadas del diagnóstico v2 en el log.
+- **Costo real de la Fase 3:** **44 llamadas, US$0,0072** (1 prueba + 18 de la corrida v1 + 25 del diagnóstico v2). Luego, en las fases 4–5, se sumaron el índice OpenAI, las consultas de comparación, las pruebas de la app y el diagnóstico v3 (ver el total al final). Una pregunta típica cuesta **≈ US$0,00017**: en promedio 1.209 tokens de entrada y 98 de salida, según las 25 llamadas del diagnóstico v2 en el log.
 
 ## Tarea 1 — Fase 4: evaluación y comparación de embeddings
 
@@ -521,11 +562,85 @@ Conclusión: **el precio no distingue a los modelos**, porque ambos son práctic
 1. **Recuperación equivalente con esta muestra.** OpenAI gana en Recall@5 (15 frente a 14) y AUC; el local, en Recall@1 y MRR. Son diferencias de 1–2 preguntas, dentro del ruido.
 2. **Latencia 21 veces menor** (14 ms frente a 303 ms), sin depender de la red. En la demo en vivo, el buscador responde al instante.
 3. **Privacidad.** Con el modelo local, la búsqueda ocurre en la computadora. Las preguntas que la defensa 1 detiene (4 de 10 fuera del corpus en la evaluación) **nunca salen de la máquina**; con embeddings por API, **todas** las preguntas se envían a OpenAI. **Matiz honesto:** las preguntas que pasan el umbral igual se envían al LLM de OpenAI para redactar la respuesta, así que la ventaja es parcial.
-4. **Funcionamiento sin internet.** Sin conexión, el buscador local sigue funcionando: la defensa 1 se abstiene y la app puede mostrar los fragmentos relevantes con su página, aunque no haya respuesta redactada. Con embeddings por API, sin internet no funciona nada. Si falla la API del LLM, el motor devuelve el error **junto con** las fuentes recuperadas.
+4. **Funcionamiento sin internet.** Sin conexión, y con el modelo ya descargado, el buscador local debería seguir funcionando (no se probó desconectando la red; ver `HF_HUB_OFFLINE=1` en la Fase 5): la defensa 1 se abstiene y la app puede mostrar los fragmentos relevantes con su página, aunque no haya respuesta redactada. Con embeddings por API, sin internet no funciona nada. Si falla la API del LLM, el motor devuelve el error **junto con** las fuentes recuperadas.
 5. **Reproducibilidad y dependencia.** El modelo local queda fijo (snapshot descargado): mismos vectores hoy y en un año. Un modelo de API puede cambiar de versión o retirarse, y obligaría a reindexar y recalibrar el umbral.
 6. **Umbral ya calibrado y validado con IA** para el modelo local (Fase 3).
 
 **Contras del modelo local:** ocupa 471 MB más PyTorch, usa CPU, hace más pesada la instalación en Windows y recupera peor algunas preguntas en lenguaje cotidiano, como D02. Si el set de evaluación creciera y la ventaja de OpenAI en Recall@5 se confirmara, convendría reconsiderar la decisión. El cambio es una línea en `config.yaml` más reconstruir el índice.
+
+## Tarea 1 — Fase 5: app Streamlit (local)
+
+### Cómo abrirla
+
+**Windows (PowerShell),** con la instalación de arriba ya hecha:
+
+```powershell
+cd HW_03_202602
+.venv\Scripts\Activate.ps1
+cd tarea1_rag_normativo
+python scripts\descargar_fuentes.py      # solo la primera vez: baja los PDFs oficiales (~12 MB)
+python scripts\procesar_documentos.py    # solo la primera vez: extrae y limpia (o usa data\processed del repo)
+python build_index.py                     # solo la primera vez: construye el índice (~20 s, descarga el modelo e5-small ~470 MB)
+streamlit run app.py
+```
+
+**macOS / Linux:**
+
+```bash
+cd HW_03_202602 && source .venv/bin/activate && cd tarea1_rag_normativo
+python build_index.py      # solo la primera vez
+streamlit run app.py
+```
+
+La app se abre en http://localhost:8501. Las respuestas redactadas necesitan `OPENAI_API_KEY` en `.env`. **Sin clave** (probado), la app sigue funcionando: las preguntas que la defensa 1 detiene se abstienen normalmente, y las demás muestran el error en rojo junto con los fragmentos encontrados. **Sin internet** (no probado), debería comportarse igual si el modelo e5-small ya está descargado; si `sentence-transformers` intenta consultar Hugging Face, se puede forzar el modo sin conexión con la variable de entorno `HF_HUB_OFFLINE=1`.
+
+`data/processed/` está en el repositorio. Por eso, en una máquina nueva basta con `build_index.py` y `streamlit run app.py`; los PDFs solo hacen falta para regenerar el texto.
+
+### Qué muestra
+
+- **Pestaña "Preguntar":** caja de pregunta y 4 ejemplos (uno que responde, una versión modificada, un tema del Reglamento y el ceviche). Por cada consulta muestra:
+  - la **respuesta** con citas (documento, página); si el sistema **se abstuvo**, un aviso amarillo con el motivo (umbral sin IA / IA fuera del corpus / sin citas); si hubo **error de API**, un aviso **rojo**;
+  - las métricas: ¿se abstuvo?, similitud máxima frente al umbral, **costo de la consulta en USD** y tokens;
+  - el límite del corpus y la nota de versión, cuando existen;
+  - los **fragmentos recuperados**, con documento, página, similitud, artículo y "modificado por"; los citados se marcan y se abren.
+- **Pestaña "Calidad de extracción (Fase 1)":** tabla de verificación de fuentes, reporte de calidad por documento y ejemplos antes/después.
+- **Pestaña "Evaluación (Fases 2-4)":**
+  - abstención por umbral y final para los prompts v1, v2 y v3;
+  - opciones de umbral y gráfico del barrido;
+  - tabla de similitudes de las 25 preguntas;
+  - comparación de embeddings;
+  - comparación de configuraciones de fragmentos.
+- **Pestaña "Costos":** total gastado, llamadas por modelo y últimas llamadas, leídos de `logs/costos_llm.csv`.
+
+### Garantías de arquitectura
+
+- `app.py` **solo** importa `responder` de `src/motor.py`. No contiene lógica RAG y **nunca construye el índice**: si el índice no existe, muestra cómo crearlo y se detiene.
+- El motor se carga una vez con `@st.cache_resource`; los reportes se leen con `@st.cache_data`.
+- Todos los textos de la interfaz están en `config.yaml > app`.
+- Los errores se limpian antes de mostrarlos o guardarlos: cualquier texto con forma de clave (`sk-…`) se reemplaza por `sk-[oculta]`, porque el error 401 de OpenAI incluye la clave enmascarada.
+
+### Pruebas de la app
+
+Se probó sin navegador con `streamlit.testing.v1.AppTest`:
+
+| Caso | Resultado |
+|---|---|
+| Carga de la app (4 pestañas, sin excepciones) | ✅ |
+| "¿Cómo se prepara un ceviche?" | abstención por **umbral**, similitud 0.792, costo US$0 ✅ |
+| Medida cautelar en obra hidráulica | respuesta con cita (pág. 43), nota de versión del D.Leg. 1715, US$0,000171 ✅ |
+| Subcontratación | abstención por la **IA** (`fuera_de_corpus`) con explicación del límite ✅ |
+| Clave de API inválida | aviso **rojo** de error, ninguna respuesta, fragmentos visibles, llamada fallida registrada ✅ |
+
+### Costo total real de la Tarea 1
+
+Según [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv): **141 llamadas, US$0,0148 en total**.
+
+| Modelo | Llamadas | Costo |
+|---|---|---|
+| gpt-6-luna (respuestas) | 73 | US$0,0118 |
+| text-embedding-3-small (comparación Fase 4) | 68 | US$0,0030 |
+
+2 llamadas fallidas, ambas de la prueba de error con clave inválida, que no se cobran. Una pregunta típica a la app cuesta **≈ US$0,00017**. Una pregunta detenida por el umbral cuesta **US$0**.
 
 ## Estructura
 

@@ -197,3 +197,33 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 - **La abstención final** mide todo el sistema.
 
 Las dos primeras se calculan sin llamar a la IA, **gratis**, así que pude probar 5 tamaños de pedazo y 33 umbrales sin gastar nada.
+
+---
+
+## Tarea 1 · Fase 5 — La app (Streamlit)
+
+**Qué hice**
+- Armé la app con 4 pestañas:
+  - **Preguntar:** respuesta con citas, fragmentos con su página y similitud, si se abstuvo y cuánto costó la consulta.
+  - **Calidad de extracción:** los reportes de la Fase 1.
+  - **Evaluación:** tablas y gráficos de las fases 2 a 4.
+  - **Costos:** todo lo gastado, leído del log.
+- La app **no piensa**: solo llama a la función `responder` del motor y muestra lo que devuelve. Tampoco construye el índice; si falta, explica cómo crearlo.
+- Los colores tienen significado:
+  - **verde** = respuesta;
+  - **amarillo** = se abstuvo (y dice por qué: umbral o IA);
+  - **azul** = límite del corpus o nota de versión;
+  - **rojo** = error de la API.
+- Probé la app sin navegador con cuatro casos:
+  - el ceviche (se abstiene gratis);
+  - la obra hidráulica (responde con la nota del D.Leg. 1715);
+  - la subcontratación (la IA se abstiene);
+  - una clave falsa (sale el error en rojo y aun así muestra los fragmentos).
+- **Seguridad extra:** el error de OpenAI traía un pedacito de la clave. Ahora cualquier cosa con forma de clave se reemplaza por "sk-[oculta]" antes de mostrarla o guardarla.
+- **Ajuste final del prompt (v3):** la IA ponía "límite del corpus" en casi todas las respuestas, aunque no faltara nada, y confundía. Ahora solo lo pone cuando de verdad falta algo (bajó de 10 a 2).
+  - **Costo de ese cambio:** una pregunta límite (D06, el tope del adelanto para materiales, que no está en el corpus) pasó a abstenerse.
+  - No cambié la regla para que "cuente bien": según lo que fijé antes, es un error, y lo digo.
+
+**Costo total de toda la Tarea 1:** 141 llamadas, **US$0,0148**, menos de 6 céntimos de sol.
+
+**Diagrama del pipeline:** está en el README y en `docs/pipeline.md`. Hay que mostrarlo al inicio del video, **antes de cualquier código**.

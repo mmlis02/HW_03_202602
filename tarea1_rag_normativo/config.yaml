@@ -215,6 +215,8 @@ prompts:
          dilo en "explicacion_limite". No te abstengas solo porque falten detalles secundarios.
        Las preguntas pueden venir en lenguaje cotidiano: relaciónalas con los términos legales
        equivalentes antes de decidir.
+       "explicacion_limite" es SOLO para información que falta en los fragmentos. Si la respuesta está
+       completa, déjalo vacío (""). No pongas ahí notas de versión, fechas ni aclaraciones.
     3. Cada afirmación de "respuesta" debe llevar su cita con el número de fragmento entre corchetes,
        por ejemplo [F2]. No escribas números de página: el sistema los pone a partir del fragmento.
     4. Versiones: si un fragmento dice "[Texto vigente — ... modificado por X, publicada el F]", usa ese
@@ -248,3 +250,52 @@ mensajes:
   nota_dl1715: >-
     El D.Leg. N.° 1715 (04/02/2026) es la norma que modificó el literal e) del numeral 85.1 del
     artículo 85 de la Ley N.° 32069; ese texto ya está incorporado en la versión actualizada de la ley.
+
+# ---------------------------------------------------------------------------
+# Fase 5: app Streamlit (solo textos y rutas de reportes; la lógica está en src/motor.py)
+# ---------------------------------------------------------------------------
+app:
+  titulo: "Asistente de contrataciones públicas para MYPE"
+  subtitulo: >-
+    Responde solo con la Ley N.° 32069 (versión actualizada al 19/07/2026), el D.S. N.° 001-2026-EF
+    y el D.Leg. N.° 1715, citando documento y página. Si la respuesta no está en esos documentos, lo dice.
+  aviso_legal: >-
+    Orientación informativa, no asesoría legal. El Reglamento completo de la Ley N.° 32069 no está
+    indexado: verifica siempre en la fuente oficial.
+  etiqueta_pregunta: "Escribe tu pregunta"
+  boton_preguntar: "Preguntar"
+  ejemplos_titulo: "Prueba con un ejemplo"
+  ejemplos:
+    - "¿En cuántos días me tienen que pagar después de la conformidad?"
+    - "¿Procede una medida cautelar para paralizar una obra de infraestructura hidráulica?"
+    - "¿Qué porcentaje máximo de mi contrato puedo subcontratar?"
+    - "¿Cómo se prepara un ceviche?"
+  pestanas: ["Preguntar", "Calidad de extracción (Fase 1)", "Evaluación (Fases 2-4)", "Costos"]
+  cargando: "Cargando el índice y el modelo de embeddings (solo la primera vez)..."
+  sin_indice: >-
+    No se encontró el índice vectorial. La app no lo construye al iniciar: ejecuta una vez
+    `python build_index.py` en la carpeta tarea1_rag_normativo y vuelve a abrir la app.
+  titulo_respuesta: "Respuesta"
+  titulo_fuentes: "Fragmentos recuperados"
+  titulo_fuentes_error: "Fragmentos más cercanos (la respuesta no se pudo generar)"
+  titulo_limite: "Límite del corpus"
+  titulo_notas_version: "Nota de versión"
+  abstencion_titulo: "El asistente se abstuvo"
+  motivos:
+    umbral: "Ningún fragmento se parece lo suficiente a la pregunta (decisión tomada sin llamar a la IA, costo 0)."
+    fuera_de_corpus: "La IA revisó los fragmentos y la respuesta no está en los documentos indexados."
+    sin_citas: "La respuesta generada no citaba ningún fragmento y se descartó por seguridad."
+  etiqueta_citada: "citado en la respuesta"
+  rutas_reportes:
+    verificacion: data/processed/verificacion_fuentes.md
+    calidad: data/processed/reporte_calidad_extraccion.md
+    ejemplos_limpieza: data/processed/ejemplos_limpieza.md
+    fragmentos: data/processed/reporte_fragmentos.md
+    grafico_fragmentos: data/processed/distribucion_fragmentos.png
+    puntajes: eval/resultados/puntajes_top1_e5small_c500_s150.md
+    barrido_png: eval/resultados/barrido_umbral_e5small_c500_s150.png
+    opciones_umbral: eval/resultados/opciones_umbral_prompt_v3.md
+    motor_v1: eval/resultados/evaluacion_motor_con_ia_prompt_v1.json
+    motor_v2: eval/resultados/evaluacion_motor_con_ia_sin_umbral_prompt_v2.json
+    motor_v3: eval/resultados/evaluacion_motor_con_ia_sin_umbral_prompt_v3.json
+    comparacion_embeddings: eval/resultados/comparacion_embeddings.json

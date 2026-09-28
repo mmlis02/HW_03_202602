@@ -19,7 +19,7 @@ import time
 from dataclasses import asdict, dataclass, field
 
 from src.config import cargar_config, umbral_activo
-from src.costos import ahora_utc, calcular_costo, registrar_llamada
+from src.costos import ahora_utc, calcular_costo, limpiar_error, registrar_llamada
 from src.embeddings import crear_embedder
 from src.indice import abrir_coleccion, buscar
 
@@ -191,8 +191,8 @@ class Motor:
             datos = json.loads(resp.choices[0].message.content)
         except Exception as ex:  # errores de API o respuesta inválida: se devuelven como ERROR
             r.latencia_s = round(time.time() - inicio, 3)
-            r.error = f"{m['error_api']} ({type(ex).__name__}: {str(ex)[:200]})"
-            fila_log.update(latencia_s=r.latencia_s, exito=False, error=f"{type(ex).__name__}: {str(ex)[:200]}")
+            r.error = f"{m['error_api']} ({limpiar_error(ex)})"
+            fila_log.update(latencia_s=r.latencia_s, exito=False, error=limpiar_error(ex))
             registrar_llamada(self.cfg, fila_log)
             return r
         fila_log["exito"] = True

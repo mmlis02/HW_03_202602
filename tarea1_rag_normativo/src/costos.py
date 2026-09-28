@@ -5,6 +5,7 @@ cada llamada se busca la franja que contiene la hora de la llamada (en la zona h
 configurada) y se aplica ese precio. OpenAI tiene hoy una sola franja (00:00-24:00).
 """
 import csv
+import re
 from datetime import datetime, time as hora
 from zoneinfo import ZoneInfo
 
@@ -51,3 +52,9 @@ def registrar_llamada(cfg: dict, fila: dict) -> None:
 
 def ahora_utc() -> datetime:
     return datetime.now(ZoneInfo("UTC"))
+
+
+def limpiar_error(ex: Exception) -> str:
+    """Texto del error SIN nada que parezca una clave (OpenAI incluye la clave enmascarada en el 401)."""
+    msg = re.sub(r"sk-[A-Za-z0-9*_\-]+", "sk-[oculta]", str(ex))
+    return f"{type(ex).__name__}: {msg[:200]}"

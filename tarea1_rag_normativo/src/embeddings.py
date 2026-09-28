@@ -70,7 +70,7 @@ class EmbedderOpenAI(Embedder):
 
     def _llamar(self, textos):
         """Cada llamada se registra en el log de costos (logs/costos_llm.csv), con éxito o error."""
-        from src.costos import ahora_utc, calcular_costo, registrar_llamada
+        from src.costos import ahora_utc, calcular_costo, limpiar_error, registrar_llamada
 
         momento, inicio = ahora_utc(), time.time()
         fila = {"fecha_hora_utc": momento.isoformat(timespec="seconds"), "modelo": self.nombre,
@@ -78,7 +78,7 @@ class EmbedderOpenAI(Embedder):
         try:
             r = self.cliente.embeddings.create(model=self.nombre, input=textos)
         except Exception as ex:
-            fila.update(latencia_s=round(time.time() - inicio, 3), exito=False, error=f"{type(ex).__name__}: {str(ex)[:200]}")
+            fila.update(latencia_s=round(time.time() - inicio, 3), exito=False, error=limpiar_error(ex))
             registrar_llamada(self.cfg, fila)
             raise
         self.ultima_latencia = time.time() - inicio
