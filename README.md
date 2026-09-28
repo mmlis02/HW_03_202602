@@ -643,6 +643,64 @@ Según [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv): **141 
 
 2 llamadas fallidas, ambas de la prueba de error con clave inválida, que no se cobran. Una pregunta típica a la app cuesta **≈ US$0,00017**. Una pregunta detenida por el umbral cuesta **US$0**.
 
+## Tarea 2 — Fase 1: adquisición de datos (OECE, estándar OCDS)
+
+```bash
+cd tarea2_radar
+python scripts/descargar_datos.py    # 3 ZIP mensuales (JSON OCDS) → data/raw/, verificados con SHA-256
+python scripts/procesar_datos.py     # una fila por proceso (ocid) → data/processed/procesos.parquet
+python scripts/actualizar_api.py     # novedades del mes en curso por API → data/processed/novedades_api.parquet
+python scripts/probar_api.py         # simula una caída de red y muestra que se reanuda desde la caché
+```
+
+### Fuente y archivos
+
+Portal de Contrataciones Abiertas de OECE, **descargas masivas** del sistema `seace_v3` (SEACE 3). Es la única fuente con datos de 2026; `seace_v2` solo llega hasta 2017. Se tomaron los **3 meses completos más recientes** al 28/09/2026. Septiembre de 2026 estaba en curso.
+
+| Mes | ZIP (JSON OCDS) | JSON interno | Records (procesos) | Releases listadas |
+|---|---|---|---|---|
+| Junio 2026 | 11,3 MB | 111,0 MB | 7.321 | 95.257 |
+| Julio 2026 | 10,2 MB | 101,9 MB | 6.570 | 102.597 |
+| Agosto 2026 | 8,8 MB | 87,4 MB | 6.585 | 90.694 |
+| **Total** | **30,3 MB** | 300 MB (no se guarda descomprimido) | **20.476** | **288.548** |
+
+- **Formato elegido: JSON OCDS.** Es el más liviano (CSV 32,8 MB, XLSX 61,8 MB) y conserva la estructura release/record y los campos anidados que hacen falta: dirección de la entidad, número de postores, ítems y adjudicaciones. El JSON se lee **directamente desde el ZIP**, sin descomprimirlo en disco.
+- **Verificación:** OECE publica una huella SHA-256 por mes. **Hallazgo:** la huella corresponde al **JSON que va dentro del ZIP**, no al ZIP. La primera verificación contra el ZIP falló y el script descartó el archivo, como debía. Luego se comprobó a qué archivo correspondía la huella. Ahora se verifica el JSON interno, y los 3 meses coinciden.
+- **Descarga re-ejecutable:** si el ZIP ya existe y su huella coincide, no se vuelve a bajar. Se descarga a un archivo `.part` y solo se renombra al terminar, así que un corte no deja un ZIP a medias.
+- **Log** (`logs/descargas.log`): primera corrida, **6 pedidos HTTP, 255,7 s**, con el tamaño de cada archivo. Segunda corrida: 3 pedidos (solo las huellas) y **0 descargas**.
+
+### Modelo OCDS: release, record y ocid
+
+- **Release:** una "foto" de un proceso en un momento: planificación, convocatoria, adjudicación, contrato. Un proceso acumula muchas releases.
+- **Record:** agrupa **todas** las releases de un proceso y trae su `compiledRelease`, la versión consolidada con el estado más reciente de cada campo.
+- **ocid** (*Open Contracting ID*): identificador único y permanente de **un proceso de contratación**, por ejemplo `ocds-dgv273-seacev3-1251524`. Lo comparten todas sus releases y su record.
+
+Cada ZIP de OECE es un **paquete de records**: por cada proceso, su `compiledRelease` completo y la lista de sus releases (solo enlace, fecha y etiqueta). Se usa el `compiledRelease`.
+
+### Una fila por proceso: antes y después
+
+| Paso | Filas |
+|---|---|
+| Releases listadas en los 3 archivos (versiones/eventos de los procesos) | 288.548 |
+| Records en los 3 archivos juntos (antes de deduplicar) | **20.476** |
+| `ocid` que aparecen en más de un mes | **0** |
+| Duplicados dentro de un mismo mes | 0 |
+| **Filas finales (una por `ocid`)** | **20.476** |
+
+La deduplicación se hace **juntando los 3 meses**, no mes por mes. **Regla:** si un `ocid` aparece varias veces, se conserva la fila con el `compiledRelease` **más reciente** (`fecha_compilado`), porque el record consolidado más nuevo incluye todo lo anterior. Desempates: más releases y luego el mes de archivo más reciente. Cada fila guarda en qué meses apareció (`meses_en_que_aparece`).
+
+**Por qué no hubo repetidos entre meses:** OECE asigna cada proceso a **un solo mes**, el de la fecha de inicio de su convocatoria (campo `dataSegmentation`, criterio publicado en el portal). La reducción grande está en pasar de releases a records (288.548 → 20.476). La regla queda implementada por si en otros meses sí hay repetidos.
+
+**Posibles duplicados "disfrazados"** (se tratan en la Fase 2): hay 1.072 grupos con **la misma nomenclatura y la misma entidad pero distinto `ocid`** (reconvocatorias tras nulidad o desierto) y 4 `tender_id` repetidos.
+
+### API: solo para novedades recientes
+
+- `/api/v1/records` **no sirve** para novedades: ignora `paginateBy` y los filtros de año y mes, y ordena por `ocid`. Recorrerlo entero serían miles de pedidos.
+- `/api/v1/search` **sí filtra** por año, mes y sistema. Se usa para el **mes en curso (septiembre 2026)**: **5.435 procesos en 55 páginas**, 55 pedidos, 15,9 MB, 88,9 s.
+- **Pausas y errores:** 1 s entre pedidos y hasta 4 reintentos con espera creciente (2, 4, 8, 16 s) ante errores de red, 429 o 5xx.
+- **Caché:** cada página se guarda en disco **apenas llega** (`data/raw/api_cache/`), así que un fallo no pierde lo ya bajado. `scripts/probar_api.py` lo demuestra: con una caída de red simulada tras 3 pedidos, el script se detiene con 48 de 55 páginas guardadas, y la corrida siguiente solo pide las 7 que faltan.
+- Las novedades quedan en una **tabla aparte** (`novedades_api.parquet`). El corpus del análisis son los 3 meses. La búsqueda de la API no trae la dirección de la entidad: si se usan, la ubicación se toma de la misma entidad en los archivos mensuales.
+
 ## Estructura
 
 ```

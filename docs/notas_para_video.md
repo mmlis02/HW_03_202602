@@ -253,3 +253,27 @@ Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes
 - **El "hola!" pasó el umbral.** Los saludos cortos se parecen "demasiado" a todo con este modelo ("hola" 0,804, "gracias" 0,834). La IA igual no respondió nada inventado; la segunda defensa lo frenó. Pero costó una llamada (US$0,00013).
 - **Por qué pasa:** es el precio de haber bajado el umbral de 0,840 a 0,800 para tener margen en la demo. Es un buen ejemplo en vivo de por qué hacen falta **dos defensas**.
 - **Mejora posible (no hecha):** un filtro previo que ignore saludos o textos demasiado cortos.
+
+---
+
+# TAREA 2 — Radar de compras públicas
+
+## Tarea 2 · Fase 1 — Conseguir los datos
+
+**Qué hice**
+- Averigüé cómo descarga los archivos la página de OECE, leyendo su código, porque la página se arma con JavaScript. Hay archivos mensuales en CSV, Excel y JSON.
+- Elegí **JSON** (el formato del estándar OCDS) de **junio, julio y agosto de 2026**, los 3 meses completos más recientes. En total pesan **30 MB comprimidos**. Para no llenar el disco, los leo sin descomprimirlos.
+- **Verifiqué cada archivo con su "huella" SHA-256** (un código que cambia si el archivo cambia en un solo byte).
+  - *Anécdota útil para el video:* la primera verificación falló. Resulta que la huella que publica OECE es la del archivo **de adentro** del ZIP, no la del ZIP. Mi programa hizo lo correcto: rechazó el archivo en vez de usarlo "a ciegas".
+- **Release, record y ocid (hay que explicarlo en el video):**
+  - **release** = una foto del proceso en un momento (convocatoria, adjudicación…);
+  - **record** = el álbum con todas las fotos de un proceso, más un resumen con el estado actual;
+  - **ocid** = el número de identidad del proceso.
+- **Una fila por proceso:** las 288.548 "fotos" (releases) se agrupan en **20.476 procesos**. Junté los 3 meses y busqué procesos repetidos entre meses: **no hubo ninguno**, porque OECE pone cada proceso en el mes en que empezó su convocatoria.
+  - La regla, por si aparecen: me quedo con la versión más reciente del resumen.
+- **La API la usé solo para lo nuevo:** los procesos de septiembre (el mes en curso), 5.435 procesos.
+  - Pido una página por segundo para no saturar el portal.
+  - Guardo cada página apenas llega. Probé "cortar internet" a propósito a mitad de camino: al volver a correr, solo pidió las 7 páginas que faltaban.
+
+**Por qué**
+- Los archivos mensuales son la forma eficiente de bajar mucho de una vez. La API sirve para lo reciente, no para bajar todo: su lista general ni siquiera se puede ordenar por fecha.

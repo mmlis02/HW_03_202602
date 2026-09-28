@@ -1,0 +1,12 @@
+2026-09-28T17:39:11 [descargando] 2026-06_seace_v3_json desde https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/06/
+2026-09-28T17:43:36 [descargando] 2026-06_seace_v3_json desde https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/06/
+2026-09-28T17:45:12    OK 2026-06_seace_v3_json.zip: 11.3 MB (JSON interno 111.0 MB) en 95.4 s, huella SHA-256 del JSON interno verificada
+2026-09-28T17:45:14 [descargando] 2026-07_seace_v3_json desde https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/07/
+2026-09-28T17:46:32    OK 2026-07_seace_v3_json.zip: 10.2 MB (JSON interno 101.9 MB) en 78.2 s, huella SHA-256 del JSON interno verificada
+2026-09-28T17:46:34 [descargando] 2026-08_seace_v3_json desde https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/08/
+2026-09-28T17:47:49    OK 2026-08_seace_v3_json.zip: 8.8 MB (JSON interno 87.4 MB) en 74.8 s, huella SHA-256 del JSON interno verificada
+2026-09-28T17:47:50 Resumen: 6 pedidos HTTP, 255.7 s en total
+2026-09-28T17:47:53 [ya existe, huella OK] 2026-06_seace_v3_json.zip (11.3 MB)
+2026-09-28T17:47:54 [ya existe, huella OK] 2026-07_seace_v3_json.zip (10.2 MB)
+2026-09-28T17:47:55 [ya existe, huella OK] 2026-08_seace_v3_json.zip (8.8 MB)
+2026-09-28T17:47:55 Resumen: 3 pedidos HTTP, 4.7 s en total

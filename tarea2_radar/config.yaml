@@ -1,0 +1,36 @@
+# Configuración de la Tarea 2 (Radar de compras públicas).
+# Todas las rutas son relativas a la carpeta donde está este archivo.
+
+rutas:
+  raw: data/raw                          # ZIP mensuales de OECE (fuera de git)
+  processed: data/processed
+  outputs: data/outputs
+  manifiesto_descargas: data/manifiesto_descargas.json
+  logs: logs
+
+oece:
+  base: "https://contratacionesabiertas.oece.gob.pe"
+  # Descargas masivas: /api/v1/file/{fuente}/{formato}/{año}/{mes}/  y la huella en .../sha/...
+  plantilla_archivo: "{base}/api/v1/file/{fuente}/{formato}/{anio}/{mes}/"
+  fuente: seace_v3                       # SEACE 3: la única fuente con datos de 2026 (seace_v2 llega a 2017)
+  formato: json                          # OCDS JSON: el más liviano (30 MB los 3 meses) y conserva la estructura
+  meses:                                 # los 3 meses COMPLETOS más recientes al 2026-09-28
+    - {anio: "2026", mes: "06"}
+    - {anio: "2026", mes: "07"}
+    - {anio: "2026", mes: "08"}
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+  timeout_segundos: 300
+  reintentos: 3
+  pausa_entre_pedidos_s: 1.0
+
+# API: solo para NOVEDADES recientes (el mes en curso, que aún no tiene archivo mensual cerrado).
+# /api/v1/records no sirve para esto (ignora paginateBy y filtros, ordena por ocid); /api/v1/search sí filtra.
+api:
+  url_busqueda: "{base}/api/v1/search"
+  parametros: {format: json, source: seace_v3, year: "2026", month: "09"}
+  por_pagina: 100
+  max_paginas: 80                 # tope de seguridad
+  pausa_entre_pedidos_s: 1.0      # para no sobrecargar el portal
+  reintentos: 4                   # espera creciente: 2, 4, 8, 16 s
+  cache: data/raw/api_cache       # una página = un archivo JSON (fuera de git)
+  cache_horas: 24                 # una página cacheada más nueva que esto no se vuelve a pedir

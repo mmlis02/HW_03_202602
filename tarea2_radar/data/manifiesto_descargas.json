@@ -1,0 +1,38 @@
+{
+  "2026-06_seace_v3_json": {
+    "archivo": "2026-06_seace_v3_json.zip",
+    "archivo_interno": "2026-06_seace_v3.json",
+    "bytes_interno": 110952715,
+    "url": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/06/",
+    "url_sha": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/sha/2026/06/",
+    "sha256_json_interno": "8766e0ab76a89e7c0234f73a630538483aa3ad22c0a4684998e9be6661cf0fc3",
+    "sha256_zip": "b64b3d39c5dc54a34a492af7db006e8be0cf1b01da4ef8ad0402d1d1db2f61a0",
+    "bytes": 11284299,
+    "fecha_descarga": "2026-09-28T17:45:12",
+    "segundos_descarga": 95.4
+  },
+  "2026-07_seace_v3_json": {
+    "archivo": "2026-07_seace_v3_json.zip",
+    "archivo_interno": "2026-07_seace_v3.json",
+    "bytes_interno": 101877153,
+    "url": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/07/",
+    "url_sha": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/sha/2026/07/",
+    "sha256_json_interno": "38006489a9bd04da40d56a57cf391dd01a55c72cd0cfb2344de20198e2b8dd91",
+    "sha256_zip": "6f928faf5c2fea2cdf5c376da81819ee15de18079ba4ebdefac24fda5fa2eb41",
+    "bytes": 10211638,
+    "fecha_descarga": "2026-09-28T17:46:32",
+    "segundos_descarga": 78.2
+  },
+  "2026-08_seace_v3_json": {
+    "archivo": "2026-08_seace_v3_json.zip",
+    "archivo_interno": "2026-08_seace_v3.json",
+    "bytes_interno": 87437184,
+    "url": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/json/2026/08/",
+    "url_sha": "https://contratacionesabiertas.oece.gob.pe/api/v1/file/seace_v3/sha/2026/08/",
+    "sha256_json_interno": "1dd790cf784a92ef74a28e8b2cf7bc70142b0f6c7dd0cb3596e8eca4ec9e0e01",
+    "sha256_zip": "41cd8ceaad3ec5f0946039958ba579ecdb825fd0f74769984d473255c0c9c508",
+    "bytes": 8796971,
+    "fecha_descarga": "2026-09-28T17:47:49",
+    "segundos_descarga": 74.8
+  }
+}

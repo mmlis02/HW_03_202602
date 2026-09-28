@@ -4,6 +4,7 @@ PyYAML==6.0.3
 python-dotenv==1.2.3
 requests==2.34.2
 pandas==3.0.6
+pyarrow==25.0.1          # formato parquet (Tarea 2)
 # --- Tarea 1: extracción de PDF ---
 pymupdf==1.28.2
 # --- Embeddings locales e índice vectorial ---

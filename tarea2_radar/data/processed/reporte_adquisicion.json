@@ -1,0 +1,30 @@
+{
+  "fecha": "2026-09-28T17:50:29",
+  "por_mes": {
+    "2026-06": {
+      "records": 7321,
+      "releases_listadas": 95257,
+      "segundos_lectura": 1.1
+    },
+    "2026-07": {
+      "records": 6570,
+      "releases_listadas": 102597,
+      "segundos_lectura": 0.8
+    },
+    "2026-08": {
+      "records": 6585,
+      "releases_listadas": 90694,
+      "segundos_lectura": 1.0
+    }
+  },
+  "filas_antes": 20476,
+  "ocid_distintos": 20476,
+  "ocid_en_mas_de_un_mes": 0,
+  "ejemplos_ocid_repetidos": {},
+  "duplicados_dentro_de_un_mismo_mes": 0,
+  "repetidos_con_datos_distintos": 0,
+  "filas_despues": 20476,
+  "filas_eliminadas": 0,
+  "regla": "se conserva la fila con compiledRelease más reciente (fecha_compilado); desempates: más releases, mes de archivo más reciente",
+  "segundos_total": 6.0
+}
