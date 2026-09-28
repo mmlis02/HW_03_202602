@@ -1,0 +1,21 @@
+# Probado con Python 3.14.7 (macOS arm64). Ver README para Windows (PyTorch CPU).
+# --- Utilidades generales ---
+PyYAML==6.0.3
+python-dotenv==1.2.3
+requests==2.34.2
+pandas==3.0.6
+# --- Tarea 1: extracción de PDF ---
+pymupdf==1.28.2
+# --- Embeddings locales e índice vectorial ---
+torch==2.14.0
+sentence-transformers==6.1.0
+chromadb==1.5.9
+# --- Modelo de generación y embeddings por API (OpenAI) ---
+openai==3.19.2
+tiktoken==0.14.0
+# --- Tarea 2: mapa (lectura de shapefile sin GDAL) ---
+pyshp==3.1.6
+# --- Interfaz y gráficos ---
+streamlit==1.64.0
+plotly==7.1.0
+matplotlib==3.11.2

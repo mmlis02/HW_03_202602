@@ -1,0 +1,18 @@
+# Entorno y credenciales
+.venv/
+venv/
+.env
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+
+# Datos grandes: se regeneran con los scripts de descarga (ver README)
+tarea1_rag_normativo/data/raw/*
+!tarea1_rag_normativo/data/raw/.gitkeep
+tarea2_radar/data/raw/*
+!tarea2_radar/data/raw/.gitkeep
+
+# Índices vectoriales: se regeneran con build_index.py
+**/data/index/
+**/chroma*/
