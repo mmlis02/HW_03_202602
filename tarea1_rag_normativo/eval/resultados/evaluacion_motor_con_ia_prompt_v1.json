@@ -1,0 +1,23 @@
+{
+  "umbral": 0.84,
+  "defensa1_sin_ia": {
+    "abstenciones_correctas": "7/10",
+    "tasa_abstencion_correcta": 0.7,
+    "abstenciones_incorrectas": "0/15",
+    "tasa_abstencion_incorrecta": 0.0
+  },
+  "final_con_ia": {
+    "abstenciones_correctas": "10/10",
+    "tasa_abstencion_correcta": 1.0,
+    "abstenciones_incorrectas": "4/15",
+    "tasa_abstencion_incorrecta": 0.267,
+    "acierto_de_cita": "10/11",
+    "errores_api": 0,
+    "costo_total_usd": 0.002826,
+    "abstenciones_por_motivo": {
+      "umbral": 7,
+      "fuera_de_corpus": 7,
+      "sin_citas": 0
+    }
+  }
+}

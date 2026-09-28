@@ -3,10 +3,17 @@
   python eval/evaluar_motor.py              -> DEFENSA 1 (umbral, SIN IA, costo 0)
   python eval/evaluar_motor.py --estimar    -> cuenta los tokens exactos de cada prompt y estima el costo
   python eval/evaluar_motor.py --con-ia     -> ABSTENCIÓN FINAL (con IA): llama al LLM, CUESTA DINERO
+  python eval/evaluar_motor.py --con-ia --sin-umbral --etiqueta X
+        -> diagnóstico: pasa TODAS las preguntas por el LLM (ignora el umbral) para poder simular
+           cualquier umbral después con eval/opciones_umbral.py. CUESTA DINERO.
 
-Métricas:
-- Abstención correcta = pregunta FUERA del corpus en la que el sistema se abstuvo.
-- Abstención incorrecta = pregunta DENTRO del corpus en la que el sistema se abstuvo.
+Métricas (regla fijada ANTES de la corrida con prompt v2; ver README, "Qué cuenta como acierto"):
+- Solo cuenta el campo estructurado `abstuvo`; nunca se interpreta el texto de la respuesta.
+- Abstención correcta = pregunta FUERA del corpus con abstuvo=True.
+  Una respuesta PARCIAL (abstuvo=False, respuesta_parcial=True) a una pregunta fuera del corpus
+  cuenta como FALLO aunque su explicacion_limite diga que el dato está en el Reglamento.
+- Abstención incorrecta = pregunta DENTRO del corpus con abstuvo=True.
+  Una respuesta parcial a una pregunta dentro del corpus cuenta como respondida.
 - Con IA, además: en las preguntas dentro del corpus respondidas, si alguna página citada
   está entre las páginas esperadas (acierto de cita).
 """
@@ -37,6 +44,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--con-ia", action="store_true", help="llama al LLM (cuesta dinero)")
     ap.add_argument("--estimar", action="store_true", help="estima el costo sin llamar al LLM")
+    ap.add_argument("--sin-umbral", action="store_true", help="con --con-ia: el LLM ve todas las preguntas")
+    ap.add_argument("--etiqueta", default="", help="sufijo para los archivos de salida")
     args = ap.parse_args()
     cfg = cargar_config()
     salida = BASE / cfg["evaluacion"]["resultados"]
@@ -54,7 +63,7 @@ def main():
     print(f"DEFENSA 1 — umbral {umbral} (sin IA, costo 0): {r1}")
     resultado = {"umbral": umbral, "defensa1_sin_ia": r1}
 
-    pasan = [f for f in filas if not f["abst_umbral"]]
+    pasan = filas if args.sin_umbral else [f for f in filas if not f["abst_umbral"]]
     if args.estimar:
         import tiktoken
         enc = tiktoken.get_encoding("o200k_base")
@@ -77,11 +86,11 @@ def main():
     if args.con_ia:
         costo_total = 0.0
         for f in filas:
-            r = motor.responder(f["pregunta"])  # el motor vuelve a aplicar la defensa 1 por sí mismo
+            r = motor.responder(f["pregunta"], aplicar_umbral=not args.sin_umbral)
             costo_total += r.costo_usd
             citadas = {(x.documento, x.pagina) for x in r.fuentes if x.citada}
             validas = paginas_validas(f["_p"]["paginas_esperadas"])
-            f.update(abst_final=r.abstuvo, motivo=r.motivo_abstencion or "", error=r.error or "",
+            f.update(parcial=r.respuesta_parcial, abst_llm=(r.motivo_abstencion in ("fuera_de_corpus", "sin_citas")), abst_final=r.abstuvo, motivo=r.motivo_abstencion or "", error=r.error or "",
                      cita_correcta=(bool(citadas & validas) if (f["tipo"] == "dentro" and not r.abstuvo and not r.error) else ""),
                      respuesta=r.respuesta or "", explicacion_limite=r.explicacion_limite,
                      notas_version=" | ".join(r.notas_version), citas=" ".join(f"{d}:p{pg}" for d, pg in sorted(citadas)),
@@ -97,7 +106,8 @@ def main():
         resultado["final_con_ia"] = r2
 
     campos = [k for k in filas[0] if not k.startswith("_")]
-    nombre = "evaluacion_motor_con_ia" if args.con_ia else "evaluacion_motor_sin_ia"
+    nombre = ("evaluacion_motor_con_ia" if args.con_ia else "evaluacion_motor_sin_ia") + \
+        ("_sin_umbral" if args.sin_umbral else "") + (f"_{args.etiqueta}" if args.etiqueta else "")
     with open(salida / f"{nombre}.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=campos, extrasaction="ignore")
         w.writeheader()

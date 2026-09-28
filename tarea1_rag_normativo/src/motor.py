@@ -60,6 +60,8 @@ class ResultadoRAG:
     abstuvo: bool = False
     motivo_abstencion: str | None = None      # "umbral" | "fuera_de_corpus" | "sin_citas" | None
     explicacion_limite: str = ""
+    # True = respondió, pero declaró que falta parte (explicacion_limite no vacía). NO es abstención.
+    respuesta_parcial: bool = False
     fuentes: list[Fuente] = field(default_factory=list)
     similitud_max: float | None = None
     umbral: float | None = None
@@ -149,7 +151,8 @@ class Motor:
         return list(dict.fromkeys(notas))
 
     # ---------- función principal ----------
-    def responder(self, pregunta: str) -> ResultadoRAG:
+    def responder(self, pregunta: str, aplicar_umbral: bool = True) -> ResultadoRAG:
+        """aplicar_umbral=False solo lo usa la evaluación diagnóstica (eval/evaluar_motor.py --sin-umbral)."""
         m = self.cfg["mensajes"]
         umbral = self.cfg["motor"]["umbral_similitud"]
         r = ResultadoRAG(pregunta=pregunta, umbral=umbral)
@@ -167,7 +170,7 @@ class Motor:
         r.similitud_max = r.fuentes[0].similitud if r.fuentes else 0.0
 
         # DEFENSA 1: decidir ANTES de llamar al LLM
-        if r.similitud_max < umbral:
+        if aplicar_umbral and r.similitud_max < umbral:
             r.abstuvo, r.motivo_abstencion, r.respuesta = True, "umbral", m["abstencion_umbral"]
             return r
 
@@ -205,10 +208,13 @@ class Motor:
             return r
 
         r.respuesta = self._poner_citas(datos.get("respuesta", ""), r.fuentes)
+        if r.explicacion_limite:  # respuesta parcial: se informa qué parte no está en el corpus
+            r.explicacion_limite = self._poner_citas(r.explicacion_limite, r.fuentes)
         if not any(f.citada for f in r.fuentes):
             # Toda respuesta debe citar: sin citas no se muestra
             r.abstuvo, r.motivo_abstencion, r.respuesta = True, "sin_citas", m["abstencion_sin_citas"]
             return r
+        r.respuesta_parcial = bool(r.explicacion_limite.strip())
         r.notas_version = self._notas_version(r.fuentes)
         return r
 

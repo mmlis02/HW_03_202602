@@ -152,6 +152,8 @@ evaluacion:
   k_valores: [1, 3, 5]
   resultados: eval/resultados
   barrido: {desde: 0.74, hasta: 0.90, paso: 0.005}
+  # Umbrales candidatos que se comparan con ambas abstenciones (eval/opciones_umbral.py)
+  opciones_umbral: [0.78, 0.80, 0.82, 0.83, 0.84]
 
 # ---------------------------------------------------------------------------
 # Fase 3: motor RAG
@@ -197,13 +199,18 @@ prompts:
     Eres un asistente que explica normas de contratación pública del Perú a dueños de micro y
     pequeñas empresas (MYPE). Respondes SOLO con lo que dicen los FRAGMENTOS que se te entregan.
     Reglas obligatorias:
-    1. No uses conocimiento propio ni información que no esté en los fragmentos. Si los fragmentos
-       no contienen la respuesta, marca "fuera_de_corpus": true. No adivines ni completes con lo
-       que "suele" decir la norma.
-    2. Cuidado con los fragmentos que solo MENCIONAN un tema sin resolverlo: si la ley dice que algo
-       "lo establece el reglamento" o cita un numeral del Reglamento sin reproducir su contenido, eso
-       NO es la respuesta: marca "fuera_de_corpus": true y explica en "explicacion_limite" qué dice el
-       corpus y qué parte falta (por ejemplo, que el Reglamento completo no está indexado).
+    1. No uses conocimiento propio ni información que no esté en los fragmentos. No adivines ni
+       completes con lo que "suele" decir la norma.
+    2. Decide "fuera_de_corpus" así:
+       - true: los fragmentos NO contienen el dato central que se pregunta (la cifra, el plazo, la
+         fórmula, el requisito o la regla concreta) y solo mencionan el tema, o remiten al Reglamento
+         u otra norma para ese dato. Un numeral del Reglamento citado sin su contenido NO es la
+         respuesta. Explica en "explicacion_limite" qué dice el corpus y qué falta.
+       - false: los fragmentos responden la pregunta, aunque sea en parte. Responde con lo que sí dicen
+         y, si falta algún detalle (por ejemplo, requisitos o condiciones que desarrolla el Reglamento),
+         dilo en "explicacion_limite". No te abstengas solo porque falten detalles secundarios.
+       Las preguntas pueden venir en lenguaje cotidiano: relaciónalas con los términos legales
+       equivalentes antes de decidir.
     3. Cada afirmación de "respuesta" debe llevar su cita con el número de fragmento entre corchetes,
        por ejemplo [F2]. No escribas números de página: el sistema los pone a partir del fragmento.
     4. Versiones: si un fragmento dice "[Texto vigente — ... modificado por X, publicada el F]", usa ese

@@ -327,6 +327,20 @@ python scripts/probar_motor_sin_costo.py   # prueba todos los caminos del motor 
 
 **Hallazgo:** 3 preguntas del Reglamento (F06, F02, F03) tienen **más similitud que preguntas legítimas**. El texto que recuperan es real y del mismo tema: el D.S. cita "el plazo previsto en el numeral 90.1" y habla de penalidades y conformidad, pero sin la respuesta. **Ningún umbral puede detenerlas sin detener también preguntas legítimas.** El umbral detiene lo claramente ajeno gratis y sin IA; lo cercano queda para la defensa 2.
 
+### Qué cuenta como acierto (regla fijada ANTES de la corrida con prompt v2)
+
+Esta regla se escribió y se subió al repositorio **antes** de ejecutar la corrida con el prompt v2, para no acomodarla a los resultados. Se puede comprobar con la fecha del commit.
+
+1. **Solo cuenta el campo estructurado `abstuvo`.** Nunca se interpreta el texto de la respuesta.
+2. **Pregunta fuera del corpus:** es **abstención correcta** solo si `abstuvo = True`, por umbral (`motivo_abstencion = "umbral"`) o por la IA (`"fuera_de_corpus"` o `"sin_citas"`).
+   - Si el sistema devuelve una **respuesta parcial** (`abstuvo = False`, `respuesta_parcial = True`), cuenta como **FALLO**, **aunque** su `explicacion_limite` diga que el dato central falta y está en el Reglamento.
+   - Motivo: la interfaz muestra eso como una respuesta, y quien lee solo la primera línea se lleva información que no responde su pregunta. El prompt exige `fuera_de_corpus = true` cuando falta el dato central, así que una respuesta parcial en ese caso es un error del modelo, no un matiz.
+3. **Pregunta dentro del corpus:** `abstuvo = True` es **abstención incorrecta**. Una respuesta parcial cuenta como **respondida**; si es buena o no se mide aparte con el acierto de cita.
+4. **Acierto de cita** (solo preguntas dentro del corpus respondidas): al menos una de las páginas citadas está entre las páginas esperadas de la pregunta.
+5. **Errores de API:** se reportan aparte y no cuentan como abstención.
+
+El campo `respuesta_parcial` (booleano) del resultado del motor es `True` cuando el sistema respondió y además declaró en `explicacion_limite` qué parte no está en el corpus.
+
 ### Calibración del umbral (barrido)
 
 ![Barrido del umbral](tarea1_rag_normativo/eval/resultados/barrido_umbral_e5small_c500_s150.png)

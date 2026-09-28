@@ -1,0 +1,20 @@
+fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia_s,costo_usd,franja,exito,error,pregunta
+2026-09-28T04:03:46+00:00,gpt-6-luna,1182,0,91,7.479,0.00016370,00:00-24:00,True,,¿Procede una medida cautelar para paralizar la ejecución de una obra de infraestructura hidráulica?
+2026-09-28T04:04:28+00:00,gpt-6-luna,1102,0,105,3.872,0.00016270,00:00-24:00,True,,"Recién formalicé mi negocio, ¿qué trámite tengo que hacer para poder venderle al Estado?"
+2026-09-28T04:04:32+00:00,gpt-6-luna,1130,0,91,2.27,0.00015850,00:00-24:00,True,,"Si una municipalidad quiere comprarme algo chiquito, de unos 3 mil soles, ¿igual tiene que hacer licitación?"
+2026-09-28T04:04:34+00:00,gpt-6-luna,1071,0,82,5.573,0.00014810,00:00-24:00,True,,"Ya entregué todo y me dieron el visto bueno, ¿cuánto se pueden demorar en pagarme?"
+2026-09-28T04:04:40+00:00,gpt-6-luna,1134,0,61,1.217,0.00014390,00:00-24:00,True,,"La entidad se está atrasando con mi pago, ¿puedo cobrarles algo extra por la demora?"
+2026-09-28T04:04:41+00:00,gpt-6-luna,1251,0,85,2.139,0.00016760,00:00-24:00,True,,"Perdí una licitación y creo que fue injusto. Si soy pequeña empresa, ¿cuánta plata tengo que dejar para reclamar?"
+2026-09-28T04:04:43+00:00,gpt-6-luna,1091,0,140,2.858,0.00017910,00:00-24:00,True,,¿El Estado me puede dar parte del pago por adelantado para comprar los materiales? ¿Cuánto como máximo?
+2026-09-28T04:04:46+00:00,gpt-6-luna,1148,0,78,1.412,0.00015380,00:00-24:00,True,,¿Pueden las micro y pequeñas empresas emitir facturas negociables al contratar con el Estado y por qué plazo máximo?
+2026-09-28T04:04:48+00:00,gpt-6-luna,1182,1179,95,1.51,0.00005959,00:00-24:00,True,,¿Procede una medida cautelar para paralizar la ejecución de una obra de infraestructura hidráulica?
+2026-09-28T04:04:49+00:00,gpt-6-luna,1257,0,160,2.302,0.00020570,00:00-24:00,True,,"¿Qué norma incorporó la infraestructura hidráulica entre las obras en que no proceden medidas cautelares, y con qué finalidad?"
+2026-09-28T04:04:52+00:00,gpt-6-luna,1148,0,72,1.208,0.00015080,00:00-24:00,True,,"Según la modificación del Reglamento, ¿quién revisa los requisitos de calificación en los procedimientos evaluados por jurados?"
+2026-09-28T04:04:53+00:00,gpt-6-luna,1117,0,97,2.337,0.00016020,00:00-24:00,True,,¿Cuál es el tope de penalidades en un contrato menor?
+2026-09-28T04:04:55+00:00,gpt-6-luna,1083,0,121,2.125,0.00016880,00:00-24:00,True,,¿Qué formación mínima se exige para certificarse como comprador público?
+2026-09-28T04:04:57+00:00,gpt-6-luna,1015,0,79,1.503,0.00014100,00:00-24:00,True,,¿Qué es la Pladicop?
+2026-09-28T04:04:59+00:00,gpt-6-luna,1062,0,176,2.208,0.00019420,00:00-24:00,True,,¿Cuándo se declara desierto un procedimiento de selección?
+2026-09-28T04:05:01+00:00,gpt-6-luna,1168,0,64,2.207,0.00014880,00:00-24:00,True,,¿Qué contracautela puede ofrecer una micro o pequeña empresa que solicita una medida cautelar?
+2026-09-28T04:05:04+00:00,gpt-6-luna,1175,0,65,1.546,0.00015000,00:00-24:00,True,,¿Cómo se calcula la penalidad diaria por mora en un contrato de bienes?
+2026-09-28T04:05:05+00:00,gpt-6-luna,1175,0,113,1.691,0.00017400,00:00-24:00,True,,"Ya entregué los productos, ¿cuántos días tienen para revisarlos y darme el ok?"
+2026-09-28T04:05:07+00:00,gpt-6-luna,1133,0,92,1.749,0.00015930,00:00-24:00,True,,"Me dieron la buena pro, ¿en cuántos días tengo que presentar los papeles para firmar el contrato?"
