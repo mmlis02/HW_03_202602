@@ -34,5 +34,19 @@
     "bytes": 8796971,
     "fecha_descarga": "2026-09-28T17:47:49",
     "segundos_descarga": 74.8
+  },
+  "ign_departamentos": {
+    "archivo": "DEPARTAMENTOS_LIMITES.zip",
+    "url": "https://www.datosabiertos.gob.pe/sites/default/files/DEPARTAMENTOS_LIMITES.zip",
+    "sha256_zip": "bcb056f4df23064f4ac8cd6adf99161c5715609a9b495d96d1fdd8e303ce58df",
+    "bytes": 4039979,
+    "fecha_descarga": "2026-09-28T17:59:35"
+  },
+  "ign_distritos": {
+    "archivo": "DISTRITOS_LIMITES.zip",
+    "url": "https://www.datosabiertos.gob.pe/sites/default/files/DISTRITOS_LIMITES.zip",
+    "sha256_zip": "6e305a08b5324f40095f9d77bcdcab3f313e890ca56dda1ff4813ad2564e1842",
+    "bytes": 18752137,
+    "fecha_descarga": "2026-09-28T18:02:15"
   }
 }

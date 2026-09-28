@@ -34,3 +34,57 @@ api:
   reintentos: 4                   # espera creciente: 2, 4, 8, 16 s
   cache: data/raw/api_cache       # una página = un archivo JSON (fuera de git)
   cache_horas: 24                 # una página cacheada más nueva que esto no se vuelve a pedir
+
+# Límites oficiales del IGN (Datos Abiertos). Misma fuente que el Issue 2 (repo HW_02_202602).
+# El portal responde HTTP 418 si la descarga no usa un User-Agent de navegador.
+ign:
+  carpeta: data/raw/ign
+  archivos:
+    departamentos: "https://www.datosabiertos.gob.pe/sites/default/files/DEPARTAMENTOS_LIMITES.zip"   # 25 registros: CODDEP, DEPARTAMEN
+    distritos: "https://www.datosabiertos.gob.pe/sites/default/files/DISTRITOS_LIMITES.zip"           # trae PROVINCIA y DEPARTAMEN
+
+# ---------------------------------------------------------------------------
+# Fase 2: validación y normalización territorial
+# ---------------------------------------------------------------------------
+validacion:
+  # Estados de ítem que indican que un proceso NO siguió (sirven para confirmar reconvocatorias)
+  # RETROTRAIDO_POR_RESOLUCION: el proceso volvió a una etapa anterior por resolución (nulidad parcial) y se re-registró.
+  estados_fallidos: [NULO, DESIERTO, CANCELADO, RETROTRAIDO_POR_RESOLUCION]
+  longitud_minima_descripcion: 15      # más corta = advertencia (no se descarta)
+  # Escrituras de provincia que difieren del IGN (se corrigen antes de buscar en la tabla oficial)
+  alias_provincias: {NAZCA: NASCA}
+  # Orden para ubicar a la entidad compradora en uno de los 25 departamentos
+  orden_ubicacion: [department, provincia_ign, distrito_ign_unico, misma_entidad]
+  categorias: {goods: Bienes, services: Servicios, works: Obras}
+  # Nombre para mostrar (con tildes); la clave es el nombre oficial del IGN (sin tildes)
+  departamentos_mostrar:
+    AMAZONAS: Amazonas
+    ANCASH: Áncash
+    APURIMAC: Apurímac
+    AREQUIPA: Arequipa
+    AYACUCHO: Ayacucho
+    CAJAMARCA: Cajamarca
+    CALLAO: Callao
+    CUSCO: Cusco
+    HUANCAVELICA: Huancavelica
+    HUANUCO: Huánuco
+    ICA: Ica
+    JUNIN: Junín
+    LA LIBERTAD: La Libertad
+    LAMBAYEQUE: Lambayeque
+    LIMA: Lima
+    LORETO: Loreto
+    MADRE DE DIOS: Madre de Dios
+    MOQUEGUA: Moquegua
+    PASCO: Pasco
+    PIURA: Piura
+    PUNO: Puno
+    SAN MARTIN: San Martín
+    TACNA: Tacna
+    TUMBES: Tumbes
+    UCAYALI: Ucayali
+
+mapa:
+  geojson: data/outputs/departamentos.geojson
+  tolerancia_simplificacion_grados: 0.01   # ~1 km: suficiente para un mapa de departamentos
+  decimales: 4

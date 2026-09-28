@@ -1,0 +1,361 @@
+{
+  "R1a_ocid_repetido": {
+    "casos": 0,
+    "accion": "ninguna (la deduplicación por ocid se hizo en la Fase 1)"
+  },
+  "R1b_tender_id_repetido": {
+    "casos": 4,
+    "grupos": 2,
+    "accion": "se conserva 1 por tender_id; 2 marcados incluir_en_analisis=False (no se borran)",
+    "ocid_excluidos": [
+      "ocds-dgv273-seacev3-1235535",
+      "ocds-dgv273-seacev3-2026-1019-1"
+    ]
+  },
+  "R1c_misma_nomenclatura_y_entidad": {
+    "casos": 2241,
+    "grupos": 1072,
+    "grupos_por_tipo": {
+      "A_reconvocatoria_confirmada": 647,
+      "C_reregistro_mismo_dia": 365,
+      "B_items_distintos_misma_nomenclatura": 44,
+      "D_indeterminado": 16
+    },
+    "versiones_anteriores": 1125,
+    "accion": "se CONSERVAN todas con advertencia; se marca tipo_repeticion y es_version_vigente (la más reciente del grupo)",
+    "ejemplos": {
+      "A_reconvocatoria_confirmada": [
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1200987",
+            "fecha": "2026-08-14",
+            "estados": "NULO",
+            "monto": 603426.19,
+            "vigente": false,
+            "descripcion": "EJECUCION DE LA OBRA:CREACIÓN DEL SERVICIO DE AGUA POTABLE RURAL Y CREACIÓN DEL "
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1244498",
+            "fecha": "2026-08-26",
+            "estados": "APELADO",
+            "monto": 603426.19,
+            "vigente": true,
+            "descripcion": "EJECUCION DE LA OBRA:CREACIÓN DEL SERVICIO DE AGUA POTABLE RURAL Y CREACIÓN DEL "
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1214519",
+            "fecha": "2026-06-03",
+            "estados": "NULO",
+            "monto": 243397.5,
+            "vigente": false,
+            "descripcion": "CONTRATACION DE CEMENTO PORTLAND TIPO HS CON ALTA RESISTENCIA A LOS SULFATOS PAR"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1223670",
+            "fecha": "2026-06-09",
+            "estados": "CONTRATADO",
+            "monto": 243397.5,
+            "vigente": true,
+            "descripcion": "CONTRATACION DE CEMENTO PORTLAND TIPO HS CON ALTA RESISTENCIA A LOS SULFATOS PAR"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1215692",
+            "fecha": "2026-06-05",
+            "estados": "CONTRATADO|RETROTRAIDO_POR_RESOLUCION",
+            "monto": 1975010.13,
+            "vigente": false,
+            "descripcion": "ADQUISICIÓN DE VÍVERES CON FICHA TECNICA PARA LA COCCIÓN DE ALIMENTOS DESTINADOS"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1242128",
+            "fecha": "2026-06-05",
+            "estados": "CONSENTIDO",
+            "monto": 1975010.13,
+            "vigente": true,
+            "descripcion": "ADQUISICIÓN DE VÍVERES CON FICHA TECNICA PARA LA COCCIÓN DE ALIMENTOS DESTINADOS"
+          }
+        ]
+      ],
+      "B_items_distintos_misma_nomenclatura": [
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1222632",
+            "fecha": "2026-06-05",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": true,
+            "descripcion": "\"Adquisición de motoniveladora y retroexcavadora\" en el marco de la IOARR \"ADQUI"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1228906",
+            "fecha": "2026-06-05",
+            "estados": "CONTRATADO",
+            "monto": 526400.0,
+            "vigente": true,
+            "descripcion": "ADQUISICIÓN DE RETROEXCAVADORA PARA LA IOARR DENOMINADA \"ADQUISICION DE MOTONIVE"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1223445",
+            "fecha": "2026-06-09",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": true,
+            "descripcion": "UISICION DE AGUJA ESPINAL DESCARTABLE PARA EL DEPARTAMENTO DE FARMACIA DEL HOSPI"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1223493",
+            "fecha": "2026-06-09",
+            "estados": "DESIERTO",
+            "monto": 49980.0,
+            "vigente": true,
+            "descripcion": "ADQUISICION DE AGUJA ESPINAL DESCARTABLE PARA EL DEPARTAMENTO DE FARMACIA DEL HO"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1223450",
+            "fecha": "2026-06-09",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": true,
+            "descripcion": "SERVICIO DE MANTENIMIENTO PREVENTIVO MEDIANTE LA INSTALACION DE LUMINARIAS DEL A"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1223521",
+            "fecha": "2026-06-09",
+            "estados": "CONTRATADO",
+            "monto": 95000.0,
+            "vigente": true,
+            "descripcion": "SERVICIO DE MANTENIMIENTO CORRECTIVO PARA EL PISO DEL AREA DE OBSERVACION III DE"
+          }
+        ]
+      ],
+      "C_reregistro_mismo_dia": [
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1218760",
+            "fecha": "2026-08-18",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": false,
+            "descripcion": "ADQUISICIÓN DE MATERIAL, INSUMOS, INSTRUMENTAL Y ACCESORIOS MÉDICOS PARA LA ATEN"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1243247",
+            "fecha": "2026-08-18",
+            "estados": "CONSENTIDO",
+            "monto": 72545.45,
+            "vigente": true,
+            "descripcion": "ADQUISICIÓN DE MATERIAL, INSUMOS, INSTRUMENTAL Y ACCESORIOS MÉDICOS PARA LA ATEN"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1218919",
+            "fecha": "2026-06-02",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": false,
+            "descripcion": "\"CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTUR"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1225289",
+            "fecha": "2026-06-02",
+            "estados": "CONTRATADO",
+            "monto": 58250.0,
+            "vigente": true,
+            "descripcion": "\"CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTUR"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1220155",
+            "fecha": "2026-06-08",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": false,
+            "descripcion": "\"ADQUISICION DE REPUESTOS PARA SOSTENER LA FLOTA BELL 212/412 ANTARTIDA PP-0135\""
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1232053",
+            "fecha": "2026-06-08",
+            "estados": "CONTRATADO",
+            "monto": 307239.4,
+            "vigente": true,
+            "descripcion": "\"ADQUISICION DE REPUESTOS PARA SOSTENER LA FLOTA BELL 212/412 ANTARTIDA PP-0135\""
+          }
+        ]
+      ],
+      "D_indeterminado": [
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1223866",
+            "fecha": "2026-06-10",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": false,
+            "descripcion": "EJECUCION DE OBRA: MEJORAMIENTO DEL SERVICIO DE MOVILIDAD URBANA EN EL JIRON MAR"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1229907",
+            "fecha": "2026-07-01",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": true,
+            "descripcion": "EJECUCION DE OBRA: MEJORAMIENTO DEL SERVICIO DE MOVILIDAD URBANA EN EL JIRON MAR"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1223890",
+            "fecha": "2026-06-19",
+            "estados": "CONVOCADO",
+            "monto": 5727335.87,
+            "vigente": false,
+            "descripcion": "obra \"MEJORAMIENTO DEL SERVICIO DE SEGURIDAD CIUDADANA LOCAL EN LA CIUDAD DE TAY"
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1229271",
+            "fecha": "2026-06-27",
+            "estados": "CONTRATADO",
+            "monto": 5727335.87,
+            "vigente": true,
+            "descripcion": "obra \"MEJORAMIENTO DEL SERVICIO DE SEGURIDAD CIUDADANA LOCAL EN LA CIUDAD DE TAY"
+          }
+        ],
+        [
+          {
+            "ocid": "ocds-dgv273-seacev3-1224110",
+            "fecha": "2026-06-11",
+            "estados": "CONVOCADO",
+            "monto": 0.0,
+            "vigente": false,
+            "descripcion": "CONTRATACIÓN DEL SERVICIO DE DEFENSA LEGAL Y ASESORÍA A FAVOR DEL SEÑOR EDUARDO "
+          },
+          {
+            "ocid": "ocds-dgv273-seacev3-1229135",
+            "fecha": "2026-06-26",
+            "estados": "CONTRATADO",
+            "monto": 69000.0,
+            "vigente": true,
+            "descripcion": "CONTRATACIÓN DEL SERVICIO DE DEFENSA LEGAL Y ASESORÍA A FAVOR DEL SEÑOR EDUARDO "
+          }
+        ]
+      ]
+    }
+  },
+  "R2_monto_nulo_o_cero": {
+    "casos": 2167,
+    "nulos": 0,
+    "ceros": 2120,
+    "moneda_extranjera_sin_conversion": 47,
+    "recuperados_con_monto_adjudicado": 38,
+    "tasa_recuperacion": 0.0175,
+    "sin_recuperar": 2129,
+    "estados_mas_comunes_sin_recuperar": {
+      "CONVOCADO": 2068,
+      "CONTRATADO": 38,
+      "CONVOCADO|DESIERTO": 12
+    },
+    "accion": "corregido con el monto adjudicado cuando existe; el resto se conserva con advertencia (monto_valido=False)"
+  },
+  "R2c_amount_PEN_cero_con_monto_en_soles": {
+    "casos": 113,
+    "accion": "se usa el monto en soles de la convocatoria (amount_PEN = 0 es un error de publicación)"
+  },
+  "R2b_moneda_extranjera": {
+    "casos": 334,
+    "por_moneda": {
+      "USD": 303,
+      "EUR": 23,
+      "GBP": 8
+    },
+    "convertidos_con_amount_PEN_de_OECE": 271,
+    "sin_conversion_amount_PEN_cero": 63,
+    "accion": "monto_pen = amount_PEN publicado por OECE (conversión oficial)"
+  },
+  "R3_sin_descripcion": {
+    "casos": 0,
+    "recuperados_con_items": 0,
+    "descripcion_muy_corta": 4,
+    "ejemplos_cortas": [
+      "DIESEL B5 S50",
+      "QA ANALYST 2",
+      "ARROZ SUPERIOR",
+      "DIESEL B5 S50"
+    ],
+    "accion": "se recupera con la descripción de los ítems si existe; las muy cortas se conservan con advertencia"
+  },
+  "R4_codificacion_y_tildes": {
+    "descripciones_con_comillas_perdidas_como_signo_de_pregunta": 5564,
+    "descripciones_con_signo_de_pregunta_real_no_tocadas": 7,
+    "descripciones_con_mojibake": 2,
+    "descripciones_con_barra_n_literal": 347,
+    "ejemplo_comillas": [
+      "¿CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTURALES, COBE",
+      "\"CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTURALES, COBE"
+    ],
+    "nombres_de_entidad_con_espacios_dobles": 594,
+    "valores_que_solo_difieren_en_tildes_mayusculas_o_espacios": {
+      "comprador_departamento_raw": 0,
+      "comprador_region_raw": 0,
+      "comprador_nombre_limpio": 0
+    },
+    "provincias_con_tilde_o_enie": [
+      "CAÑETE",
+      "DATEM DEL MARAÑON",
+      "FERREÑAFE",
+      "MARAÑON"
+    ],
+    "accion": "comparaciones con clave sin tildes (JUNÍN = JUNIN); '¿' sin '?' -> comillas; se quita 'Â'; se normalizan espacios"
+  },
+  "R5_ubicacion_comprador": {
+    "campo_usado": "parties[rol=buyer].address.department (dirección de la entidad compradora)",
+    "department_no_es_departamento_valido": 0,
+    "region_contiene_provincia_no_departamento": 20476,
+    "region_no_encontrada_en_IGN_ni_con_alias": 0,
+    "alias_de_provincia_aplicado": 92,
+    "department_vs_provincia_IGN_inconsistentes": 0,
+    "ubicados_por_fuente": {
+      "department": 20476
+    },
+    "recuperados_por_respaldo": 0,
+    "tasa_recuperacion_de_los_no_validos": null,
+    "sin_ubicar": 0,
+    "tasa_ubicacion_final": 1.0,
+    "departamentos_distintos": 25,
+    "accion": "department válido -> se usa; si no: provincia (IGN, con alias) -> distrito único (IGN) -> misma entidad en otros procesos"
+  },
+  "R6_numero_de_postores": {
+    "casos_numberOfTenderers_faltante": 2750,
+    "de_ellos_con_adjudicacion": 3,
+    "accion": "se conserva; se trata en la Fase 5 (indicador de un solo postor)"
+  },
+  "resumen": {
+    "filas": 20476,
+    "incluidas_en_analisis": 20474,
+    "excluidas_con_motivo": 2,
+    "filas_con_alguna_advertencia": 3956
+  },
+  "novedades_api": {
+    "procesos": 5435,
+    "ubicados_por_misma_entidad": 5277,
+    "tasa_recuperacion_departamento": 0.9709,
+    "sin_ubicar": 158,
+    "motivo_sin_ubicar": "la búsqueda de la API no trae la dirección y la entidad no aparece en junio-agosto",
+    "uso": "tabla aparte 'novedades recientes'; NO entra al corpus ni a los indicadores"
+  },
+  "mapa": {
+    "geojson": "data/outputs/departamentos.geojson",
+    "bytes": 112278,
+    "departamentos": 25,
+    "departamentos_de_los_datos_que_no_estan_en_el_mapa": []
+  },
+  "fecha": "2026-09-28T18:09:15"
+}

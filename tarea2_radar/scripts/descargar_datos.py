@@ -110,6 +110,24 @@ def main():
                              "segundos_descarga": round(segundos, 1)}
         time.sleep(o["pausa_entre_pedidos_s"])
 
+    # --- Límites del IGN (no publican huella: se registra la nuestra en el manifiesto) ---
+    carpeta_ign = ruta(cfg, "raw").parent.parent / cfg["ign"]["carpeta"]
+    carpeta_ign.mkdir(parents=True, exist_ok=True)
+    for nombre, url in cfg["ign"]["archivos"].items():
+        destino = carpeta_ign / url.rsplit("/", 1)[1]
+        if destino.exists():
+            registrar(f"[ya existe] {destino.name} ({destino.stat().st_size / 1e6:.1f} MB)")
+            continue
+        t0 = time.time()
+        with pedir(url, stream=True) as r, open(destino.with_suffix(".zip.part"), "wb") as f:
+            for bloque in r.iter_content(1 << 20):
+                f.write(bloque)
+        destino.with_suffix(".zip.part").rename(destino)
+        registrar(f"   OK IGN {destino.name}: {destino.stat().st_size / 1e6:.1f} MB en {time.time() - t0:.1f} s")
+        manifiesto[f"ign_{nombre}"] = {"archivo": destino.name, "url": url, "sha256_zip": sha256(destino),
+                                       "bytes": destino.stat().st_size, "fecha_descarga": datetime.now().isoformat(timespec="seconds")}
+        time.sleep(o["pausa_entre_pedidos_s"])
+
     man_path.write_text(json.dumps(manifiesto, indent=2, ensure_ascii=False), encoding="utf-8")
     registrar(f"Resumen: {pedidos} pedidos HTTP, {time.time() - inicio_total:.1f} s en total")
 

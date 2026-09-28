@@ -277,3 +277,24 @@ Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes
 
 **Por qué**
 - Los archivos mensuales son la forma eficiente de bajar mucho de una vez. La API sirve para lo reciente, no para bajar todo: su lista general ni siquiera se puede ordenar por fecha.
+
+## Tarea 2 · Fase 2 — Revisar y ordenar los datos (validación)
+
+**Qué hice**
+- **Regla de oro: no borré ninguna fila.** Cada problema queda marcado, se corrige si se puede y se cuenta en el reporte de calidad. Si algo se excluye, queda escrito el porqué.
+- **Ubicación: uso la dirección de la entidad que compra (el Estado)**, no la de las empresas. Una empresa de Lima puede ganar una obra en Puno; lo que interesa es dónde compra el Estado.
+- **Hallazgo:** el campo "department" venía bien en el 100 % de los casos. El campo "region" en realidad traía **provincias** (Huari, Trujillo, La Convención…), justo la mezcla que avisa el enunciado.
+  - Para comprobarlo, convertí cada provincia a su departamento con la **tabla oficial del IGN** y comparé: coincidieron todas.
+  - Solo una provincia estaba escrita distinto: **NAZCA** en los datos, **NASCA** en el IGN. La corregí con un "alias".
+- **Las comparaciones ignoran tildes y mayúsculas** (JUNÍN = JUNIN = Junín).
+- **Hallazgo de codificación (bueno para el video):** en **5.564 descripciones** las comillas “ ” se habían convertido en "¿". Por ejemplo: `OBRA: ¿MEJORAMIENTO… CUSCO¿`. Las devolví a comillas, pero solo cuando no había un "?" (así no toco preguntas reales).
+- **Montos:**
+  - 2.120 procesos tenían monto 0, casi todos todavía "convocados". Solo pude recuperar 38 con el monto adjudicado; los demás se cuentan como procesos, pero no entran a las sumas de dinero.
+  - Los montos en dólares y euros se pasaron a soles con la conversión que publica OECE.
+- **Posibles reconvocatorias (1.072 grupos):** misma nomenclatura, misma entidad, distinto ocid. **No las borré.** Revisé la historia de cada grupo:
+  - **647 son reconvocatorias confirmadas:** la versión anterior quedó nula, desierta, cancelada o "retrotraída". Ejemplo: una obra de agua potable anulada el 14/08 y convocada de nuevo el 26/08, con el mismo monto.
+  - 365 son re-registros del mismo día, 44 parecen compras distintas con el mismo código y 16 no se pudieron clasificar.
+- **Septiembre (API)** va aparte, como "novedades recientes". Como la API no trae la dirección, ubiqué cada proceso buscando la misma entidad en junio–agosto: funcionó en el 97 %.
+- **El mapa:** pasé el mapa oficial del IGN (5,4 MB) a un archivo liviano de 0,11 MB, con los mismos nombres de departamento que uso en los datos.
+
+**Números para el video:** 20.476 procesos, **100 % ubicados** en los 25 departamentos, 0 filas borradas y 2 excluidas con motivo (el mismo proceso registrado dos veces).

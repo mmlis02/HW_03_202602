@@ -679,19 +679,19 @@ Cada ZIP de OECE es un **paquete de records**: por cada proceso, su `compiledRel
 
 ### Una fila por proceso: antes y después
 
+**288.548 releases (eventos) corresponden a 20.476 procesos (`ocid`).** OECE ya entrega **records**, uno por proceso con su `compiledRelease` consolidado. Por eso, al juntar los 3 meses y deduplicar por `ocid`, **no apareció ningún repetido**: la reducción de releases a procesos ya viene hecha en los archivos.
+
 | Paso | Filas |
 |---|---|
-| Releases listadas en los 3 archivos (versiones/eventos de los procesos) | 288.548 |
-| Records en los 3 archivos juntos (antes de deduplicar) | **20.476** |
+| Releases (eventos de los procesos) listadas en los 3 archivos | 288.548 |
+| Records (procesos) en los 3 archivos juntos, antes de deduplicar | **20.476** |
 | `ocid` que aparecen en más de un mes | **0** |
 | Duplicados dentro de un mismo mes | 0 |
 | **Filas finales (una por `ocid`)** | **20.476** |
 
-La deduplicación se hace **juntando los 3 meses**, no mes por mes. **Regla:** si un `ocid` aparece varias veces, se conserva la fila con el `compiledRelease` **más reciente** (`fecha_compilado`), porque el record consolidado más nuevo incluye todo lo anterior. Desempates: más releases y luego el mes de archivo más reciente. Cada fila guarda en qué meses apareció (`meses_en_que_aparece`).
-
-**Por qué no hubo repetidos entre meses:** OECE asigna cada proceso a **un solo mes**, el de la fecha de inicio de su convocatoria (campo `dataSegmentation`, criterio publicado en el portal). La reducción grande está en pasar de releases a records (288.548 → 20.476). La regla queda implementada por si en otros meses sí hay repetidos.
-
-**Posibles duplicados "disfrazados"** (se tratan en la Fase 2): hay 1.072 grupos con **la misma nomenclatura y la misma entidad pero distinto `ocid`** (reconvocatorias tras nulidad o desierto) y 4 `tender_id` repetidos.
+- La deduplicación se hace **juntando los 3 meses**, no mes por mes, porque un proceso podría aparecer en varios. No ocurrió porque OECE asigna cada proceso a **un solo mes**: el de la fecha de inicio de su convocatoria (campo `dataSegmentation`, criterio publicado en el portal).
+- **Regla** (queda implementada para otros meses): si un `ocid` aparece varias veces, se conserva la fila con el `compiledRelease` **más reciente** (`fecha_compilado`), porque el record consolidado más nuevo incluye todo lo anterior. Desempates: más releases y luego el mes de archivo más reciente. Cada fila guarda en qué meses apareció (`meses_en_que_aparece`).
+- Los repetidos "disfrazados" (mismo proceso con otro `ocid`) se tratan en la Fase 2.
 
 ### API: solo para novedades recientes
 
@@ -699,7 +699,75 @@ La deduplicación se hace **juntando los 3 meses**, no mes por mes. **Regla:** s
 - `/api/v1/search` **sí filtra** por año, mes y sistema. Se usa para el **mes en curso (septiembre 2026)**: **5.435 procesos en 55 páginas**, 55 pedidos, 15,9 MB, 88,9 s.
 - **Pausas y errores:** 1 s entre pedidos y hasta 4 reintentos con espera creciente (2, 4, 8, 16 s) ante errores de red, 429 o 5xx.
 - **Caché:** cada página se guarda en disco **apenas llega** (`data/raw/api_cache/`), así que un fallo no pierde lo ya bajado. `scripts/probar_api.py` lo demuestra: con una caída de red simulada tras 3 pedidos, el script se detiene con 48 de 55 páginas guardadas, y la corrida siguiente solo pide las 7 que faltan.
-- Las novedades quedan en una **tabla aparte** (`novedades_api.parquet`). El corpus del análisis son los 3 meses. La búsqueda de la API no trae la dirección de la entidad: si se usan, la ubicación se toma de la misma entidad en los archivos mensuales.
+- **Septiembre (API) NO entra al corpus ni a los indicadores principales.** Se guarda aparte como **"novedades recientes"** (`novedades_validadas.parquet`) y el tablero lo marca así. La búsqueda de la API no trae la dirección de la entidad; la ubicación se toma de la misma entidad en los archivos mensuales (ver Fase 2).
+
+## Tarea 2 — Fase 2: validación y normalización territorial
+
+```bash
+cd tarea2_radar
+python scripts/descargar_datos.py    # también baja los límites del IGN (departamentos y distritos)
+python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_calidad.md/.json, departamentos.geojson
+```
+
+**Principio:** ninguna fila se borra. Cada problema se **marca** con una columna. Si es recuperable, se **corrige** y se reporta la tasa de recuperación. Si no, se **conserva con advertencia** (columna `advertencias`) o se excluye del análisis con motivo (`incluir_en_analisis=False`, `motivo_exclusion`). El detalle completo está en [`reporte_calidad.md`](tarea2_radar/data/processed/reporte_calidad.md).
+
+### Reporte de calidad (cada regla: casos, acción, resultado)
+
+| Regla | Casos detectados | Qué se hizo | Resultado |
+|---|---|---|---|
+| R1a. Mismo ocid repetido | 0 | deduplicación por ocid en la Fase 1 | — |
+| R1b. Mismo tender_id con distinto ocid (proceso registrado dos veces) | 4 filas (2 procesos) | se conserva el de compiledRelease más reciente; la copia queda con `incluir_en_analisis=False` | 2 excluidos con motivo |
+| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente` | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
+| R2. Monto faltante o cero | 2,167 (monto nulo 0, monto 0: 2,120, moneda extranjera sin conversión a soles: 47) | se recupera con el monto adjudicado; el resto `monto_valido=False` (fuera de sumas de monto, dentro de conteos) | 38 recuperados (tasa 1.8%); 2,129 con advertencia |
+| R2c. amount_PEN = 0 con monto en soles > 0 | 113 | se usa el monto en soles de la convocatoria | corregidos |
+| R2b. Moneda extranjera | 334 (USD 303, EUR 23, GBP 8) | `monto_pen` = amount_PEN publicado por OECE | 271/334 convertidos; 63 con amount_PEN = 0 (cuentan en R2) |
+| R3. Sin descripción | 0 | se recupera con la descripción de ítems si existe | 0 recuperados; 4 descripciones muy cortas con advertencia |
+| R4. Codificación y tildes (JUNÍN vs JUNIN) | variantes por tildes/espacios: departamento 0, provincia 0, entidad 0; **5,564 descripciones con comillas “ ” perdidas y publicadas como '¿'**; 2 con mojibake ('Â'); 347 con '\n' escrito como texto; 594 nombres con espacios dobles | comparación con clave sin tildes/mayúsculas; '¿' sin '?' → comillas (7 con pregunta real no se tocan); se quita 'Â' y el '\n' literal; espacios normalizados | corregidos (ej.: `¿CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTURALES, COBE` → `"CONTRATACIÓN DEL SERVICIO DE MANTENIMIENTO CORRECTIVO DE ELEMENTOS NO ESTRUCTURALES, COBE`) |
+| R5a. `department` no es un departamento válido | 0 | respaldo: provincia → distrito → misma entidad | — |
+| R5b. Campo `region` con provincias (no departamentos) | 20,476 | no se usa como departamento; se valida contra el IGN | inconsistencias department vs provincia: 0 |
+| R5c. Provincia escrita distinto que en el IGN | 92 (NAZCA→NASCA) | alias documentado en config.yaml | corregidos |
+| R5d. Sin departamento al final | 0 | — | **tasa de ubicación 100.0%** (25 departamentos) |
+| R6. Número de postores faltante | 2,750 (3 con adjudicación) | se conserva; se trata en la Fase 5 | — |
+
+### Ubicación: qué campo se usa y cómo se normaliza
+
+- **Campo usado: la dirección de la entidad compradora** (`parties[]` con rol `buyer` → `address.department`), como pide el enunciado. Es la ubicación de quien compra, el Estado.
+  - Los postores y proveedores también tienen dirección, pero es la de la empresa (dónde está registrada), no la de la compra: una empresa de Lima puede ganar una obra en Puno.
+  - Los ítems no traen lugar de entrega en estos archivos.
+- **Qué trae cada campo de la dirección:**
+  - `department`: el departamento, y es **válido en el 100 %** de los procesos de este periodo (25 valores, sin tildes ni vacíos).
+  - `region`: **provincias**, no departamentos (195 valores: HUARI, TRUJILLO, LA CONVENCION…). Algunas se llaman igual que un departamento (LIMA, CUSCO, AREQUIPA), lo que las vuelve engañosas.
+  - `locality`: el distrito.
+- **Regla explícita** (en orden; `config.yaml > validacion.orden_ubicacion`):
+  1. `department`, si es uno de los 25 departamentos del IGN;
+  2. si no, la **provincia** convertida a departamento con la tabla oficial del IGN (196 provincias, ningún nombre repetido entre departamentos), con alias documentados (NAZCA → NASCA);
+  3. si no, el **distrito**, solo si su nombre existe en un único departamento (95 nombres se repiten y no se usan);
+  4. si no, el departamento de **la misma entidad** en otros procesos.
+- **Todas las comparaciones** usan una clave sin tildes, en mayúsculas y con espacios simples, así que JUNÍN, Junín y "JUNIN " son lo mismo.
+- **Validación cruzada:** la provincia de `region`, convertida con el IGN, coincide con el `department` declarado en **todos** los procesos (0 inconsistencias).
+- **Resultado:**
+  - **corpus (jun–ago):** 20.476 de 20.476 procesos ubicados (**100 %**) en los 25 departamentos; **0 sin ubicar**. Este periodo no necesitó los respaldos 2–4. Quedan implementados porque el enunciado anticipa que pueden hacer falta.
+  - **Novedades de septiembre (API):** la búsqueda no trae la dirección, así que se ubicaron por **la misma entidad** del corpus: 5,277 de 5,435 (**tasa de recuperación 97.1%**). Quedan 158 sin ubicar, porque esas entidades no compraron en junio–agosto.
+
+### Posibles reconvocatorias: cómo se detectaron y verificaron
+
+- **Detección:** grupos de procesos con **la misma nomenclatura y la misma entidad pero distinto `ocid`**. En total, 1.072 grupos con 2.241 procesos.
+- **Verificación:** se clasificó cada grupo según la historia de estados de sus ítems y las fechas de publicación. **Estado fallido** = NULO, DESIERTO, CANCELADO o RETROTRAÍDO_POR_RESOLUCIÓN (el proceso volvió a una etapa anterior por una resolución y se registró de nuevo).
+
+| Tipo | Grupos | Criterio | Ejemplo verificado |
+|---|---|---|---|
+| **A. Reconvocatoria confirmada** | **647** | una versión anterior quedó en estado fallido | obra de agua potable rural: NULO el 14/08 → nueva convocatoria el 26/08 (APELADO), mismo monto S/ 603.426,19; cemento portland: NULO el 03/06 → CONTRATADO el 09/06 |
+| **C. Re-registro del mismo día** | 365 | misma fecha y misma descripción, sin estado fallido previo | una copia CONVOCADO con monto 0 y otra CONSENTIDO con monto S/ 72.545,45 (insumos médicos, 18/08) |
+| **B. Misma nomenclatura, descripciones distintas** | 44 | misma fecha, descripción distinta | motoniveladora frente a retroexcavadora del mismo IOARR (compras distintas). **Limitación:** incluye casos del mismo proceso con la descripción cortada ("UISICION DE AGUJA…" frente a "ADQUISICION DE AGUJA…") |
+| **D. Indeterminado** | 16 | fechas distintas, sin estado fallido previo | — |
+
+**Qué se hizo:** **no se borra ninguno.** Todos quedan con la advertencia "posible reconvocatoria o re-registro", el `tipo_repeticion` y `es_version_vigente` (la versión más reciente del grupo; en B todas son vigentes). Los indicadores cuentan todos los `ocid`, porque cada uno es un proceso oficial. El tablero permite ver cuántos son versiones anteriores (1,125) para no sobreestimar montos.
+
+### Mapa
+
+[`data/outputs/departamentos.geojson`](tarea2_radar/data/outputs/departamentos.geojson) viene del shapefile oficial del IGN (DEPARTAMENTOS_LIMITES, 5,4 MB), simplificado con Ramer-Douglas-Peucker (tolerancia de 0,01°, unos 1 km) y 4 decimales. Pesa **0,11 MB**, tiene 25 departamentos y la propiedad `departamento` tiene **exactamente los mismos nombres** que la normalización. `nombre` guarda la versión con tildes para mostrar.
+
+**Fuente de los límites:** Instituto Geográfico Nacional (IGN), vía la Plataforma Nacional de Datos Abiertos (datosabiertos.gob.pe): `DEPARTAMENTOS_LIMITES.zip` y `DISTRITOS_LIMITES.zip` (atributos UBIGEO, DEPARTAMEN, PROVINCIA, DISTRITO; fuente INEI). Es la misma fuente declarada en el Issue 2. El portal responde HTTP 418 sin un User-Agent de navegador.
 
 ## Estructura
 

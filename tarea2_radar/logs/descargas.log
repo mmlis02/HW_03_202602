@@ -10,3 +10,9 @@
 2026-09-28T17:47:54 [ya existe, huella OK] 2026-07_seace_v3_json.zip (10.2 MB)
 2026-09-28T17:47:55 [ya existe, huella OK] 2026-08_seace_v3_json.zip (8.8 MB)
 2026-09-28T17:47:55 Resumen: 3 pedidos HTTP, 4.7 s en total
+2026-09-28T17:59:04 [ya existe, huella OK] 2026-06_seace_v3_json.zip (11.3 MB)
+2026-09-28T17:59:05 [ya existe, huella OK] 2026-07_seace_v3_json.zip (10.2 MB)
+2026-09-28T17:59:07 [ya existe, huella OK] 2026-08_seace_v3_json.zip (8.8 MB)
+2026-09-28T17:59:35    OK IGN DEPARTAMENTOS_LIMITES.zip: 4.0 MB en 28.4 s
+2026-09-28T18:02:15    OK IGN DISTRITOS_LIMITES.zip: 18.8 MB en 158.6 s
+2026-09-28T18:02:16 Resumen: 5 pedidos HTTP, 193.6 s en total
