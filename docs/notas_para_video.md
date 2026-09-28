@@ -42,3 +42,31 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 - Elegí la **actualizada** porque desde 2024 varias leyes cambiaron artículos. Con el texto original, el asistente podría responder algo que ya no rige, y para una MYPE eso es peor que no responder.
 - La del texto original queda en la tabla como prueba de que también la revisé.
 - Agregué el **D.Leg. 1715** como documento opcional. Es la norma que cambió un literal de la ley (agregó la "infraestructura hidráulica" a las obras que no se pueden paralizar con medidas cautelares). Sirve para mostrar en el video cómo el asistente explica qué norma cambió qué y cuándo.
+
+---
+
+## Tarea 1 · Fase 1 · Paso 2 — Limpiar el texto y medir su calidad
+
+**Qué hice**
+- **La página va pegada al texto desde el primer momento.** Leo cada PDF página por página, y cada pedazo de texto sale con su número de página. Nunca junto todo el documento en un solo texto.
+  - *Para el video:* si juntara todo y lo cortara después, tendría que adivinar de qué página viene cada pedazo contando letras. Al limpiar se borran letras (encabezados, notas), así que esa cuenta se descuadra y las citas saldrían con páginas equivocadas.
+- **Limpié el ruido con reglas escritas y contadas:**
+  - borré el encabezado de El Peruano en cada página (número, "NORMAS LEGALES", fecha);
+  - borré el sello de firma digital y el código de cierre de la norma;
+  - uní las líneas que el PDF cortaba por el ancho de la columna (a veces cortaba cada palabra en una línea);
+  - quité las "concordancias" del SPIJ.
+- **Resolví las versiones de la ley.** La versión actualizada trae el texto viejo y, al lado, la nota "(*) modificado por…" con el texto nuevo. Mi programa:
+  - borra el texto viejo para que el buscador **no pueda encontrarlo**;
+  - deja el texto nuevo con una etiqueta: "[Texto vigente — modificado por el D.Leg. 1715, publicada el 04 febrero 2026]".
+
+  Eran 20 notas: 12 modificaciones, 2 incorporaciones, 1 derogación, 4 avisos y 1 fe de erratas. Las 12 modificaciones se resolvieron todas.
+- Generé un **reporte de calidad** por documento (páginas, letras, páginas descartadas, reglas aplicadas y una muestra del medio del texto) y un archivo con **ejemplos de antes y después**.
+
+**Por qué**
+- Si el texto lleva basura (encabezados, otras normas), el buscador puede traer un pedazo que no dice nada útil, o que es de otra norma.
+- Si el texto viejo sigue en el índice, el asistente podría responder algo que **ya no rige**. Borrarlo antes de indexar es la forma más segura: lo que no está en el índice no se puede citar.
+
+**Números para decir en el video**
+- De 112.601 letras del PDF del D.S. 001-2026-EF, 6.272 eran de otra norma y se recortaron.
+- Ninguna página se descartó: todas tienen texto de su norma.
+- Ejemplo estrella para el video: el art. 85.1.e) antes (sin "infraestructura hidráulica") y después (con la etiqueta del D.Leg. 1715).

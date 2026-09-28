@@ -1,0 +1,205 @@
+[
+  {
+    "accion": "aviso de vigencia (se conserva)",
+    "pagina_nota": 1,
+    "detalle": "[Nota de vigencia] De conformidad con la Cuarta Disposición Complementaria Final del Decreto Supremo N° 278-2024-EF, pub"
+  },
+  {
+    "accion": "aviso de vigencia (se conserva)",
+    "pagina_nota": 1,
+    "detalle": "[Nota de vigencia] De conformidad con la Septuagésima Sexta Disposición Complementaria Final de la Ley Nº 32185, publica"
+  },
+  {
+    "accion": "aviso de vigencia (se conserva)",
+    "pagina_nota": 1,
+    "detalle": "[Nota de vigencia] De conformidad con el Numeral 14.2 del Artículo 14 de la Ley Nº 32185, publicada el 11 diciembre 2024"
+  },
+  {
+    "accion": "Literal modificado",
+    "norma": "la Sexta Disposición Complementaria Modificatoria de la Ley N° 32515",
+    "fecha": "04 diciembre 2025",
+    "pagina_nota": 6,
+    "paginas_texto_antiguo": [
+      6
+    ],
+    "etiqueta": "b)",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "b) Las contrataciones realizadas por los órganos del Servicio Exterior de la República fuera del territorio nacional, exclusivamente para su funcionamiento y gestión.(*)",
+    "texto_nuevo": "\"b) Las contrataciones realizadas por los órganos del Servicio Exterior de la República exclusivamente para su funcionamiento y gestión.”"
+  },
+  {
+    "accion": "Literal incorporado",
+    "norma": "la Décimo Primera Disposición Complementaria Modificatoria de la Ley N° 32515",
+    "fecha": "04 diciembre 2025",
+    "pagina_nota": 8,
+    "estado": "texto incorporado conservado"
+  },
+  {
+    "accion": "Literal modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 9,
+    "paginas_texto_antiguo": [
+      9
+    ],
+    "etiqueta": "d)",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "d) Administrar, diseñar, desarrollar, operar, integrar datos y evaluar el desempeño de la Pladicop, en el marco del principio de eficacia y eficiencia.(*)",
+    "texto_nuevo": "\"d)Administrar, diseñar, desarrollar, gestionar e integrar datos, y evaluar el desempeño de las herramientas digitales a su cargo, las cuales forman parte de la Pladicop.\""
+  },
+  {
+    "accion": "Literal modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 14,
+    "paginas_texto_antiguo": [
+      13
+    ],
+    "etiqueta": "b)",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "b) Diseñar, desarrollar, gestionar e integrar datos, y evaluar el desempeño de las herramientas digitales a su cargo, las cuales forman parte de la Pladicop.(*)",
+    "texto_nuevo": "\"b) Administrar, diseñar, desarrollar, gestionar e integrar datos, y evaluar el desempeño de las herramientas digitales a su cargo, las cuales forman parte de la Pladicop.\""
+  },
+  {
+    "accion": "Numeral modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 21,
+    "paginas_texto_antiguo": [
+      21
+    ],
+    "etiqueta": "41.1",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "41.1. Pertenece a los sistemas de información del Ministerio de Economía y Finanzas, e integra a toda plataforma que salvaguarde el acceso y disponibilidad de la información sobre contrataciones dentro del ámbito de la presente ley, regímenes especiales y contratos menores. El OECE define en el ámbi",
+    "texto_nuevo": "\"41.1 Es el conjunto de herramientas digitales que permiten la gestión e integración de la información sobre contrataciones dentro del ámbito del SNA.\""
+  },
+  {
+    "accion": "Numeral modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 21,
+    "paginas_texto_antiguo": [
+      21
+    ],
+    "etiqueta": "41.2",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "41.2. La Pladicop es un sistema a través del cual se gestionan las transacciones electrónicas, el intercambio de información y la difusión y transparencia de las contrataciones públicas. Las entidades contratantes registran de forma obligatoria la información correspondiente a todas las fases de los",
+    "texto_nuevo": "\"41.2 A través de las herramientas digitales que conforman la Pladicop se gestionan las transacciones electrónicas, el intercambio de información, y la difusión y transparencia de las contrataciones públicas. Las entidades contratantes están obligadas a registrar la información requerida sobre el pr"
+  },
+  {
+    "accion": "Numeral modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 22,
+    "paginas_texto_antiguo": [
+      21
+    ],
+    "etiqueta": "41.5",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "41.5. El OECE desarrolla y administra la Pladicop, en el marco de los principios y lineamientos del Sistema Nacional de Abastecimiento. Asimismo, es responsable de la mejora continua de la referida plataforma digital, así como de los mecanismos que garanticen su seguridad, interoperabilidad e integr",
+    "texto_nuevo": "\"41.5. Periódicamente, las entidades a cargo de las herramientas digitales que integran la Pladicop gestionan auditorías especializadas en ciberseguridad, bajo estándares internacionales.\""
+  },
+  {
+    "accion": "Numeral derogado",
+    "norma": "la Única Disposición Complementaria Derogatoria de la Ley N° 32103",
+    "fecha": "26 julio 2024",
+    "pagina_nota": 32,
+    "estado": "texto derogado eliminado del índice",
+    "texto_antiguo": "67.8. El reglamento establece las condiciones para la utilización del fideicomiso como forma de pago.(*)"
+  },
+  {
+    "accion": "Numeral modificado",
+    "norma": "la Décimo Sexta Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 36,
+    "paginas_texto_antiguo": [
+      36
+    ],
+    "etiqueta": "73.2",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "73.2. La garantía por interposición del recurso de apelación debe otorgarse a favor de la entidad contratante o del OECE, según corresponda. El monto de la garantía es de hasta el 0.5 % de la cuantía del procedimiento de selección o del ítem que se decida impugnar. En ningún caso la garantía es mayo",
+    "texto_nuevo": "\"73.2 La garantía por interposición del recurso de apelación debe otorgarse a favor de la entidad contratante o del OECE, según corresponda. El monto de la garantía es de hasta el 3% de la cuantía del procedimiento de selección o del ítem que se decida impugnar. En el caso de las micro y pequeñas em"
+  },
+  {
+    "accion": "Literal modificado",
+    "norma": "el Artículo 3 del Decreto Legislativo N° 1715",
+    "fecha": "04 febrero 2026",
+    "pagina_nota": 43,
+    "paginas_texto_antiguo": [
+      43
+    ],
+    "etiqueta": "e)",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "e) No proceden las medidas cautelares destinadas a impedir, paralizar o retrasar el inicio o continuidad de la ejecución de obras en salud, educación, infraestructura vial y saneamiento, y la gestión y conservación por niveles de servicio para el mantenimiento vial.(*)",
+    "texto_nuevo": "\"e) No proceden las medidas cautelares destinadas a impedir, paralizar o retrasar el inicio o continuidad de la ejecución de obras en salud, educación, infraestructura hidráulica, infraestructura vial y saneamiento, y la gestión y conservación por niveles de servicio para el mantenimiento vial.”"
+  },
+  {
+    "accion": "Numeral modificado",
+    "norma": "la Quinta Disposición Complementaria Modificatoria de la Ley N° 32732",
+    "fecha": "19 julio 2026",
+    "pagina_nota": 49,
+    "paginas_texto_antiguo": [
+      49
+    ],
+    "etiqueta": "1",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "1. La presente ley prevalece sobre las normas del procedimiento administrativo general, de derecho público y sobre aquellas de derecho privado que sean aplicables, salvo en el caso de los procedimientos administrativos sancionadores a cargo del Tribunal de Contrataciones Públicas, y de los procedimi",
+    "texto_nuevo": "\"1. La presente ley prevalece sobre las normas del procedimiento administrativo general, de derecho público y sobre aquellas de derecho privado que sean aplicables, lo que comprende también a la regulación de los procedimientos administrativos sancionadores a cargo del Tribunal de Contrataciones Púb"
+  },
+  {
+    "accion": "aviso de vigencia (se conserva)",
+    "pagina_nota": 50,
+    "detalle": "[Nota de vigencia] De conformidad con la Única Disposición Complementaria Transitoria de la Ley N° 32732, publicada el 1"
+  },
+  {
+    "accion": "Numeral incorporado",
+    "norma": "la Décima Primera Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 53,
+    "estado": "texto incorporado conservado"
+  },
+  {
+    "accion": "Disposición modificada",
+    "norma": "la Décima Primera Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 59,
+    "paginas_texto_antiguo": [
+      59
+    ],
+    "etiqueta": "VIGÉSIMA NOVENA",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "VIGÉSIMA NOVENA. Vigencia de la ley La presente norma entra en vigor a los noventa días calendario contados a partir del día siguiente a la publicación de su reglamento, excepto la décima tercera, décima sexta, décima novena y vigésima octava disposiciones complementarias finales, así como la única ",
+    "texto_nuevo": "\"VIGÉSIMA NOVENA. Vigencia de la ley La presente norma entra en vigor a los noventa días calendario contados a partir del día siguiente a la publicación de su reglamento, excepto los numerales 1 y 2 de la décima tercera, décima sexta, décima novena y vigésima octava disposiciones complementarias fin"
+  },
+  {
+    "accion": "Numeral 1 modificado",
+    "norma": "la Décima Segunda Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 60,
+    "paginas_texto_antiguo": [
+      60
+    ],
+    "etiqueta": "PRIMERA",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "PRIMERA. Integración de la información de las plataformas sobre contrataciones públicas 1. La Pladicop es parte de los sistemas de información que administra el Ministerio de Economía y Finanzas. La información del Sistema Electrónico de Contrataciones del Estado (SEACE), el RNP, la Plataforma para ",
+    "texto_nuevo": "\"PRIMERA. Integración de las herramientas digitales que conforman la Pladicop La información del Sistema Electrónico de Contrataciones del Estado (SEACE), el RNP, la herramienta digital para contratos menores y otros sistemas complementarios sobre contrataciones públicas forman parte de la Pladicop."
+  },
+  {
+    "accion": "Disposición modificada",
+    "norma": "la Décimo Séptima Disposición Complementaria Modificatoria de la Ley Nº 32187",
+    "fecha": "11 diciembre 2024",
+    "pagina_nota": 61,
+    "paginas_texto_antiguo": [
+      60
+    ],
+    "etiqueta": "TERCERA",
+    "estado": "texto antiguo eliminado del índice",
+    "texto_antiguo": "TERCERA. Vigencia de la designación de los vocales del Tribunal de Contrataciones Públicas 1. Los vocales del Tribunal de Contrataciones Públicas que a la entrada en vigor de la presente ley cuenten con designación vigente continúan en el ejercicio de sus funciones hasta completar el período para el",
+    "texto_nuevo": "“TERCERA. Implementación progresiva de las autoridades instructoras y vigencia de la designación de vocales en el Tribunal de Contrataciones Públicas\n1. En un plazo que no exceda el primer trimestre del año fiscal 2026, el OECE implementa las autoridades instructoras para los procedimientos administ"
+  },
+  {
+    "accion": "fe de erratas",
+    "pagina_nota": 63,
+    "detalle": "'vretirado' -> 'retirado'"
+  }
+]

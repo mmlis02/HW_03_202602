@@ -83,3 +83,20 @@ documentos:
     url_pdf: "https://cdn.www.gob.pe/uploads/document/file/8418795/6994512-ley_32069.pdf"
     url_ficha: "https://www.gob.pe/institucion/mef/normas-legales/6994512-32069"
     incluir: false
+
+# Reglas de limpieza (Fase 1). Cada regla se cuenta y se reporta en el reporte de calidad.
+limpieza:
+  # Encabezado de página de El Peruano: "34 / NORMAS LEGALES / Jueves 8 de enero de 2026 / El Peruano /"
+  encabezado_elperuano: '\A\s*(\d{1,3}\s*\n)?\s*NORMAS\s+LEGALES\s*\n[^\n]*\d{4}\s*\n\s*El Peruano\s*(/\s*)?\n(\s*/\s*\n)?'
+  # Sello de firma digital que El Peruano estampa en algunas páginas
+  sello_firma: 'Firmado por:\s*Editora Peru\s*\n\s*Fecha:\s*[\d/]+\s+[\d:]+\s*\n?'
+  # Código de publicación que cierra cada norma en El Peruano (ya usado para recortar)
+  codigo_publicacion: '^\s*\d{7}-\d+\s*$'
+  # Párrafos de concordancias del SPIJ (referencias a otras normas que no están en el corpus)
+  concordancias: '^CONCORDANCIAS:'
+  # Ligaduras tipográficas rotas: "Caliﬁ cación" -> "Calificación"
+  ligaduras: {"ﬁ": "fi", "ﬂ": "fl", "ﬀ": "ff", "ﬃ": "ffi", "ﬄ": "ffl"}
+  # Documentos que conservan texto antiguo + nota "(*) ... modificado por ..." (versión actualizada SPIJ/OECE)
+  documentos_con_notas_de_version: [ley32069]
+  # Cuántos párrafos hacia atrás se busca el inicio del texto antiguo de una nota de modificación
+  ventana_busqueda_texto_antiguo: 15
