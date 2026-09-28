@@ -14,13 +14,13 @@ D12,dentro,¿Qué formación mínima se exige para certificarse como comprador p
 D13,dentro,¿Qué es la Pladicop?,0.8568,False
 D14,dentro,¿Cuándo se declara desierto un procedimiento de selección?,0.9245,False
 D15,dentro,¿Qué contracautela puede ofrecer una micro o pequeña empresa que solicita una medida cautelar?,0.8794,False
-F01,fuera,¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto?,0.8393,True
+F01,fuera,¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto?,0.8393,False
 F02,fuera,¿Cómo se calcula la penalidad diaria por mora en un contrato de bienes?,0.8601,False
 F03,fuera,"Ya entregué los productos, ¿cuántos días tienen para revisarlos y darme el ok?",0.8575,False
-F04,fuera,¿Cómo saco mi RUC en la SUNAT para mi negocio?,0.8238,True
+F04,fuera,¿Cómo saco mi RUC en la SUNAT para mi negocio?,0.8238,False
 F05,fuera,¿Cómo se prepara un ceviche?,0.7922,True
 F06,fuera,"Me dieron la buena pro, ¿en cuántos días tengo que presentar los papeles para firmar el contrato?",0.8787,False
-F07,fuera,¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo?,0.8264,True
+F07,fuera,¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo?,0.8264,False
 F08,fuera,¿Cuál es la capital de Australia?,0.754,True
 F09,fuera,¿Cada cuántos kilómetros hay que cambiarle el aceite al carro?,0.7945,True
 F10,fuera,¿Qué equipo ganó la Copa América 2024?,0.7639,True

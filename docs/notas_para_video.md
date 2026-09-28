@@ -137,3 +137,33 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 **Qué mide cada tasa (para el video)**
 - **Abstención por umbral (sin IA):** 7/10 correctas, 0/15 incorrectas. Cuesta 0.
 - **Abstención final (con IA):** pendiente de la corrida autorizada.
+
+---
+
+## Tarea 1 · Fase 3 (cont.) — Primeras llamadas reales y ajuste del umbral
+
+**Qué hice**
+- **Regla antes de mirar.** Antes de correr la segunda prueba escribí en el README qué cuenta como acierto y lo subí a GitHub, así la fecha prueba que no la acomodé a los resultados:
+  - si la pregunta es de fuera del corpus y el sistema da una respuesta "a medias", cuenta como **error**, aunque aclare que falta el dato;
+  - solo cuenta el campo "abstuvo" (sí/no), no lo que dice el texto.
+- **Primera corrida real (prompt v1):**
+  - las 10 preguntas de fuera: 10 bien;
+  - pero se abstuvo en 4 legítimas. En 3 de ellas la IA tenía la página correcta y se negó a responder porque "faltaban detalles": mi instrucción era demasiado estricta.
+- **Corregí el prompt (v2):** abstenerse solo si falta el **dato central**; si la respuesta es parcial, responder y decir qué falta. Resultado: siguen 10/10 bien afuera y bajan a 2 las legítimas perdidas.
+  - **Advertencia honesta:** ajusté el prompt mirando estas mismas preguntas, así que la mejora puede estar inflada.
+- **Bajé el umbral de 0,840 a 0,800.**
+  - Con 0,840 había solo 0,005 de margen sobre la pregunta legítima más baja: en la demo en vivo, una pregunta dicha con otras palabras podía quedar bloqueada sin razón.
+  - Con 0,800 el margen es 9 veces mayor.
+  - Se siguen bloqueando gratis el ceviche y las otras preguntas absurdas.
+  - Lo que pasa, la IA lo atrapa: en la prueba atrapó las 6 que pasaron.
+
+**Ejemplos reales para mostrar en el video**
+- **Versión:** "¿Procede una medida cautelar para paralizar una obra de infraestructura hidráulica?" → "No… (Ley 32069 actualizada, pág. 43)", con la nota automática "Texto vigente: modificado por el D.Leg. 1715, publicada el 04 febrero 2026".
+- **Límite del corpus:** "¿En cuántos días presento los papeles para firmar el contrato?" → el sistema se abstiene y explica que el único plazo que encontró es para *después* de firmar, así que no responde la pregunta.
+- **Respuesta parcial:** "Recién formalicé mi negocio, ¿qué trámite…?" → "inscribirte en el RNP (pág. 17)" + "los requisitos específicos están en el Reglamento".
+
+**Limitaciones que debo mencionar**
+- **D02 ("3 mil soles") y D12:** el buscador no le entregó a la IA el pedazo correcto. En D12 la página sí llegó, pero no el párrafo exacto: medir "por página" es un poco optimista.
+- **D13 (Pladicop):** la IA no siempre elige el mejor fragmento para citar.
+
+**Costo real:** 44 llamadas, **US$0,0072 en total**. Una pregunta cuesta unos US$0,00017 (menos de un milésimo de sol). Lo sé porque cada llamada queda anotada en `logs/costos_llm.csv` con sus tokens y su precio.

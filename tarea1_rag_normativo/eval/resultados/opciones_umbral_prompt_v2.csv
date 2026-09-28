@@ -1,0 +1,6 @@
+umbral,margen_sobre_legitima_mas_baja,umbral_abst_correctas,umbral_abst_incorrectas,final_abst_correctas,final_abst_incorrectas,fuera_respondidas_por_error,dentro_perdidas,llamadas_llm_de_25,costo_eval_usd
+0.78,0.065,2/10,0/15,10/10,2/15,ninguna,D02 D12,23,0.003953
+0.8,0.045,4/10,0/15,10/10,2/15,ninguna,D02 D12,21,0.003663
+0.82,0.025,4/10,0/15,10/10,2/15,ninguna,D02 D12,21,0.003663
+0.83,0.015,6/10,0/15,10/10,2/15,ninguna,D02 D12,19,0.003326
+0.84,0.005,7/10,0/15,10/10,2/15,ninguna,D02 D12,18,0.003165

@@ -222,7 +222,7 @@ Ninguna diferencia individual es estadísticamente sólida. Por eso la decisión
 |---|---|---|
 | Recall@5 | el motor entrega 5 fragmentos al LLM: si la página correcta no está entre ellos, no hay buena respuesta | 0.93, empatada con la mejor (c1800) |
 | Recall@1 / MRR | la fuente más relevante sale primero, lo que se ve mejor en la interfaz y ayuda al LLM | 0.80 (empatada con la mejor) / **0.85 (la mejor)** |
-| Umbral en el punto de trabajo | con la regla del umbral (ver Fase 3), cuántas preguntas fuera detiene sin detener legítimas | **7/10** con 0 errores (c500 y c1800: 6/10) |
+| Umbral en el punto de trabajo | con la regla inicial del umbral ("justo bajo la legítima más baja"), cuántas preguntas fuera detiene sin detener legítimas; el umbral final se revisó en la Fase 3 | **7/10** con 0 errores (c500 y c1800: 6/10) |
 | AUC global | separación general dentro/fuera | 0.887, **la más baja**: el solapamiento sube el puntaje de las 3 trampas que ningún umbral puede detener igual (ver Fase 3); en el punto de trabajo sí detiene más |
 | Margen frente a 512 tokens | ningún fragmento se trunca | máx. 204 tokens (40 %) |
 | Precisión de la cita | fragmentos chicos = el usuario ve exactamente el párrafo que responde | ~440 chars por fragmento |
@@ -274,7 +274,9 @@ python preguntar.py "¿En cuántos días me tienen que pagar?"   # interfaz de l
 python eval/barrido_umbral.py              # barrido del umbral (sin IA, costo 0)
 python eval/evaluar_motor.py               # abstención por UMBRAL (sin IA, costo 0)
 python eval/evaluar_motor.py --estimar     # estima el costo de la corrida con IA
-python eval/evaluar_motor.py --con-ia      # abstención FINAL (con IA) — cuesta dinero
+python eval/evaluar_motor.py --con-ia      # abstención FINAL (con IA) con el umbral de config.yaml — cuesta dinero
+python eval/evaluar_motor.py --con-ia --sin-umbral --etiqueta prompt_v2   # diagnóstico: el LLM ve las 25 — cuesta dinero
+python eval/opciones_umbral.py --etiqueta prompt_v2   # compara umbrales con AMBAS abstenciones (sin nuevas llamadas)
 python scripts/probar_motor_sin_costo.py   # prueba todos los caminos del motor con un LLM falso
 ```
 
@@ -282,7 +284,7 @@ python scripts/probar_motor_sin_costo.py   # prueba todos los caminos del motor 
 
 - **Offline** (`build_index.py`): PDF → texto por página → limpieza → fragmentos → embeddings → ChromaDB. Se corre una vez.
 - **Online** (`src/motor.py`): una sola función `responder(pregunta) -> dict`. La app Streamlit (Fase 5) y `preguntar.py` **solo llaman a esa función**. El motor abre el índice en modo lectura (`get_collection`: si no existe, falla en vez de reconstruirlo) y **nunca lee los PDFs**.
-- **Resultado estructurado:** `respuesta`, `abstuvo` (booleano), `motivo_abstencion` (`umbral` / `fuera_de_corpus` / `sin_citas`), `explicacion_limite`, `fuentes` (documento, título, página, similitud, artículo, `modificado_por`, texto, `citada`), `similitud_max`, `umbral`, `notas_version`, `llamo_llm`, `modelo`, `tokens_entrada`, `tokens_salida`, `costo_usd`, `latencia_s` y **`error`**.
+- **Resultado estructurado:** `respuesta`, `abstuvo` (booleano), `motivo_abstencion` (`umbral` / `fuera_de_corpus` / `sin_citas`), `explicacion_limite`, `respuesta_parcial` (booleano), `fuentes` (documento, título, página, similitud, artículo, `modificado_por`, texto, `citada`), `similitud_max`, `umbral`, `notas_version`, `llamo_llm`, `modelo`, `tokens_entrada`, `tokens_salida`, `costo_usd`, `latencia_s` y **`error`**.
 - **El motor no conoce interfaces.** Verificación:
   ```bash
   grep -nE "^\s*(import|from)\s+(streamlit|telegram|gradio|flask|tkinter)" tarea1_rag_normativo/src/*.py || echo "OK: ninguna librería de interfaz en src/"
@@ -291,13 +293,13 @@ python scripts/probar_motor_sin_costo.py   # prueba todos los caminos del motor 
 
 ### Dos defensas contra responder mal
 
-**Defensa 1: umbral, SIN IA (costo 0).** Si la similitud del mejor fragmento es menor que `umbral_similitud`, el motor se abstiene **antes** de llamar al LLM.
+**Defensa 1: umbral, SIN IA (costo 0).** Si la similitud del mejor fragmento es menor que `umbral_similitud` (**0.800**), el motor se abstiene **antes** de llamar al LLM.
 
-**Defensa 2: el LLM, con esquema JSON estricto.** El LLM devuelve `{"fuera_de_corpus": bool, "respuesta": str, "explicacion_limite": str}`. El prompt le prohíbe usar conocimiento propio y le exige marcar `fuera_de_corpus` cuando los fragmentos solo **mencionan** el tema sin resolverlo, por ejemplo "en porcentaje mayor al permitido por el reglamento". La abstención es un **campo booleano del resultado**, nunca se deduce comparando el texto.
+**Defensa 2: el LLM, con esquema JSON estricto.** El LLM devuelve `{"fuera_de_corpus": bool, "respuesta": str, "explicacion_limite": str}`. El prompt le prohíbe usar conocimiento propio y le exige marcar `fuera_de_corpus` cuando los fragmentos **no contienen el dato central** que se pregunta, aunque mencionen el tema, como "en porcentaje mayor al permitido por el reglamento". Si responde solo en parte, debe declarar lo que falta en `explicacion_limite`. La abstención es un **campo booleano del resultado**, nunca se deduce comparando el texto.
 
-**Por qué hacen falta las dos.** Tabla de similitud top-1 de las 25 preguntas ([`puntajes_top1_e5small_c500_s150.md`](tarea1_rag_normativo/eval/resultados/puntajes_top1_e5small_c500_s150.md)):
+**Por qué hacen falta las dos.** Similitud top-1 de las 25 preguntas ([`puntajes_top1_e5small_c500_s150.md`](tarea1_rag_normativo/eval/resultados/puntajes_top1_e5small_c500_s150.md)):
 
-| # | id | Tipo | Similitud top-1 | Pregunta | Defensa 1 (umbral 0.840) |
+| # | id | Tipo | Similitud top-1 | Pregunta | Defensa 1 (umbral 0.800) |
 |---|---|---|---|---|---|
 | 1 | D14 | dentro | 0.9245 | ¿Cuándo se declara desierto un procedimiento de selección? | pasa ✅ |
 | 2 | D07 | dentro | 0.9043 | ¿Pueden las micro y pequeñas empresas emitir facturas negociables al contratar con el Estado y por qué plazo máximo? | pasa ✅ |
@@ -317,15 +319,15 @@ python scripts/probar_motor_sin_costo.py   # prueba todos los caminos del motor 
 | 16 | D13 | dentro | 0.8568 | ¿Qué es la Pladicop? | pasa ✅ |
 | 17 | D04 | dentro | 0.8562 | La entidad se está atrasando con mi pago, ¿puedo cobrarles algo extra por la demora? | pasa ✅ |
 | 18 | D01 | dentro | 0.8450 | Recién formalicé mi negocio, ¿qué trámite tengo que hacer para poder venderle al Estado? | pasa ✅ |
-| 19 | F01 | fuera | 0.8393 | ¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto? | detenida ✅ |
-| 20 | F07 | fuera | 0.8264 | ¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo? | detenida ✅ |
-| 21 | F04 | fuera | 0.8238 | ¿Cómo saco mi RUC en la SUNAT para mi negocio? | detenida ✅ |
+| 19 | F01 | fuera | 0.8393 | ¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto? | **pasa → defensa 2 (IA)** |
+| 20 | F07 | fuera | 0.8264 | ¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo? | **pasa → defensa 2 (IA)** |
+| 21 | F04 | fuera | 0.8238 | ¿Cómo saco mi RUC en la SUNAT para mi negocio? | **pasa → defensa 2 (IA)** |
 | 22 | F09 | fuera | 0.7945 | ¿Cada cuántos kilómetros hay que cambiarle el aceite al carro? | detenida ✅ |
 | 23 | F05 | fuera | 0.7922 | ¿Cómo se prepara un ceviche? | detenida ✅ |
 | 24 | F10 | fuera | 0.7639 | ¿Qué equipo ganó la Copa América 2024? | detenida ✅ |
 | 25 | F08 | fuera | 0.7540 | ¿Cuál es la capital de Australia? | detenida ✅ |
 
-**Hallazgo:** 3 preguntas del Reglamento (F06, F02, F03) tienen **más similitud que preguntas legítimas**. El texto que recuperan es real y del mismo tema: el D.S. cita "el plazo previsto en el numeral 90.1" y habla de penalidades y conformidad, pero sin la respuesta. **Ningún umbral puede detenerlas sin detener también preguntas legítimas.** El umbral detiene lo claramente ajeno gratis y sin IA; lo cercano queda para la defensa 2.
+**Hallazgo:** 3 preguntas del Reglamento (F06, F02, F03) tienen **más similitud que preguntas legítimas**; por ejemplo, F06 = 0.8787 frente a D01 = 0.8450. El texto que recuperan es real y del mismo tema: el D.S. cita "el plazo previsto en el numeral 90.1" y habla de penalidades y conformidad, pero sin la respuesta. **Ningún umbral puede detenerlas sin detener también preguntas legítimas.** El umbral detiene gratis lo claramente ajeno; lo cercano lo detiene la defensa 2.
 
 ### Qué cuenta como acierto (regla fijada ANTES de la corrida con prompt v2)
 
@@ -341,46 +343,104 @@ Esta regla se escribió y se subió al repositorio **antes** de ejecutar la corr
 
 El campo `respuesta_parcial` (booleano) del resultado del motor es `True` cuando el sistema respondió y además declaró en `explicacion_limite` qué parte no está en el corpus.
 
-### Calibración del umbral (barrido)
+### Resultados con IA: prompt v1 frente a prompt v2
+
+| | Prompt v1 (umbral 0.840) | Prompt v2 (umbral 0.840)* | **Prompt v2 (umbral 0.800) ✅** |
+|---|---|---|---|
+| Abstención por umbral (sin IA): correctas / incorrectas | 7/10 / 0/15 | 7/10 / 0/15 | **4/10 / 0/15** |
+| **Abstención final (con IA): correctas / incorrectas** | 10/10 / **4/15** (D01, D02, D06, D12) | 10/10 / **2/15** (D02, D12) | **10/10 / 2/15** (D02, D12) |
+| Acierto de cita (respondidas dentro del corpus) | 10/11 (D13 citó la pág. 60, no la 21) | 13/13 | 13/13 |
+| Respuestas parciales (`respuesta_parcial = True`) | — (campo aún no existía) | 10 de 13 respondidas | 10 de 13 respondidas |
+| Preguntas fuera respondidas por error | ninguna | ninguna | ninguna |
+| Llamadas al LLM en la evaluación | 18 | 18 | 21 |
+| Errores de API | 0 | 0 | 0 |
+
+\* Las columnas de v2 se obtienen de **una sola corrida diagnóstica** en la que el LLM vio las 25 preguntas (25 llamadas, US$0.0042). Para cada umbral, la abstención final es "similitud < umbral **o** el LLM se abstuvo". El LLM no es determinista, así que una nueva corrida podría variar en algún caso.
+
+**Qué cambió de v1 a v2.** En v1, D01, D06 y D12 tenían la **página** correcta en primer lugar y aun así el LLM se abstuvo: la regla del prompt ("abstente si solo menciona el tema") era tan amplia que lo hacía abstenerse por cualquier detalle faltante. v2 distingue entre "falta el **dato central**" (abstenerse) y "faltan detalles secundarios" (responder y declarar el límite). Resultado: se recuperaron D01 y D06 sin dejar pasar ninguna trampa.
+
+> ⚠️ **Posible sobreajuste.** El prompt v2 se ajustó **mirando los fallos de estas mismas 25 preguntas de evaluación**. Por eso la mejora de 4/15 a 2/15 abstenciones incorrectas es optimista: no hay un conjunto de prueba separado que la confirme. Una evaluación honesta necesitaría preguntas nuevas, redactadas sin ver los resultados. Queda como trabajo futuro.
+
+### Calibración del umbral: barrido y opciones con ambas abstenciones
 
 ![Barrido del umbral](tarea1_rag_normativo/eval/resultados/barrido_umbral_e5small_c500_s150.png)
 
-| Umbral | Fuera detenidas (bien) | Dentro detenidas (mal) | Fuera que pasan al LLM |
-|---|---|---|---|
-| 0.780 | 2/10 | 0/15 | 8 |
-| 0.820 | 4/10 | 0/15 | 6 |
-| **0.840 ✅** | 7/10 | 0/15 | 3 |
-| 0.845 | 7/10 | 0/15 | 3 |
-| 0.850 | 7/10 | 1/15 | 3 |
-| 0.860 | 8/10 | 5/15 | 2 |
-| 0.880 | 10/10 | 10/15 | 0 |
+Umbrales candidatos con el prompt v2 ([`opciones_umbral_prompt_v2.md`](tarea1_rag_normativo/eval/resultados/opciones_umbral_prompt_v2.md)):
 
-(Tabla completa cada 0.005 en `eval/resultados/barrido_umbral_e5small_c500_s150.csv`.)
+| Umbral | Margen sobre la legítima más baja | Umbral (sin IA): correctas / incorrectas | Final (con IA): correctas / incorrectas | Fuera respondidas por error | Dentro perdidas | Llamadas al LLM (de 25) |
+|---|---|---|---|---|---|---|
+| 0.78 | +0.0650 | 2/10 / 0/15 | 10/10 / 2/15 | ninguna | D02 D12 | 23 |
+| **0.80 ✅** | +0.0450 | 4/10 / 0/15 | 10/10 / 2/15 | ninguna | D02 D12 | 21 |
+| 0.82 | +0.0250 | 4/10 / 0/15 | 10/10 / 2/15 | ninguna | D02 D12 | 21 |
+| 0.83 | +0.0150 | 6/10 / 0/15 | 10/10 / 2/15 | ninguna | D02 D12 | 19 |
+| 0.84 | +0.0050 | 7/10 / 0/15 | 10/10 / 2/15 | ninguna | D02 D12 | 18 |
 
-**Regla de elección:** el umbral más alto que no detiene ninguna pregunta legítima del set (0.845 todavía no detiene ninguna, porque D01 = 0.8450), con un margen de 0.005 → **0.840**. En 0.850 ya se pierde D01.
+**Decisión: 0.800** (antes era 0.840). Con el prompt v2 **todas las opciones dan la misma abstención final** (10/10 correctas, 2/15 incorrectas), porque el LLM detiene todo lo que el umbral deja pasar. Lo que cambia entre opciones es:
 
-**Trade-off entre responder mal y no responder:**
-- Subir el umbral a 0.86 detendría una trampa más, pero también 5 de 15 preguntas legítimas: el sistema se volvería inútil para quien más lo necesita.
-- Bajarlo a 0.78, como el umbral "intuitivo" del enunciado, dejaría pasar al LLM 8 de 10 preguntas ajenas, incluido el ceviche (0.7922, casi igual al 0.79 que midió el equipo docente). Cada una costaría dinero y arriesgaría una respuesta inventada.
-- Como existe la defensa 2, el umbral se optimiza para **no perder respuestas legítimas**, y las preguntas cercanas que pasan las atrapa el LLM.
+- **Margen para la demo en vivo.** Con 0.840 había solo 0.005 de margen sobre la pregunta legítima más baja (D01 = 0.8450): una pregunta redactada distinto podía quedar bloqueada sin razón. Con 0.800 el margen es **0.045**, nueve veces mayor.
+- **Qué se detiene gratis y sin IA.** 0.800 sigue deteniendo sin IA las 4 preguntas claramente ajenas: capital de Australia, Copa América, aceite del carro y **ceviche (0.7922)**, el ejemplo del enunciado.
+  - 0.82 detiene exactamente las mismas 4 con menos margen, así que 0.80 es mejor en todo.
+  - 0.78 deja pasar el ceviche a la IA.
+- **Costo y dependencia de la IA.** Bajar de 0.84 a 0.80 agrega 3 llamadas por cada 25 preguntas, unos US$0,0005, y deja la RUC, el REMYPE y la subcontratación en manos de la defensa 2. En la corrida las atrapó todas, pero el LLM no es determinista.
 
-La contrapartida queda documentada: con solo 15 preguntas, una pregunta legítima nueva con similitud menor a 0.840 sería rechazada. El margen de 0.005 es pequeño y **deberá revisarse cuando crezca el set de evaluación**.
+**Trade-off entre responder mal y no responder.** Un umbral alto evita llamadas, pero bloquea preguntas legítimas redactadas de forma distinta. Un umbral bajo pone todo el peso en la IA. Se eligió el punto en que el umbral **nunca** bloquea una pregunta legítima del set, con margen amplio, y aun así filtra gratis lo que está claramente fuera del dominio.
 
-### Versiones (capas 2, 3 y 4)
+### Versiones (capas 2, 3 y 4) — ejemplo real
 
 1. **Capa 1 (Fase 1):** el texto antiguo de la ley se borra del índice; solo queda el texto vigente etiquetado.
 2. **Capa 2 (metadatos):** cada fragmento con `[Texto vigente — …]` lleva `modificado_por` y `fecha_modificacion`.
-3. **Capa 3 (nota explícita, determinista):** el motor agrega `notas_version` **a partir de los metadatos de las fuentes citadas**, no del texto que genera el LLM:
-   - fragmento modificado → "Texto vigente: modificado por el Artículo 3 del Decreto Legislativo N° 1715, publicada el 04 febrero 2026.";
-   - fuente del D.S. 001-2026-EF → "modifica solo algunos artículos del Reglamento… el Reglamento completo no está en el corpus";
-   - fuente del D.Leg. 1715 → nota de que es la norma modificatoria y que su texto ya está en la versión actualizada.
-4. **Capa 4 (prompt + evaluación):** el prompt exige usar el texto vigente y mencionar la norma modificatoria. Las preguntas D05, D08–D13 evalúan artículos modificados.
+3. **Capa 3 (nota explícita, determinista):** el motor agrega `notas_version` **a partir de los metadatos de las fuentes citadas**, no del texto del LLM:
+   - fragmento modificado → "Texto vigente: modificado por…";
+   - fuente del D.S. 001-2026-EF → aviso de que solo trae algunos artículos del Reglamento;
+   - fuente del D.Leg. 1715 → aviso de que es la norma modificatoria.
+4. **Capa 4 (prompt + evaluación):** el prompt exige usar el texto vigente y nombrar la norma modificatoria. D05 y D08–D13 evalúan artículos modificados.
 
-**Ejemplo (prueba sin costo):** para "¿Procede una medida cautelar para paralizar una obra de infraestructura hidráulica?", el motor citó (Ley 32069 actualizada, pág. 43) y agregó la nota "Texto vigente: modificado por el Artículo 3 del Decreto Legislativo N° 1715, publicada el 04 febrero 2026." El ejemplo con respuesta real del LLM se agregará tras la corrida autorizada.
+**Ejemplo real (D08, prompt v2):**
 
-### Límites del corpus
+> **Pregunta:** ¿Procede una medida cautelar para paralizar la ejecución de una obra de infraestructura hidráulica?
+>
+> **Respuesta:** No. No proceden las medidas cautelares destinadas a impedir, paralizar o retrasar el inicio o la continuidad de la ejecución de obras de infraestructura hidráulica (Ley 32069 actualizada, pág. 43). Esta regla fue incorporada por el Decreto Legislativo N.° 1715, publicado el 4 de febrero de 2026 (Ley 32069 actualizada, pág. 43).
+>
+> **Nota de versión:** Texto vigente: modificado por el Artículo 3 del Decreto Legislativo N° 1715, publicada el 04 febrero 2026.
 
-Cuando la pregunta es del Reglamento (no indexado), el LLM marca `fuera_de_corpus` y el motor responde con `motivo_abstencion = "fuera_de_corpus"` más una `explicacion_limite`, que dice qué contiene el corpus y qué falta. Ejemplo esperado: la subcontratación, donde la ley solo remite al reglamento. El ejemplo real se agregará tras la corrida autorizada.
+**Ejemplo real de modificación del Reglamento (D06, respuesta parcial):**
+
+> **Respuesta:** Sí. La entidad puede darte un adelanto para materiales e insumos, equipamiento y mobiliario, si así se establece y fundamenta en la estrategia de contratación (Ley 32069 actualizada, pág. 32). El 30 % máximo mencionado en la Ley corresponde a los adelantos directos, no al adelanto para materiales (Ley 32069 actualizada, pág. 32).
+>
+> **Límite del corpus:** Los fragmentos no indican el porcentaje máximo del adelanto para materiales. El Reglamento modificado señala que se otorga progresivamente y según los porcentajes definidos en las bases, pero no precisa aquí un tope (D.S. 001-2026-EF, pág. 7).
+>
+> **Nota de versión:** El D.S. N.° 001-2026-EF modifica solo algunos artículos del Reglamento de la Ley N.° 32069 (D.S. N.° 009-2025-EF). El Reglamento completo no está en el corpus: esta respuesta muestra únicamente el texto modificado, no el artículo completo del Reglamento.
+
+### Límites del corpus — ejemplos reales
+
+Cuando la respuesta está en el Reglamento (no indexado), el sistema **se abstiene** (`abstuvo = True`, `motivo_abstencion = "fuera_de_corpus"`) y explica el límite:
+
+> **F06:** Me dieron la buena pro, ¿en cuántos días tengo que presentar los papeles para firmar el contrato? (Reglamento, art. 90.1)
+>
+> **Respuesta:** Tu pregunta está relacionada con contrataciones públicas, pero la respuesta no está en los documentos indexados.
+>
+> **Límite del corpus:** El corpus menciona el consentimiento de la buena pro y, en otro contexto, un plazo de hasta veintidós días desde la suscripción del contrato para entregar documentos; ese plazo es posterior a la firma y no responde cuánto tiempo tienes para presentar los papeles para firmar.
+
+> **F01:** ¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto? (Reglamento, art. 108)
+>
+> **Respuesta:** Tu pregunta está relacionada con contrataciones públicas, pero la respuesta no está en los documentos indexados.
+>
+> **Límite del corpus:** Aunque la pregunta se refiere a subcontratar parte de la prestación, los fragmentos entregados tratan otros temas y no contienen la regla, el porcentaje máximo ni las condiciones aplicables.
+
+Y cuando el corpus responde solo en parte, el sistema **responde** y declara lo que falta (`respuesta_parcial = True`):
+
+> **D01:** Para poder venderle al Estado, debes tener inscripción vigente en el Registro Nacional de Proveedores (RNP), cumpliendo los requisitos y condiciones establecidos en el reglamento (Ley 32069 actualizada, pág. 17). Además, no debes estar comprendido en una causal de impedimento para contratar con el Estado (Ley 32069 actualizada, pág. 17).
+>
+> **Límite del corpus:** Los fragmentos indican que necesitas inscribirte en el RNP, pero no detallan el trámite, los documentos ni los requisitos específicos; remiten esos aspectos al reglamento.
+
+### Limitaciones conocidas
+
+- **D02 ("algo chiquito, de unos 3 mil soles"): falla del buscador.** La página correcta (pág. 19, art. 34, contratos menores ≤ 8 UIT) no aparece entre los 5 fragmentos recuperados: la pregunta habla de soles y "licitación", y el texto de UIT y "contratos menores". Con esos fragmentos, el LLM hizo bien en abstenerse. Además, el valor de la UIT en soles no está en el corpus.
+- **D12 (formación del comprador público): falla del buscador a nivel de fragmento.** La **página** esperada (D.S. pág. 2) sí se recuperó, por eso cuenta como acierto en Recall@k. Pero el fragmento con la respuesta (`ds001_2026_ef:p2:c4`, numeral 16.1) no estaba entre los 5; llegaron otros dos de la misma página. **El Recall calculado por página es optimista**: puede contar como acierto un caso en que el fragmento útil no llegó al LLM.
+- **D13 ("¿Qué es la Pladicop?"): citas imprecisas.** En v1 citó solo la pág. 60 (disposición transitoria) en vez de la pág. 21 (art. 41.1, la definición). En v2 cita las págs. 21, 22 y 60, pero su `explicacion_limite` dice que "no incluye una definición legal completa", aunque el 41.1 vigente sí la trae. El LLM no siempre reconoce el fragmento más pertinente.
+- **Respuestas parciales frecuentes.** Con v2, 10 de 13 respuestas llevan `explicacion_limite`. El LLM tiende a declarar límites incluso cuando la respuesta es suficiente. Es un sesgo conservador aceptable, pero la interfaz debe mostrar el límite como nota secundaria, no como alerta.
+- **Sobreajuste del prompt** (ver arriba) y **muestra pequeña**: 15 + 10 preguntas.
+- **No determinismo:** el mismo prompt puede dar otra decisión en una nueva corrida.
 
 ### Citas, errores y costos
 
@@ -394,8 +454,9 @@ Cuando la pregunta es del Reglamento (no indexado), el LLM marca `fuera_de_corpu
   | gpt-6-luna | US$0,10 | US$0,01 | US$0,50 |
   | text-embedding-3-small | US$0,02 | — | — |
 
-- **Precio según la hora:** `config.yaml > precios` tiene **franjas horarias por modelo**, y `src/costos.py` elige la franja según la hora de **cada** llamada, en la zona horaria configurada. **OpenAI no cobra distinto según la hora**, así que hay una sola franja (00:00–24:00). La prueba sin costo verifica la lógica con una tabla ficticia de dos franjas: 03:00 UTC → tarifa nocturna, 15:00 UTC → tarifa diurna.
-- **Log de costos:** cada llamada al LLM se registra en `logs/costos_llm.csv` con fecha y hora UTC, modelo, tokens de entrada, caché y salida, latencia, costo en USD, franja, éxito o fracaso y error.
+- **Precio según la hora:** `config.yaml > precios` tiene **franjas horarias por modelo**, y `src/costos.py` elige la franja según la hora de **cada** llamada, en la zona horaria configurada, con intervalos [desde, hasta) sin huecos. **OpenAI no cobra distinto según la hora**, así que hay una sola franja (00:00–24:00). La prueba sin costo verifica la lógica con una tabla ficticia de dos franjas: 03:00 UTC → tarifa nocturna, 15:00 UTC → tarifa diurna, 08:29:59 → nocturna.
+- **Log de costos:** cada llamada al LLM se registra en [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv) con fecha y hora UTC, modelo, tokens de entrada, caché y salida, latencia, costo en USD, franja, éxito o fracaso y error.
+- **Costo real de la Fase 3:** **44 llamadas, US$0,0072 en total** (1 prueba + 18 de la corrida v1 + 25 del diagnóstico v2). Una pregunta típica cuesta **≈ US$0,00017**: en promedio 1.209 tokens de entrada y 98 de salida, según las 25 llamadas del diagnóstico v2 en el log.
 
 ## Estructura
 

@@ -1,6 +1,6 @@
 # Similitud top-1 de las 25 preguntas (e5small_c500_s150)
 
-Umbral elegido: **0.84** (defensa 1, sin IA). Ordenadas de mayor a menor similitud.
+Umbral elegido: **0.8** (defensa 1, sin IA). Ordenadas de mayor a menor similitud.
 
 | # | id | Tipo | Similitud top-1 | Pregunta | Defensa 1 (umbral) |
 |---|---|---|---|---|---|
@@ -22,9 +22,9 @@ Umbral elegido: **0.84** (defensa 1, sin IA). Ordenadas de mayor a menor similit
 | 16 | D13 | dentro | 0.8568 | ¿Qué es la Pladicop? | pasa ✅ |
 | 17 | D04 | dentro | 0.8562 | La entidad se está atrasando con mi pago, ¿puedo cobrarles algo extra por la demora? | pasa ✅ |
 | 18 | D01 | dentro | 0.8450 | Recién formalicé mi negocio, ¿qué trámite tengo que hacer para poder venderle al Estado? | pasa ✅ |
-| 19 | F01 | fuera | 0.8393 | ¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto? | detenida ✅ |
-| 20 | F07 | fuera | 0.8264 | ¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo? | detenida ✅ |
-| 21 | F04 | fuera | 0.8238 | ¿Cómo saco mi RUC en la SUNAT para mi negocio? | detenida ✅ |
+| 19 | F01 | fuera | 0.8393 | ¿Puedo pasarle parte del trabajo a otra empresa? ¿Hasta cuánto? | **pasa → defensa 2 (IA)** |
+| 20 | F07 | fuera | 0.8264 | ¿Cómo inscribo mi empresa en el REMYPE y qué beneficios tengo? | **pasa → defensa 2 (IA)** |
+| 21 | F04 | fuera | 0.8238 | ¿Cómo saco mi RUC en la SUNAT para mi negocio? | **pasa → defensa 2 (IA)** |
 | 22 | F09 | fuera | 0.7945 | ¿Cada cuántos kilómetros hay que cambiarle el aceite al carro? | detenida ✅ |
 | 23 | F05 | fuera | 0.7922 | ¿Cómo se prepara un ceviche? | detenida ✅ |
 | 24 | F10 | fuera | 0.7639 | ¿Qué equipo ganó la Copa América 2024? | detenida ✅ |

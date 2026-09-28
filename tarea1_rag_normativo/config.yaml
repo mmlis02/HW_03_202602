@@ -160,8 +160,8 @@ evaluacion:
 # ---------------------------------------------------------------------------
 motor:
   # Defensa 1 (sin IA): si la similitud del mejor fragmento es menor que esto, se abstiene
-  # SIN llamar al LLM. Calibrado con eval/barrido_umbral.py (ver README, Fase 3).
-  umbral_similitud: 0.840
+  # SIN llamar al LLM. Calibrado con eval/barrido_umbral.py y eval/opciones_umbral.py (ver README, Fase 3).
+  umbral_similitud: 0.800
   k_contexto: 5        # fragmentos que se entregan al LLM
   # Cómo se muestra cada cita [Fn] en la respuesta final: "(<cita corta>, pág. N)"
   citas_cortas:
