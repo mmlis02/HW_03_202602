@@ -1,0 +1,30 @@
+{
+  "ley32069": {
+    "fecha_descarga": "2026-09-27T21:50:49",
+    "archivo": "ley32069_actualizada_2026-07-19.pdf",
+    "url_pdf": "https://cdn.www.gob.pe/uploads/document/file/9295551/6444155-ley-general-de-contrataciones-publicas-con-modificaciones-posteriores-hasta-el-19-07-2026.pdf",
+    "bytes": 547209,
+    "sha256": "f14ffa37b824b8af03c0b97e0603839a786ed61c7ca07b1d300c9af928d133f7"
+  },
+  "ds001_2026_ef": {
+    "fecha_descarga": "2026-09-27T21:50:48",
+    "archivo": "ds001_2026_ef.pdf",
+    "url_pdf": "https://busquedas.elperuano.pe/api/archivo/file/4UFSj6jQKdnBeQxKkvTolN/*/2474920-3.PDF",
+    "bytes": 3730404,
+    "sha256": "2c272250c2cf5b5b3236be8bb5d9ef4622892d99f9e8c00caa485b710828b038"
+  },
+  "dl1715": {
+    "fecha_descarga": "2026-09-27T21:50:48",
+    "archivo": "dl1715.pdf",
+    "url_pdf": "https://busquedas.elperuano.pe/api/archivo/file/5z857khg4YtBF5wOR0RgDP/*/2483559-7.PDF",
+    "bytes": 669743,
+    "sha256": "ada8b6acea84640306bfd81dba88be8d8525f63a217f796f2dd908c6977d1b64"
+  },
+  "ley32069_original": {
+    "fecha_descarga": "2026-09-27T21:50:48",
+    "archivo": "ley32069_original.pdf",
+    "url_pdf": "https://cdn.www.gob.pe/uploads/document/file/8418795/6994512-ley_32069.pdf",
+    "bytes": 7560726,
+    "sha256": "a73f39cc5a66fce9fb6913608b94f5d35f82945538ffcb461a8a9c848a5c65ff"
+  }
+}

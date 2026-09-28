@@ -1,0 +1,85 @@
+# Configuración de la Tarea 1 (RAG normativo).
+# Todas las rutas son relativas a la carpeta donde está este archivo.
+# Nada de rutas, modelos, umbrales, prompts ni mensajes debe quedar "escrito a mano" en el código.
+
+rutas:
+  raw: data/raw                      # PDFs originales (nunca se modifican, fuera de git)
+  processed: data/processed          # texto extraído, página por página
+  manifiesto_descargas: data/manifiesto_descargas.json   # fecha de descarga y huella (sha256) de cada PDF
+  logs: logs
+
+descarga:
+  # Algunos portales del Estado rechazan descargas sin un "User-Agent" de navegador.
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+  timeout_segundos: 60
+
+verificacion:
+  # Una página con menos caracteres que esto se considera "sin texto extraíble".
+  min_caracteres_pagina: 200
+  # El orden de lectura se mide con la secuencia de "Artículo N.": debe ser creciente al menos este % de veces.
+  umbral_orden_lectura: 0.9
+  # Con menos artículos que esto la medida no es confiable y se revisa a mano.
+  min_articulos_para_medir_orden: 10
+
+# Documentos candidatos. Solo entran al índice los que tengan incluir: true.
+# Decisión (27/09/2026): se usa la versión actualizada de la ley (OECE) y NO el texto
+# original de 2024, que se verificó igual y queda en la tabla como evidencia (ver README).
+documentos:
+  - id: ley32069
+    titulo: "Ley N.° 32069, Ley General de Contrataciones Públicas (versión actualizada al 19/07/2026)"
+    tipo: ley_texto_actualizado
+    emisor: "Congreso de la República (texto actualizado por OECE a partir del SPIJ)"
+    fecha_publicacion: "2024-06-24"
+    version: "Versión actualizada con modificaciones hasta el 19/07/2026"
+    fecha_version: "2026-07-19"
+    modifica: null
+    archivo: ley32069_actualizada_2026-07-19.pdf
+    recorte: {despues_de: null, hasta: null}
+    url_pdf: "https://cdn.www.gob.pe/uploads/document/file/9295551/6444155-ley-general-de-contrataciones-publicas-con-modificaciones-posteriores-hasta-el-19-07-2026.pdf"
+    url_ficha: "https://www.gob.pe/institucion/osce/colecciones/45029-ley-n-32069-ley-general-de-contrataciones-publicas"
+    incluir: true
+
+  - id: ds001_2026_ef
+    titulo: "Decreto Supremo N.° 001-2026-EF, que modifica el Reglamento de la Ley N.° 32069"
+    tipo: decreto_supremo
+    emisor: "Ministerio de Economía y Finanzas (Poder Ejecutivo)"
+    fecha_publicacion: "2026-01-08"
+    version: "Publicado en El Peruano el 08/01/2026"
+    fecha_version: "2026-01-08"
+    modifica: "Reglamento de la Ley N.° 32069 (D.S. N.° 009-2025-EF)"
+    archivo: ds001_2026_ef.pdf
+    # El Peruano cierra cada norma con su código de publicación; se usa para recortar texto de otras normas.
+    recorte: {despues_de: null, hasta: "2474920-3"}   # en la pág. 16 sigue otra norma (R.VM. 001-2026-EF/15.01)
+    url_pdf: "https://busquedas.elperuano.pe/api/archivo/file/4UFSj6jQKdnBeQxKkvTolN/*/2474920-3.PDF"
+    url_ficha: "https://busquedas.elperuano.pe/dispositivo/NL/2474920-3"
+    incluir: true
+
+  # Documento opcional: modifica un literal de la propia Ley 32069.
+  - id: dl1715
+    titulo: "Decreto Legislativo N.° 1715, que modifica el literal e) del numeral 85.1 del artículo 85 de la Ley N.° 32069"
+    tipo: decreto_legislativo
+    emisor: "Poder Ejecutivo (por delegación del Congreso, Ley N.° 32527)"
+    fecha_publicacion: "2026-02-04"
+    version: "Publicado en El Peruano el 04/02/2026"
+    fecha_version: "2026-02-04"
+    modifica: "Ley N.° 32069 (art. 85.1.e)"
+    archivo: dl1715.pdf
+    recorte: {despues_de: "2483559-6", hasta: "2483559-7"}   # comparte páginas con otra norma y con el D.Leg. 1716
+    url_pdf: "https://busquedas.elperuano.pe/api/archivo/file/5z857khg4YtBF5wOR0RgDP/*/2483559-7.PDF"
+    url_ficha: "https://busquedas.elperuano.pe/dispositivo/NL/2483559-7"
+    incluir: true
+
+  # Alternativa evaluada y descartada (se deja para la tabla de verificación).
+  - id: ley32069_original
+    titulo: "Ley N.° 32069, texto original publicado en El Peruano (separata especial, 24/06/2024)"
+    tipo: ley
+    emisor: "Congreso de la República"
+    fecha_publicacion: "2024-06-24"
+    version: "Texto original sin modificaciones posteriores"
+    fecha_version: "2024-06-24"
+    modifica: null
+    archivo: ley32069_original.pdf
+    recorte: {despues_de: null, hasta: "2300373-1"}
+    url_pdf: "https://cdn.www.gob.pe/uploads/document/file/8418795/6994512-ley_32069.pdf"
+    url_ficha: "https://www.gob.pe/institucion/mef/normas-legales/6994512-32069"
+    incluir: false

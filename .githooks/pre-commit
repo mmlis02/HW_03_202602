@@ -1,0 +1,32 @@
+#!/bin/sh
+# Revisión automática antes de cada commit: bloquea claves de API y archivos .env.
+# Se activa una vez por clon con:  git config core.hooksPath .githooks
+
+# 1) Nunca subir un archivo .env (sí se permite .env.example)
+if git diff --cached --name-only --diff-filter=ACMR | grep -E '(^|/)\.env$' >/dev/null; then
+  echo "BLOQUEADO: estás intentando hacer commit de un archivo .env (credenciales)."
+  echo "Quítalo con: git restore --staged .env"
+  exit 1
+fi
+
+# 2) Buscar patrones de claves en las líneas agregadas
+PATRON='(sk-[A-Za-z0-9_-]{20,}|sk-proj-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|ghp_[A-Za-z0-9]{36}|-----BEGIN [A-Z ]*PRIVATE KEY-----)'
+ENCONTRADOS=$(git diff --cached -U0 --diff-filter=ACMR | grep -E '^\+' | grep -v '^+++' | grep -cE "$PATRON")
+if [ "$ENCONTRADOS" -gt 0 ]; then
+  echo "BLOQUEADO: se encontró algo que parece una clave de API en los cambios preparados."
+  echo "Archivos afectados:"
+  for f in $(git diff --cached --name-only --diff-filter=ACMR); do
+    git show ":$f" 2>/dev/null | grep -qE "$PATRON" && echo "  - $f"
+  done
+  echo "Mueve la clave a .env (que git ignora) y vuelve a intentarlo."
+  exit 1
+fi
+
+# 3) Toda variable en .env.example debe estar vacía
+if git diff --cached --name-only | grep -qx '.env.example'; then
+  if git show :.env.example | grep -vE '^\s*(#|$)' | grep -qvE '^[A-Z0-9_]+=\s*$'; then
+    echo "BLOQUEADO: .env.example debe tener solo nombres de variables vacías (p. ej. OPENAI_API_KEY=)."
+    exit 1
+  fi
+fi
+exit 0
