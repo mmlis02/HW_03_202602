@@ -22,7 +22,8 @@
       "D_indeterminado": 16
     },
     "versiones_anteriores": 1125,
-    "accion": "se CONSERVAN todas con advertencia; se marca tipo_repeticion y es_version_vigente (la más reciente del grupo)",
+    "copias_C_excluidas_del_analisis": 373,
+    "accion": "se CONSERVAN todas con advertencia (tipo_repeticion, es_version_vigente); las copias de re-registros del mismo día (C) se excluyen del análisis",
     "ejemplos": {
       "A_reconvocatoria_confirmada": [
         [
@@ -339,8 +340,14 @@
   },
   "resumen": {
     "filas": 20476,
-    "incluidas_en_analisis": 20474,
-    "excluidas_con_motivo": 2,
+    "incluidas_en_analisis": 20101,
+    "excluidas_con_motivo": 375,
+    "excluidas_por_motivo": {
+      "re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción)": 373,
+      "mismo tender_id que otro ocid (registro duplicado)": 2
+    },
+    "incluidas_con_monto_valido": 18226,
+    "incluidas_sin_monto": 1875,
     "filas_con_alguna_advertencia": 3956
   },
   "novedades_api": {
@@ -357,5 +364,5 @@
     "departamentos": 25,
     "departamentos_de_los_datos_que_no_estan_en_el_mapa": []
   },
-  "fecha": "2026-09-28T18:09:15"
+  "fecha": "2026-09-28T18:14:56"
 }

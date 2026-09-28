@@ -73,13 +73,19 @@ def validar(df: pd.DataFrame, terr: Territorio, vcfg: dict) -> tuple[pd.DataFram
         if tipo != "B_items_distintos_misma_nomenclatura":  # en B son compras distintas: todas vigentes
             d.loc[x.index[:-1], "es_version_vigente"] = False
     advertir(d["tipo_repeticion"] != "", "posible reconvocatoria o re-registro (misma nomenclatura y entidad)")
+    # Re-registro del mismo día = el MISMO proceso contado dos veces: la copia (no vigente) se conserva
+    # con su marca, pero se excluye de conteos, montos e indicador de riesgo (igual que R1b).
+    copia_c = (d["tipo_repeticion"] == "C_reregistro_mismo_dia") & ~d["es_version_vigente"] & d["incluir_en_analisis"]
+    d.loc[copia_c, "incluir_en_analisis"] = False
+    d.loc[copia_c, "motivo_exclusion"] = "re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción); se conserva la versión vigente"
     # Limitación conocida: en B, "descripciones distintas" incluye descripciones del MISMO proceso cortadas
     # de forma distinta (p. ej. "UISICION DE AGUJA..." vs "ADQUISICION DE AGUJA..."), así que B no garantiza ítems distintos.
     rep["R1c_misma_nomenclatura_y_entidad"] = {
         "casos": int(len(grupos)), "grupos": int(grupos.groupby(["comprador_id", "nomenclatura"]).ngroups),
         "grupos_por_tipo": tipos,
         "versiones_anteriores": int((~d["es_version_vigente"]).sum()),
-        "accion": "se CONSERVAN todas con advertencia; se marca tipo_repeticion y es_version_vigente (la más reciente del grupo)"}
+        "copias_C_excluidas_del_analisis": int(copia_c.sum()),
+        "accion": "se CONSERVAN todas con advertencia (tipo_repeticion, es_version_vigente); las copias de re-registros del mismo día (C) se excluyen del análisis"}
 
     # ---------------- R2: monto faltante o cero ----------------------------------------------
     # amount_PEN de OECE solo si es > 0 (en algunos procesos en soles OECE publica amount_PEN = 0 con monto > 0)
@@ -208,5 +214,8 @@ def validar(df: pd.DataFrame, terr: Territorio, vcfg: dict) -> tuple[pd.DataFram
     d["advertencias"] = d["advertencias"].map(lambda a: " | ".join(a))
     rep["resumen"] = {"filas": total, "incluidas_en_analisis": int(d["incluir_en_analisis"].sum()),
                       "excluidas_con_motivo": int((~d["incluir_en_analisis"]).sum()),
+                      "excluidas_por_motivo": d.loc[~d["incluir_en_analisis"], "motivo_exclusion"].str.split(";").str[0].value_counts().to_dict(),
+                      "incluidas_con_monto_valido": int((d["incluir_en_analisis"] & d["monto_valido"]).sum()),
+                      "incluidas_sin_monto": int((d["incluir_en_analisis"] & ~d["monto_valido"]).sum()),
                       "filas_con_alguna_advertencia": int((d["n_advertencias"] > 0).sum())}
     return d, rep

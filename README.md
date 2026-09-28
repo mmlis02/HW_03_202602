@@ -717,7 +717,7 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
 |---|---|---|---|
 | R1a. Mismo ocid repetido | 0 | deduplicación por ocid en la Fase 1 | — |
 | R1b. Mismo tender_id con distinto ocid (proceso registrado dos veces) | 4 filas (2 procesos) | se conserva el de compiledRelease más reciente; la copia queda con `incluir_en_analisis=False` | 2 excluidos con motivo |
-| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente` | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
+| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente`; **la copia de cada re-registro del mismo día (C) se excluye del análisis** (373 copias) | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
 | R2. Monto faltante o cero | 2,167 (monto nulo 0, monto 0: 2,120, moneda extranjera sin conversión a soles: 47) | se recupera con el monto adjudicado; el resto `monto_valido=False` (fuera de sumas de monto, dentro de conteos) | 38 recuperados (tasa 1.8%); 2,129 con advertencia |
 | R2c. amount_PEN = 0 con monto en soles > 0 | 113 | se usa el monto en soles de la convocatoria | corregidos |
 | R2b. Moneda extranjera | 334 (USD 303, EUR 23, GBP 8) | `monto_pen` = amount_PEN publicado por OECE | 271/334 convertidos; 63 con amount_PEN = 0 (cuentan en R2) |
@@ -728,6 +728,21 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
 | R5c. Provincia escrita distinto que en el IGN | 92 (NAZCA→NASCA) | alias documentado en config.yaml | corregidos |
 | R5d. Sin departamento al final | 0 | — | **tasa de ubicación 100.0%** (25 departamentos) |
 | R6. Número de postores faltante | 2,750 (3 con adjudicación) | se conserva; se trata en la Fase 5 | — |
+
+### Procesos que quedan para el análisis
+
+| | Procesos |
+|---|---|
+| Procesos en el corpus (una fila por ocid) | 20,476 |
+| − Excluidos: re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción) | 373 |
+| − Excluidos: mismo tender_id que otro ocid (registro duplicado) | 2 |
+| **= Procesos para el análisis** (conteos e indicador de riesgo) | **20,101** |
+| de ellos con monto válido (entran a las sumas de monto) | 18,226 |
+| de ellos sin monto (cuentan como proceso, no suman monto) | 1,875 |
+
+3,956 procesos tienen alguna advertencia (columna `advertencias`).
+
+Los **montos totales** del tablero suman solo los procesos con monto válido, y el tablero indica junto al total cuántos procesos quedan fuera por no tener monto.
 
 ### Ubicación: qué campo se usa y cómo se normaliza
 
@@ -745,9 +760,11 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
   4. si no, el departamento de **la misma entidad** en otros procesos.
 - **Todas las comparaciones** usan una clave sin tildes, en mayúsculas y con espacios simples, así que JUNÍN, Junín y "JUNIN " son lo mismo.
 - **Validación cruzada:** la provincia de `region`, convertida con el IGN, coincide con el `department` declarado en **todos** los procesos (0 inconsistencias).
-- **Resultado:**
-  - **corpus (jun–ago):** 20.476 de 20.476 procesos ubicados (**100 %**) en los 25 departamentos; **0 sin ubicar**. Este periodo no necesitó los respaldos 2–4. Quedan implementados porque el enunciado anticipa que pueden hacer falta.
-  - **Novedades de septiembre (API):** la búsqueda no trae la dirección, así que se ubicaron por **la misma entidad** del corpus: 5,277 de 5,435 (**tasa de recuperación 97.1%**). Quedan 158 sin ubicar, porque esas entidades no compraron en junio–agosto.
+- **Lo que pasó en este periodo** (dicho con claridad):
+  - **El campo `department` venía limpio:** 25 departamentos válidos en el 100 % de los procesos de junio–agosto, sin tildes, vacíos ni provincias.
+  - **Las provincias aparecieron en `region`:** es ahí donde se mezclan con departamentos.
+  - Por eso, en el corpus (20.476 procesos) todos se ubicaron con la regla 1 (**100 %, 0 sin ubicar**), y los respaldos 2–4 no hicieron falta.
+- **En septiembre (API) las reglas de respaldo sí fueron necesarias.** La búsqueda de la API no trae la dirección de la entidad, así que cada proceso se ubicó con la regla 4 (misma entidad en junio–agosto): 5,277 de 5,435, **tasa de recuperación 97,1 %**. Quedan 158 sin ubicar, porque esas entidades no compraron en junio–agosto.
 
 ### Posibles reconvocatorias: cómo se detectaron y verificaron
 
@@ -761,7 +778,9 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
 | **B. Misma nomenclatura, descripciones distintas** | 44 | misma fecha, descripción distinta | motoniveladora frente a retroexcavadora del mismo IOARR (compras distintas). **Limitación:** incluye casos del mismo proceso con la descripción cortada ("UISICION DE AGUJA…" frente a "ADQUISICION DE AGUJA…") |
 | **D. Indeterminado** | 16 | fechas distintas, sin estado fallido previo | — |
 
-**Qué se hizo:** **no se borra ninguno.** Todos quedan con la advertencia "posible reconvocatoria o re-registro", el `tipo_repeticion` y `es_version_vigente` (la versión más reciente del grupo; en B todas son vigentes). Los indicadores cuentan todos los `ocid`, porque cada uno es un proceso oficial. El tablero permite ver cuántos son versiones anteriores (1,125) para no sobreestimar montos.
+**Qué se hizo:** **no se borra ninguno.** Todos quedan con la advertencia "posible reconvocatoria o re-registro", el `tipo_repeticion` y `es_version_vigente` (la versión más reciente del grupo; en B todas son vigentes).
+- **Re-registros del mismo día (C):** son **el mismo proceso contado dos veces**. La copia se conserva con su marca, pero se **excluye de conteos, montos e indicador de riesgo** (373 copias), igual que los 2 duplicados por `tender_id`.
+- **Reconvocatorias confirmadas (A):** se cuentan todas, porque cada convocatoria es un procedimiento oficial distinto. La versión anterior queda marcada como no vigente.
 
 ### Mapa
 

@@ -85,7 +85,7 @@ def reporte_md(r: dict) -> str:
     L.append(f"| R1a. Mismo ocid repetido | {a['casos']} | deduplicación por ocid en la Fase 1 | — |")
     L.append(f"| R1b. Mismo tender_id con distinto ocid (proceso registrado dos veces) | {b['casos']} filas ({b['grupos']} procesos) | se conserva el de compiledRelease más reciente; la copia queda con `incluir_en_analisis=False` | {len(b['ocid_excluidos'])} excluidos con motivo |")
     t = c["grupos_por_tipo"]
-    L.append(f"| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | {c['casos']:,} filas en {c['grupos']:,} grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente` | A reconvocatoria confirmada: {t.get('A_reconvocatoria_confirmada', 0)} · C re-registro mismo día: {t.get('C_reregistro_mismo_dia', 0)} · B ítems distintos (no es repetición): {t.get('B_items_distintos_misma_nomenclatura', 0)} · D indeterminado: {t.get('D_indeterminado', 0)} grupos |")
+    L.append(f"| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | {c['casos']:,} filas en {c['grupos']:,} grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente`; **la copia de cada re-registro del mismo día (C) se excluye del análisis** ({c['copias_C_excluidas_del_analisis']} copias) | A reconvocatoria confirmada: {t.get('A_reconvocatoria_confirmada', 0)} · C re-registro mismo día: {t.get('C_reregistro_mismo_dia', 0)} · B ítems distintos (no es repetición): {t.get('B_items_distintos_misma_nomenclatura', 0)} · D indeterminado: {t.get('D_indeterminado', 0)} grupos |")
     m, mb = R["R2_monto_nulo_o_cero"], R["R2b_moneda_extranjera"]
     L.append(f"| R2. Monto faltante o cero | {m['casos']:,} (monto nulo {m['nulos']}, monto 0: {m['ceros']:,}, moneda extranjera sin conversión a soles: {m['moneda_extranjera_sin_conversion']}) | se recupera con el monto adjudicado; el resto `monto_valido=False` (fuera de sumas de monto, dentro de conteos) | {m['recuperados_con_monto_adjudicado']} recuperados (tasa {m['tasa_recuperacion']:.1%}); {m['sin_recuperar']:,} con advertencia |")
     pc = R["R2c_amount_PEN_cero_con_monto_en_soles"]
@@ -107,7 +107,15 @@ def reporte_md(r: dict) -> str:
     if "novedades_api" in R:
         n = R["novedades_api"]
         L += ["", f"**Novedades recientes (API, septiembre 2026, aparte):** {n['procesos']:,} procesos; departamento recuperado por la misma entidad del corpus en {n['ubicados_por_misma_entidad']:,} (**tasa de recuperación {n['tasa_recuperacion_departamento']:.1%}**); {n['sin_ubicar']:,} sin ubicar ({n['motivo_sin_ubicar']}). {n['uso']}."]
-    L += ["", f"**Resumen:** {R['resumen']['incluidas_en_analisis']:,} procesos incluidos en el análisis; {R['resumen']['excluidas_con_motivo']} excluidos con motivo; {R['resumen']['filas_con_alguna_advertencia']:,} con alguna advertencia.",
+    rs = R["resumen"]
+    L += ["", "## Procesos que quedan para el análisis", "",
+          "| | Procesos |", "|---|---|",
+          f"| Procesos en el corpus (una fila por ocid) | {rs['filas']:,} |"]
+    L += [f"| − Excluidos: {k} | {v:,} |" for k, v in rs["excluidas_por_motivo"].items()]
+    L += [f"| **= Procesos para el análisis** (conteos e indicador de riesgo) | **{rs['incluidas_en_analisis']:,}** |",
+          f"| de ellos con monto válido (entran a las sumas de monto) | {rs['incluidas_con_monto_valido']:,} |",
+          f"| de ellos sin monto (cuentan como proceso, no suman monto) | {rs['incluidas_sin_monto']:,} |",
+          "", f"{rs['filas_con_alguna_advertencia']:,} procesos tienen alguna advertencia (columna `advertencias`).",
           "", "## Verificación de posibles reconvocatorias (ejemplos)", ""]
     for tipo, grupos in c.get("ejemplos", {}).items():
         L.append(f"**{tipo}**")

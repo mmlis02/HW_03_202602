@@ -6,7 +6,7 @@ Corpus: 20,476 procesos (jun–ago 2026). Ninguna fila se borra: se marcan, se c
 |---|---|---|---|
 | R1a. Mismo ocid repetido | 0 | deduplicación por ocid en la Fase 1 | — |
 | R1b. Mismo tender_id con distinto ocid (proceso registrado dos veces) | 4 filas (2 procesos) | se conserva el de compiledRelease más reciente; la copia queda con `incluir_en_analisis=False` | 2 excluidos con motivo |
-| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente` | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
+| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente`; **la copia de cada re-registro del mismo día (C) se excluye del análisis** (373 copias) | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
 | R2. Monto faltante o cero | 2,167 (monto nulo 0, monto 0: 2,120, moneda extranjera sin conversión a soles: 47) | se recupera con el monto adjudicado; el resto `monto_valido=False` (fuera de sumas de monto, dentro de conteos) | 38 recuperados (tasa 1.8%); 2,129 con advertencia |
 | R2c. amount_PEN = 0 con monto en soles > 0 | 113 | se usa el monto en soles de la convocatoria | corregidos |
 | R2b. Moneda extranjera | 334 (USD 303, EUR 23, GBP 8) | `monto_pen` = amount_PEN publicado por OECE | 271/334 convertidos; 63 con amount_PEN = 0 (cuentan en R2) |
@@ -22,7 +22,18 @@ Corpus: 20,476 procesos (jun–ago 2026). Ninguna fila se borra: se marcan, se c
 
 **Novedades recientes (API, septiembre 2026, aparte):** 5,435 procesos; departamento recuperado por la misma entidad del corpus en 5,277 (**tasa de recuperación 97.1%**); 158 sin ubicar (la búsqueda de la API no trae la dirección y la entidad no aparece en junio-agosto). tabla aparte 'novedades recientes'; NO entra al corpus ni a los indicadores.
 
-**Resumen:** 20,474 procesos incluidos en el análisis; 2 excluidos con motivo; 3,956 con alguna advertencia.
+## Procesos que quedan para el análisis
+
+| | Procesos |
+|---|---|
+| Procesos en el corpus (una fila por ocid) | 20,476 |
+| − Excluidos: re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción) | 373 |
+| − Excluidos: mismo tender_id que otro ocid (registro duplicado) | 2 |
+| **= Procesos para el análisis** (conteos e indicador de riesgo) | **20,101** |
+| de ellos con monto válido (entran a las sumas de monto) | 18,226 |
+| de ellos sin monto (cuentan como proceso, no suman monto) | 1,875 |
+
+3,956 procesos tienen alguna advertencia (columna `advertencias`).
 
 ## Verificación de posibles reconvocatorias (ejemplos)
 
