@@ -70,3 +70,34 @@ Este archivo explica, paso a paso y sin tecnicismos, qué se hizo y por qué. Si
 - De 112.601 letras del PDF del D.S. 001-2026-EF, 6.272 eran de otra norma y se recortaron.
 - Ninguna página se descartó: todas tienen texto de su norma.
 - Ejemplo estrella para el video: el art. 85.1.e) antes (sin "infraestructura hidráulica") y después (con la etiqueta del D.Leg. 1715).
+
+---
+
+## Tarea 1 · Fase 2 — Fragmentos, embeddings e índice
+
+**Qué hice**
+- **Preguntas de prueba.** Armé 25 preguntas: 15 que el corpus sí responde (6 escritas por mí como las haría una dueña de MYPE) y 10 que no. De esas 10, varias son "trampas" que solo responde el Reglamento: subcontratación, penalidad por mora, plazo de conformidad y plazo para firmar el contrato.
+  - La página correcta de cada pregunta la busqué **leyendo el texto**, no con el buscador. Así la prueba no se "copia" las respuestas del propio sistema.
+- **Fragmentos.** Corté el texto en pedazos. Cada pedazo pertenece a **una sola página**, así su cita es exacta. Lleva sus datos aparte del texto: documento, versión, página, artículo y, si cambió, "modificado por D.Leg. 1715".
+- **Probé tres tamaños** (500, 1000 y 1800 letras) con las preguntas y elegí 500:
+  - es el que más veces pone la respuesta correcta en el **primer lugar** (80 %);
+  - es el que mejor distingue preguntas de dentro y de fuera.
+- **Embeddings.** Cada pedazo se convierte en una lista de 384 números (su "huella de significado") con el modelo local e5-small, que corre en mi computadora sin pagar nada. El modelo pide dos cosas:
+  - poner "query: " delante de las preguntas y "passage: " delante de los pedazos;
+  - no pasar de 512 tokens. Mi pedazo más largo tiene 183, así que nunca se corta nada.
+- **Índice (ChromaDB).** Guardé las huellas, el texto y los datos en una base en disco (`data/index/`). La app solo **lee** este índice; nunca vuelve a leer los PDFs.
+
+**Por qué el índice es seguro de reconstruir (para el video)**
+- Cada pedazo tiene un nombre fijo, por ejemplo `dl1715:p1:c3`: documento, página y número de pedazo.
+- Si corro el proceso dos veces, ve que ya existen y no duplica nada.
+- Si se corta a la mitad, la próxima vez sigue donde quedó. Lo probé cortando a propósito: completó los 154 que faltaban.
+- Si agrego un documento nuevo, no toca los pedazos de los otros. También lo probé.
+
+**Qué es Recall@k (para el video)**
+- Recall@5 = en cuántas preguntas la página correcta aparece entre los 5 pedazos que trae el buscador.
+- Mide **solo el buscador**, sin llamar al modelo que redacta. Por eso la evaluación **cuesta cero** y la puedo repetir cada vez que cambio algo.
+
+**Hallazgo importante**
+- Las similitudes de este modelo están muy apretadas: todas entre 0,75 y 0,89.
+- El ceviche saca 0,80, igual que en la prueba del profesor.
+- Las trampas del Reglamento sacan hasta 0,87, más que algunas preguntas legítimas (0,84). Un solo umbral no alcanza para separarlas; en la Fase 3 hay que calibrarlo con datos y agregar otra defensa.

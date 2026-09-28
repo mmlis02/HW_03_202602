@@ -1,0 +1,29 @@
+{
+  "e5small_c500": {
+    "recall@1": 0.8,
+    "recall@3": 0.8,
+    "recall@5": 0.867,
+    "mrr@5": 0.817,
+    "latencia_media_s": 0.0354,
+    "sim_top1_dentro_min": 0.8398,
+    "sim_top1_fuera_max": 0.8712
+  },
+  "e5small_c1000": {
+    "recall@1": 0.733,
+    "recall@3": 0.8,
+    "recall@5": 0.8,
+    "mrr@5": 0.767,
+    "latencia_media_s": 0.0115,
+    "sim_top1_dentro_min": 0.845,
+    "sim_top1_fuera_max": 0.8628
+  },
+  "e5small_c1800": {
+    "recall@1": 0.667,
+    "recall@3": 0.867,
+    "recall@5": 0.933,
+    "mrr@5": 0.772,
+    "latencia_media_s": 0.0109,
+    "sim_top1_dentro_min": 0.84,
+    "sim_top1_fuera_max": 0.8589
+  }
+}

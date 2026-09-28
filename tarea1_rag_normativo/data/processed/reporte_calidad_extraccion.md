@@ -12,6 +12,19 @@ Generado por `scripts/procesar_documentos.py`. 'chars' = caracteres.
 
 - Páginas descartadas: ninguna (todas tienen texto de la norma).
 
+Notas de versión "(*)": el PDF tiene **37 marcas "(*)"**, que corresponden a **20 notas** (líneas que empiezan con "(*)") más **17 marcas de llamada** (el "(*)" pegado al final del texto al que se refiere cada nota; los avisos de la primera página no tienen llamada).
+
+| Tipo de nota | Cantidad |
+|---|---|
+| Numeral modificado | 6 |
+| aviso de vigencia | 4 |
+| Literal modificado | 4 |
+| Disposición modificada | 2 |
+| Literal incorporado | 1 |
+| Numeral derogado | 1 |
+| Numeral incorporado | 1 |
+| fe de erratas | 1 |
+
 Reglas de limpieza aplicadas:
 
 - Párrafos de concordancias SPIJ eliminados: **1**

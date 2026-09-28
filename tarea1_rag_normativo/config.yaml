@@ -100,3 +100,50 @@ limpieza:
   documentos_con_notas_de_version: [ley32069]
   # Cuántos párrafos hacia atrás se busca el inicio del texto antiguo de una nota de modificación
   ventana_busqueda_texto_antiguo: 15
+
+# ---------------------------------------------------------------------------
+# Fase 2: fragmentos, embeddings e índice
+# ---------------------------------------------------------------------------
+fragmentos:
+  # Configuraciones comparadas con eval/preguntas.csv (tamaño y solape en caracteres).
+  configuraciones:
+    c500:  {tamano: 500,  solape: 75}
+    c1000: {tamano: 1000, solape: 150}
+    c1800: {tamano: 1800, solape: 250}
+  # Configuración elegida para el índice principal (ver README, sección Fase 2).
+  elegida: c500
+  # Texto corto que se antepone a cada fragmento al calcular su embedding (no cambia el texto citado).
+  nombres_cortos:
+    ley32069: "Ley 32069, Ley General de Contrataciones Públicas (versión actualizada)"
+    ds001_2026_ef: "D.S. 001-2026-EF que modifica el Reglamento de la Ley 32069"
+    dl1715: "D.Leg. 1715 que modifica el art. 85 de la Ley 32069"
+
+embeddings:
+  modelo_activo: local            # local | openai  (cambiar de modelo = cambiar esta línea)
+  modelos:
+    local:
+      tipo: sentence_transformers
+      nombre: intfloat/multilingual-e5-small
+      prefijo_consulta: "query: "     # exigido por la familia E5 (ver ficha del modelo)
+      prefijo_pasaje: "passage: "
+      max_tokens: 512                 # límite de entrada del modelo; lo demás se trunca
+      lote: 32
+      alias: e5small
+    openai:
+      tipo: openai
+      nombre: text-embedding-3-small
+      prefijo_consulta: ""
+      prefijo_pasaje: ""
+      max_tokens: 8191
+      lote: 100
+      alias: oai3small
+
+indice:
+  carpeta: data/index/chroma        # fuera de git; se regenera con build_index.py
+  prefijo_coleccion: t1
+  lote_insercion: 64
+
+evaluacion:
+  preguntas: eval/preguntas.csv
+  k_valores: [1, 3, 5]
+  resultados: eval/resultados

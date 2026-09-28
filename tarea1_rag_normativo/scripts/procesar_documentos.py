@@ -11,6 +11,7 @@ Uso (desde la carpeta tarea1_rag_normativo):
     python scripts/procesar_documentos.py
 """
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -77,6 +78,13 @@ def main():
             elif n not in conservadas:
                 descartadas.append({"pagina": n, "motivo": "quedó vacía tras la limpieza (solo ruido)"})
 
+        # Conteo de marcas "(*)": cada NOTA empieza una línea con "(*)"; además, el texto al que
+        # se refiere suele terminar con otra marca "(*)" de llamada. Por eso hay más marcas que notas.
+        texto_norma = "\n".join(p["texto"] for p in paginas)
+        marcas = texto_norma.count("(*)")
+        notas = len(re.findall(r"^\s*\(\*\)", texto_norma, flags=re.M))
+        tipos = Counter(r["accion"].split(" (")[0].replace("Numeral 1", "Numeral") for r in registro)
+
         medio = limpias[len(limpias) // 2]
         reporte.append({
             "documento": doc["id"],
@@ -88,6 +96,10 @@ def main():
             "chars_de_la_norma_tras_recorte": sum(len(p["texto"]) for p in paginas),
             "chars_limpios": sum(len(p["texto"]) for p in limpias),
             "reglas_aplicadas": {k: v for k, v in contador.items() if v},
+            "marcas_asterisco_en_pdf": marcas,
+            "notas_de_version": notas,
+            "marcas_de_llamada": marcas - notas,
+            "notas_por_tipo": dict(tipos),
             "muestra_pagina": medio["pagina"],
             "muestra_texto": recorte(medio["texto"], 700),
         })
@@ -106,6 +118,12 @@ def main():
             lineas += [f"- Página {d['pagina']} descartada: {d['motivo']}" for d in r["paginas_descartadas"]]
         else:
             lineas.append("- Páginas descartadas: ninguna (todas tienen texto de la norma).")
+        if r["notas_de_version"]:
+            lineas += ["", f"Notas de versión \"(*)\": el PDF tiene **{r['marcas_asterisco_en_pdf']} marcas \"(*)\"**, que corresponden a "
+                       f"**{r['notas_de_version']} notas** (líneas que empiezan con \"(*)\") más **{r['marcas_de_llamada']} marcas de llamada** "
+                       "(el \"(*)\" pegado al final del texto al que se refiere cada nota; los avisos de la primera página no tienen llamada).", "",
+                       "| Tipo de nota | Cantidad |", "|---|---|"]
+            lineas += [f"| {k} | {v} |" for k, v in sorted(r["notas_por_tipo"].items(), key=lambda x: -x[1])]
         lineas += ["", "Reglas de limpieza aplicadas:", ""]
         lineas += [f"- {DESCRIPCION_REGLAS.get(k, k)}: **{v}**" for k, v in r["reglas_aplicadas"].items()] or ["- ninguna"]
         lineas += ["", f"Muestra del texto limpio (página {r['muestra_pagina']}, mitad del documento):", "",
