@@ -9,7 +9,7 @@ El enunciado completo está en [docs/enunciado.md](docs/enunciado.md). Las notas
 
 > **Video (máx. 12 min):** _[enlace pendiente — pegar aquí el enlace de YouTube / Drive]_
 >
-> Diagramas del pipeline: [docs/pipeline.md](docs/pipeline.md) · Guion del video: [docs/guion_video.md](docs/guion_video.md)
+> Diagramas del pipeline: [docs/pipeline.md](docs/pipeline.md)
 
 ## Resultados en resumen
 
@@ -1148,7 +1148,7 @@ En SEACE, los **participantes** (empresas inscritas en el procedimiento) y los *
 ```
 ├── README.md · requirements.txt · .env.example · .githooks/pre-commit (bloquea claves en commits)
 ├── comun/                      # motor compartido por ambas tareas: embeddings, costos por hora, llamada al LLM
-├── docs/                       # enunciado, pipeline.md (diagramas), notas_para_video.md, guion_video.md
+├── docs/                       # enunciado, pipeline.md (diagramas), notas_para_video.md, revision_requisitos.md
 ├── tarea1_rag_normativo/
 │   ├── config.yaml             # TODOS los parámetros, prompts y textos de la Tarea 1
 │   ├── build_index.py          # proceso OFFLINE

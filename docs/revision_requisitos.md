@@ -87,5 +87,5 @@ Cada requisito de `docs/enunciado.md`, dónde se cumple y qué faltaba o falta. 
 | requirements.txt | raíz | ✅ |
 | Reportes de calidad de ambas tareas y logs de ejecución | `*/data/processed/`, `*/logs/` | ✅ |
 | Log de costos con llamadas reales | `*/logs/costos_llm.csv` | ✅ |
-| Video ≤ 12 min enlazado en el README | README (espacio reservado) | ⏳ **Pendiente de la autora:** grabar y pegar el enlace. Guion en `docs/guion_video.md` |
+| Video ≤ 12 min enlazado en el README | README (espacio reservado) | ⏳ **Pendiente de la autora:** grabar y pegar el enlace |
 | Commits distribuidos en el tiempo | historial git | ⚠️ 21 commits en 2 días (27 y 28/09). No se puede corregir sin falsificar fechas; se recomienda seguir commiteando los ajustes finales y el video en días siguientes |
