@@ -52,3 +52,7 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-29T00:04:28+00:00,gpt-6-luna,1610,0,215,2.286,0.00026850,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
 2026-09-29T00:04:30+00:00,gpt-6-luna,621,0,55,1.367,0.00008960,00:00-24:00,True,,[filtros] Compra de aviones de combate F-35
 2026-09-29T00:04:32+00:00,gpt-6-luna,1201,0,195,2.373,0.00021760,00:00-24:00,True,,Compra de aviones de combate F-35
+2026-09-29T00:10:37+00:00,gpt-6-luna,630,0,57,1.914,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-29T00:10:39+00:00,gpt-6-luna,1610,1607,213,2.39,0.00012287,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-29T00:11:37+00:00,gpt-6-luna,630,0,57,1.534,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-29T00:11:40+00:00,gpt-6-luna,1610,1607,291,2.533,0.00016187,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles

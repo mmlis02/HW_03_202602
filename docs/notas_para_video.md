@@ -341,3 +341,11 @@ Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes
 - **Mínimo de 10 procesos por entidad:** la mitad de las entidades tiene 3 procesos o menos, y sin mínimo una entidad con 1 solo proceso aparecería con "100 %". Con 10, un caso pesa 10 %.
 - **Muestro el intervalo de confianza:** con pocos procesos, el porcentaje es muy incierto. Las 4 últimas del top 10 tienen un solo caso, así que no se puede decir que sean "más riesgosas".
 - **El aviso se repite en la app y debe decirse en el video:** "una bandera roja es una razón para mirar con más atención, **no es evidencia de irregularidad**". Solo aparecen entidades públicas, nunca personas.
+
+**Verificación pedida: ¿el indicador cuenta inscritos o postores?**
+- En SEACE, "participantes" (inscritos) y "postores" (quienes presentan oferta) son distintos. El indicador debe contar postores.
+- **Los datos de OECE no traen el número de inscritos.** Probé qué cuenta el campo de "postores":
+  - en 1 de cada 3 procesos la lista incluye **consorcios**, y un consorcio solo existe al presentar una oferta;
+  - en un proceso seguido día a día por la API, el campo estaba vacío durante la convocatoria y apareció de golpe después de las ofertas.
+- **Conclusión:** cuenta postores; no hubo que corregir nada. El 1,1 % es bajo, pero coincide con estos datos.
+- **Límite honesto:** OECE no lo documenta y no pude compararlo con el SEACE. Un proceso de pintado de fachada figura con 102 postores, lo cual es llamativo.

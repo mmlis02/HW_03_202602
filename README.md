@@ -1010,6 +1010,35 @@ Los 2.750 procesos sin `numberOfTenderers` de la Fase 2 casi nunca tienen adjudi
 - **Con 5:** 2 casos ya dan 40 %.
 - **Con 20 o 30:** el ranking se reduce a 100 o 44 entidades sin cambiar la tasa máxima.
 
+### Verificación: ¿el campo cuenta participantes o postores?
+
+En SEACE, los **participantes** (empresas inscritas en el procedimiento) y los **postores** (quienes presentan oferta) son cosas distintas. La bandera R018 necesita **ofertas recibidas**. El indicador usa `tender.numberOfTenderers`, junto con la lista `tender.tenderers`. La política de publicación de OECE **no define** qué contienen, y los archivos OCDS **no publican el número de participantes inscritos**: no existe un campo aparte ni una sección `bids`, ni en las descargas masivas ni en la API. Por eso se verificó con los propios datos:
+
+| Prueba | Si el campo contara **inscritos**… | Si contara **postores**… | Resultado |
+|---|---|---|---|
+| Consorcios en la lista | no aparecerían: un consorcio no se inscribe como participante; se forma al presentar la oferta (promesa de consorcio) | aparecerían | **5.891 de 17.726 procesos (33 %) tienen consorcios en la lista** (13 % de las entradas en obras) → **postores** |
+| Evolución en el tiempo (API, `ocds-dgv273-seacev3-1239618`: convocatoria el 07/08, consultas hasta el 18/08) | crecería día a día desde el inicio de la convocatoria | aparecería de golpe después de la presentación de ofertas | vacío en las versiones del 10/08, 21/08 y 01/09; **aparece de golpe con 102 el 23/09** → **postores** |
+| El ganador está en la lista | sí | sí | sí en los 5 ejemplos (no distingue) |
+| Procesos solo CONVOCADOS | tendrían inscritos desde el primer día | casi nunca tendrían dato | la mayoría **no tiene** `numberOfTenderers` (2.750 vacíos, casi todos sin adjudicar) → **postores** |
+| Tamaño de los conteos | altos | bajos o moderados | mediana 7 en adjudicados, 16–19 en concursos de servicios y consultoría, **máximo 102** (pintado de una fachada) → **llamativo**, pero posible en servicios simples a los que acuden muchas MYPE |
+
+**Cinco ejemplos** (los archivos no traen el número de participantes, así que no puede mostrarse al lado):
+
+| ocid | Método | `numberOfTenderers` | Nombres en la lista | Consorcios en la lista | ¿Ganador en la lista? | Estado |
+|---|---|---|---|---|---|---|
+| ocds-dgv273-seacev3-1228717 | Concurso Público Abreviado | 5 | 5 | 1 (y es el ganador) | sí | CONVOCADO |
+| ocds-dgv273-seacev3-1239618 | Concurso Público de Servicios | 102 | 102 | 5 | sí | APELADO |
+| ocds-dgv273-seacev3-1221040 | Licitación Pública Abreviada | **1** | 1 | 0 | sí | CONTRATADO |
+| ocds-dgv273-seacev3-1214374 | Licitación Pública Abreviada | 14 | 14 | 1 | — (desierto) | DESIERTO |
+| ocds-dgv273-seacev3-1195042 | Subasta Inversa Electrónica | 18 | 18 | 0 | sí | CONTRATADO |
+
+**Conclusión:** la evidencia indica que `tenderers` / `numberOfTenderers` lista a quienes llegaron a la etapa de **oferta** (postores), que es lo que mide R018. **No se corrigió el cálculo.** La tasa de 1,13 % es baja frente a lo que se suele reportar para el Perú, pero es coherente con estos datos: en los procedimientos competitivos, la mediana de postores de un proceso adjudicado es 7.
+
+**Limitaciones que siguen abiertas:**
+- **Sin fuente oficial:** OECE no documenta el campo y no se pudo contrastar con la ficha pública del SEACE, que no es accesible de forma automática. Una verificación manual sencilla: buscar en el SEACE el procedimiento `CP SER-SM-3-2026-CS-CSJLI/PJ-1` (ocid …1239618) y comparar su número de postores con los 102.
+- **Conteo y lista no siempre coinciden:** en **218 procesos** `numberOfTenderers` no coincide con el largo de la lista, y no es por identificadores repetidos. Por eso se usa `numberOfTenderers` tal como lo publica OECE.
+- **Postores no admitidos:** la lista podría incluir postores cuyas ofertas luego no fueron admitidas. Para R018 eso es correcto, porque mide ofertas **recibidas**.
+
 **Top 10 de entidades** (mínimo 10 procesos; IC95 = intervalo de confianza de Wilson):
 
 | # | Entidad compradora | Departamento | Procesos | Con un postor | Tasa | IC95 |
