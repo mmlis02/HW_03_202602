@@ -17,7 +17,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.config import BASE, cargar_config, ruta  # noqa: E402
+from src.config import BASE, archivo, cargar_config, ruta  # noqa: E402
 from src.territorio import Territorio, geojson_departamentos  # noqa: E402
 from src.validacion import validar  # noqa: E402
 
@@ -28,9 +28,9 @@ def main():
     ign = BASE / cfg["ign"]["carpeta"]
     terr = Territorio(ign, cfg["validacion"]["alias_provincias"])
 
-    df = pd.read_parquet(proc / "procesos.parquet")
+    df = pd.read_parquet(archivo(cfg, "procesos"))
     val, rep = validar(df, terr, cfg["validacion"])
-    val.to_parquet(proc / "procesos_validados.parquet", index=False)
+    val.to_parquet(archivo(cfg, "procesos_validados"), index=False)
 
     # --- Ejemplos para verificar a mano las posibles reconvocatorias ---
     ejemplos = {}
@@ -45,7 +45,7 @@ def main():
     rep["R1c_misma_nomenclatura_y_entidad"]["ejemplos"] = ejemplos
 
     # --- Novedades (API, septiembre): aparte; ubicación por la misma entidad del corpus ---
-    nov_path = proc / "novedades_api.parquet"
+    nov_path = archivo(cfg, "novedades_api")
     if nov_path.exists():
         nov = pd.read_parquet(nov_path)
         por_entidad = val.dropna(subset=["departamento"]).groupby("comprador_id")["departamento"].agg(lambda s: s.mode().iat[0])
@@ -53,7 +53,7 @@ def main():
         nov["departamento_fuente"] = nov["departamento"].notna().map({True: "misma_entidad", False: ""})
         nov["categoria_es"] = nov["categoria"].map(cfg["validacion"]["categorias"]).fillna("Sin categoría")
         nov["tipo_dato"] = "novedad reciente (API, mes en curso, no validada ni incluida en indicadores)"
-        nov.to_parquet(proc / "novedades_validadas.parquet", index=False)
+        nov.to_parquet(archivo(cfg, "novedades_validadas"), index=False)
         rep["novedades_api"] = {"procesos": len(nov), "ubicados_por_misma_entidad": int(nov["departamento"].notna().sum()),
                                 "tasa_recuperacion_departamento": round(nov["departamento"].notna().mean(), 4),
                                 "sin_ubicar": int(nov["departamento"].isna().sum()),

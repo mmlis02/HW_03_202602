@@ -15,7 +15,8 @@ from src.config import BASE, cargar_config
 
 cfg = cargar_config()
 A = cfg["app"]
-st.set_page_config(page_title=A["titulo"], page_icon="⚖️", layout="wide")
+T = A["textos"]  # todos los textos de la interfaz vienen de config.yaml
+st.set_page_config(page_title=A["titulo"], page_icon=T["icono"], layout="wide")
 
 
 @st.cache_resource(show_spinner=A["cargando"])
@@ -43,20 +44,21 @@ def mostrar_fuentes(fuentes: list[dict], titulo: str):
     cortas = cfg["motor"]["citas_cortas"]
     for f in fuentes:
         marca = f" · ✅ {A['etiqueta_citada']}" if f["citada"] else ""
-        encabezado = f"{cortas.get(f['documento'], f['documento'])} — pág. {f['pagina']} — similitud {f['similitud']:.3f}{marca}"
+        encabezado = T["fuente_encabezado"].format(doc=cortas.get(f["documento"], f["documento"]), pagina=f["pagina"],
+                                                   similitud=f["similitud"]) + marca
         with st.expander(encabezado, expanded=f["citada"]):
             st.caption(f"{f['titulo']}" + (f" · {f['articulo']}" if f["articulo"] else "")
-                       + (f" · modificado por {f['modificado_por']}" if f["modificado_por"] else ""))
+                       + (" · " + T["modificado_por"].format(norma=f["modificado_por"]) if f["modificado_por"] else ""))
             st.text(f["texto"])
 
 
 def mostrar_resultado(r: dict):
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("¿Se abstuvo?", "Sí" if r["abstuvo"] else "No")
-    c2.metric("Similitud máxima", f"{r['similitud_max']:.3f}" if r["similitud_max"] is not None else "—",
-              help=f"Umbral de abstención: {r['umbral']}")
-    c3.metric("Costo de la consulta", f"US$ {r['costo_usd']:.6f}")
-    c4.metric("Tokens (entrada / salida)", f"{r['tokens_entrada']} / {r['tokens_salida']}")
+    c1.metric(T["m_abstuvo"], T["si"] if r["abstuvo"] else T["no"])
+    c2.metric(T["m_similitud"], f"{r['similitud_max']:.3f}" if r["similitud_max"] is not None else T["sin_valor"],
+              help=T["ayuda_umbral"].format(umbral=r["umbral"]))
+    c3.metric(T["m_costo"], f"US$ {r['costo_usd']:.6f}")
+    c4.metric(T["m_tokens"], f"{r['tokens_entrada']} / {r['tokens_salida']}")
 
     if r["error"]:
         st.error(r["error"])  # los errores de API se muestran como ERROR, nunca como respuesta
@@ -74,7 +76,7 @@ def mostrar_resultado(r: dict):
         st.info(f"**{A['titulo_limite']}:** {r['explicacion_limite']}")
     for nota in r["notas_version"]:
         st.info(f"**{A['titulo_notas_version']}:** {nota}")
-    st.caption(f"Modelo: {r['modelo'] or '— (no se llamó a la IA)'} · latencia {r['latencia_s']:.2f} s")
+    st.caption(T["modelo_latencia"].format(modelo=r["modelo"] or T["sin_llm"], latencia=r["latencia_s"]))
     if r["fuentes"]:
         mostrar_fuentes(r["fuentes"], A["titulo_fuentes"])
 
@@ -102,7 +104,7 @@ with tab_preg:
         pregunta = st.text_area(A["etiqueta_pregunta"], key="pregunta", height=90)
         enviar = st.form_submit_button(A["boton_preguntar"], type="primary")
     if enviar:
-        with st.spinner("Buscando en los documentos..."):
+        with st.spinner(T["buscando"]):
             st.session_state["resultado"] = responder(pregunta)
     if st.session_state.get("resultado"):
         mostrar_resultado(st.session_state["resultado"])
@@ -115,41 +117,38 @@ with tab_cal:
                 st.markdown(texto)
 
 with tab_eval:
-    st.subheader("Motor completo: abstención por umbral (sin IA) y final (con IA)")
+    st.subheader(T["eval_titulo_motor"])
+
     def fila(nombre, datos, con_umbral):
-        f = {"Corrida": nombre}
+        f = {T["eval_columna_corrida"]: nombre}
         if con_umbral:
-            f.update({f"umbral: {k}": v for k, v in datos["defensa1_sin_ia"].items() if "tasa" not in k})
-        f.update({f"final: {k}": v for k, v in datos["final_con_ia"].items()
+            f.update({f"{T['eval_prefijo_umbral']}: {k}": v for k, v in datos["defensa1_sin_ia"].items() if "tasa" not in k})
+        f.update({f"{T['eval_prefijo_final']}: {k}": v for k, v in datos["final_con_ia"].items()
                   if k in ("abstenciones_correctas", "abstenciones_incorrectas", "acierto_de_cita", "costo_total_usd")})
         return f
-    corridas = [("Prompt v1 (umbral 0.840)", "motor_v1", True),
-                ("Prompt v2 (diagnóstico: el LLM ve las 25)", "motor_v2", False),
-                ("Prompt v3 — en uso (diagnóstico: el LLM ve las 25)", "motor_v3", False)]
-    filas = [fila(n, leer_json(k), u) for n, k, u in corridas if leer_json(k)]
+    filas = [fila(c["nombre"], leer_json(c["clave"]), c["con_umbral"]) for c in T["eval_corridas"] if leer_json(c["clave"])]
     if filas:
         st.dataframe(pd.DataFrame(filas).fillna("—"), hide_index=True)
     opciones = leer_texto("opciones_umbral")
     if opciones:
-        st.markdown("**Opciones de umbral con el prompt v3, en uso** (umbral elegido para el modelo local: "
-                    f"{cfg['motor']['umbral_similitud']['local']})")
+        st.markdown(T["eval_opciones"].format(umbral=cfg["motor"]["umbral_similitud"]["local"]))
         st.markdown(opciones)
     barrido = BASE / A["rutas_reportes"]["barrido_png"]
     if barrido.exists():
-        st.image(str(barrido), caption="Barrido del umbral (sin IA)")
+        st.image(str(barrido), caption=T["eval_barrido"])
     puntajes = leer_texto("puntajes")
     if puntajes:
-        with st.expander("Similitud top-1 de las 25 preguntas de evaluación"):
+        with st.expander(T["eval_puntajes"]):
             st.markdown(puntajes)
 
-    st.subheader("Comparación de embeddings (Fase 4)")
+    st.subheader(T["eval_embeddings"])
     comp = leer_json("comparacion_embeddings")
     if comp:
         campos = ["recall@1", "recall@3", "recall@5", "mrr@5", "segundos_indexacion", "costo_indexacion_usd",
                   "latencia_consulta_media_s", "costo_por_consulta_usd", "dimension", "auc_dentro_fuera"]
         tabla = pd.DataFrame({m["modelo"]: {c: m.get(c) for c in campos} for m in comp["modelos"].values()})
         st.dataframe(tabla.astype(str))
-    st.subheader("Fragmentos y recuperación (Fase 2)")
+    st.subheader(T["eval_fragmentos"])
     frag = leer_texto("fragmentos")
     if frag:
         st.markdown(frag.split("![Distribución]")[0])
@@ -159,15 +158,14 @@ with tab_eval:
 
 with tab_cost:
     log = BASE / cfg["precios"]["log_llamadas"]
-    st.write(f"Precios: {cfg['precios']['fuente']} (verificados el {cfg['precios']['fecha_verificacion']}). "
-             "OpenAI cobra igual a toda hora; la tabla de franjas horarias está en config.yaml.")
+    st.write(T["costos_precios"].format(fuente=cfg["precios"]["fuente"], fecha=cfg["precios"]["fecha_verificacion"]))
     if log.exists():
         df = pd.read_csv(log)
         df["costo_usd"] = pd.to_numeric(df["costo_usd"], errors="coerce").fillna(0)
         c1, c2, c3 = st.columns(3)
-        c1.metric("Llamadas registradas", len(df))
-        c2.metric("Costo total", f"US$ {df['costo_usd'].sum():.4f}")
-        c3.metric("Llamadas fallidas", int((df["exito"].astype(str) != "True").sum()))
+        c1.metric(T["costos_llamadas"], len(df))
+        c2.metric(T["costos_total"], f"US$ {df['costo_usd'].sum():.4f}")
+        c3.metric(T["costos_fallidas"], int((df["exito"].astype(str) != "True").sum()))
         st.dataframe(df.groupby("modelo").agg(llamadas=("modelo", "size"), costo_usd=("costo_usd", "sum")).reset_index(), hide_index=True)
-        with st.expander("Últimas 20 llamadas"):
+        with st.expander(T["costos_ultimas"]):
             st.dataframe(df.tail(20), hide_index=True)

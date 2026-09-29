@@ -7,7 +7,44 @@ Proyecto para una MYPE peruana que quiere venderle al Estado:
 
 El enunciado completo está en [docs/enunciado.md](docs/enunciado.md). Las notas para el video están en [docs/notas_para_video.md](docs/notas_para_video.md).
 
-> Estado: en construcción. Cada fase agrega su sección a este README.
+> **Video (máx. 12 min):** _[enlace pendiente — pegar aquí el enlace de YouTube / Drive]_
+>
+> Diagramas del pipeline: [docs/pipeline.md](docs/pipeline.md) · Guion del video: [docs/guion_video.md](docs/guion_video.md)
+
+## Resultados en resumen
+
+**Tarea 1: asistente normativo** (Ley 32069 actualizada, D.S. 001-2026-EF y D.Leg. 1715; 1.039 fragmentos)
+
+| | Resultado |
+|---|---|
+| Recuperación (15 preguntas dentro del corpus), modelo local e5-small | Recall@1 0,80 · Recall@3 0,87 · Recall@5 **0,93** · MRR 0,85 |
+| Defensa 1: abstención por umbral 0,800, sin IA | fuera del corpus detenidas 4/10 · legítimas detenidas **0/15** |
+| Abstención final con IA (prompt v3, en uso) | correctas **10/10** · incorrectas 3/15 (D02, D06, D12) |
+| Citas correctas (página esperada) | 12/12 |
+| Embeddings local frente a OpenAI | Recall@5 0,93 frente a 1,00 · latencia 14 ms frente a 303 ms · se eligió el local (ver Fase 4) |
+
+**Tarea 2: radar de compras** (OECE jun–ago 2026; 19.616 procesos en el análisis)
+
+| | Resultado |
+|---|---|
+| Una fila por proceso | 288.548 releases = 20.476 procesos (`ocid`); 0 repetidos entre meses |
+| Ubicación en los 25 departamentos | corpus **100 %**; novedades de septiembre (API) 97,1 % |
+| Filtros extraídos por la IA (25 preguntas) | **25/25** con todos los campos correctos |
+| Recall@5 (16 preguntas): filtros correctos / de la IA / solo embeddings | **0,94** / 0,88 / 0,69 |
+| Abstención con umbral 0,830: por umbral sin IA / final con IA | 2/8 y 0/16 / **6/8 y 0/16** (fallan las trampas F03 y F07) |
+| Un solo postor (R018, competitivos) | 134 de 11.833 = **1,13 %** |
+
+## Costo real total de las llamadas a la API
+
+Según los logs de costos de ambas tareas (precios verificados el 2026-09-27; OpenAI cobra igual a toda hora):
+
+| Tarea | Llamadas | Costo (USD) | Log |
+|---|---|---|---|
+| Tarea 1 (gpt-6-luna y text-embedding-3-small) | 145 (3 fallidas: pruebas con clave inválida, sin cobro) | US$0,0152 | [`tarea1_rag_normativo/logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv) |
+| Tarea 2 (gpt-6-luna) | 57 | US$0,0091 | [`tarea2_radar/logs/costos_llm.csv`](tarea2_radar/logs/costos_llm.csv) |
+| **Total** | **202** | **US$0,0243** | |
+
+Una pregunta típica cuesta ≈ US$0,00017 en la Tarea 1 y ≈ US$0,0003 en la Tarea 2 (dos llamadas). Una pregunta detenida por el umbral cuesta US$0.
 
 ## Instalación en Windows (paso a paso)
 
@@ -44,9 +81,48 @@ Probado con **Python 3.14.7**. En Windows:
 
 En macOS/Linux los pasos son iguales, con `python3 -m venv .venv` y `source .venv/bin/activate`. El paso 3 no hace falta en Mac, porque la versión por defecto ya es solo CPU.
 
-## Datos grandes fuera de git
+## Datos grandes fuera de git y cómo regenerar todo
 
-Los PDFs originales, los archivos mensuales de OECE y los índices vectoriales **no se suben al repositorio**; ver `.gitignore`. Cada tarea tiene un script de descarga (`scripts/`) que los vuelve a bajar y que no repite lo que ya existe. Los detalles se agregarán en cada fase.
+Los PDFs originales, los archivos mensuales de OECE, los límites del IGN y los índices vectoriales **no se suben al repositorio** (ver `.gitignore`). Sí están versionados los datos procesados (`data/processed/`), los reportes, las evaluaciones y los logs. Por eso **las dos apps funcionan tras clonar con solo construir los índices**.
+
+**Uso rápido** (con el entorno activado; en Windows usa `\` en las rutas):
+
+```bash
+# Tarea 1
+cd tarea1_rag_normativo
+python build_index.py            # índice local (~20 s; la primera vez descarga el modelo e5-small, ~470 MB)
+streamlit run app.py             # http://localhost:8501
+# Tarea 2 (en otra terminal)
+cd tarea2_radar
+python build_index.py            # índice de descripciones (~6 min la primera vez)
+streamlit run app.py             # si el 8501 está ocupado, Streamlit usa el 8502
+```
+
+**Regenerar todo desde cero** (descargas incluidas; no repite lo que ya existe):
+
+```bash
+# Tarea 1: PDFs oficiales → texto → índice → evaluación
+cd tarea1_rag_normativo
+python scripts/descargar_fuentes.py      # PDFs de gob.pe y El Peruano (~12 MB) → data/raw/
+python scripts/verificar_fuentes.py
+python scripts/procesar_documentos.py
+python build_index.py --fragmentos todas
+python eval/evaluar_recuperacion.py --fragmentos todas
+python eval/barrido_umbral.py && python eval/evaluar_motor.py
+# Tarea 2: OECE + IGN → validación → índice → evaluación → riesgo
+cd ../tarea2_radar
+python scripts/descargar_datos.py        # 3 ZIP de OECE (30 MB, verificados con SHA-256) + límites del IGN (23 MB)
+python scripts/actualizar_api.py         # novedades del mes en curso (API, con caché)
+python scripts/procesar_datos.py
+python scripts/validar_datos.py
+python build_index.py
+python eval/construir_verdad.py && python eval/evaluar_recuperacion.py && python eval/barrido_umbral.py
+python scripts/calcular_riesgo.py
+```
+
+Las evaluaciones **con IA** cuestan dinero y se ejecutan aparte: `python eval/evaluar_motor.py --con-ia` en cada tarea, más `--sin-umbral --etiqueta X` en la Tarea 1. Cada tarea tiene también pruebas **sin costo** con un LLM falso: `python scripts/probar_motor_sin_costo.py`.
+
+**Todos los parámetros están en el `config.yaml` de cada tarea:** rutas y archivos de datos, modelos, tamaños de fragmento, umbrales, prompts, mensajes y textos de la interfaz, y la tabla de precios por hora. Los reportes y logs tienen nombres fijos dentro de las carpetas configuradas.
 
 ## Tarea 1 — Pipeline
 
@@ -634,14 +710,14 @@ Se probó sin navegador con `streamlit.testing.v1.AppTest`:
 
 ### Costo total real de la Tarea 1
 
-Según [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv): **141 llamadas, US$0,0148 en total**.
+Según [`logs/costos_llm.csv`](tarea1_rag_normativo/logs/costos_llm.csv): **145 llamadas, US$0,0152 en total** (incluye las pruebas de la app hechas por la autora; ver también el costo total de ambas tareas al inicio).
 
 | Modelo | Llamadas | Costo |
 |---|---|---|
-| gpt-6-luna (respuestas) | 73 | US$0,0118 |
+| gpt-6-luna (respuestas) | 77 | US$0,0123 |
 | text-embedding-3-small (comparación Fase 4) | 68 | US$0,0030 |
 
-2 llamadas fallidas, ambas de la prueba de error con clave inválida, que no se cobran. Una pregunta típica a la app cuesta **≈ US$0,00017**. Una pregunta detenida por el umbral cuesta **US$0**.
+3 llamadas fallidas, todas de pruebas de error con clave inválida, que no se cobran. Una pregunta típica a la app cuesta **≈ US$0,00017**. Una pregunta detenida por el umbral cuesta **US$0**.
 
 ## Tarea 2 — Fase 1: adquisición de datos (OECE, estándar OCDS)
 
@@ -1070,10 +1146,26 @@ En SEACE, los **participantes** (empresas inscritas en el procedimiento) y los *
 ## Estructura
 
 ```
-├── README.md
-├── requirements.txt
-├── .env.example
-├── docs/                    # enunciado, diagramas, notas para el video
-├── tarea1_rag_normativo/    # config.yaml, build_index.py, app.py, src/, eval/, data/, logs/
-└── tarea2_radar/            # config.yaml, app.py, src/, eval/, data/, logs/
+├── README.md · requirements.txt · .env.example · .githooks/pre-commit (bloquea claves en commits)
+├── comun/                      # motor compartido por ambas tareas: embeddings, costos por hora, llamada al LLM
+├── docs/                       # enunciado, pipeline.md (diagramas), notas_para_video.md, guion_video.md
+├── tarea1_rag_normativo/
+│   ├── config.yaml             # TODOS los parámetros, prompts y textos de la Tarea 1
+│   ├── build_index.py          # proceso OFFLINE
+│   ├── app.py · preguntar.py   # interfaces (solo llaman a src/motor.py → responder)
+│   ├── src/                    # config, extraccion, limpieza, fragmentos, embeddings, indice, motor, costos
+│   ├── scripts/                # descargar_fuentes, verificar_fuentes, procesar_documentos, reporte_fragmentos, pruebas
+│   ├── eval/                   # preguntas.csv, evaluar_recuperacion, barrido_umbral, evaluar_motor, opciones_umbral, comparar_embeddings, resultados/
+│   ├── data/{raw (fuera de git), processed, index (fuera de git)}
+│   └── logs/                   # costos_llm.csv, build_index.log, pruebas
+└── tarea2_radar/
+    ├── config.yaml             # TODOS los parámetros, prompts y textos de la Tarea 2
+    ├── build_index.py · app.py
+    ├── src/                    # adquisicion, api_oece, validacion, territorio, indice, motor, riesgo, config
+    ├── scripts/                # descargar_datos, actualizar_api, procesar_datos, validar_datos, calcular_riesgo, pruebas
+    ├── eval/                   # definiciones.yaml (hoja de respuestas), construir_verdad, evaluar_recuperacion, barrido_umbral, evaluar_motor, resultados/
+    ├── data/{raw (fuera de git), processed, outputs, index (fuera de git)}
+    └── logs/                   # costos_llm.csv, descargas.log, api.log, procesar_datos.log, build_index.log
 ```
+
+**Historial de commits:** el trabajo se hizo en commits por fase entre el 27 y el 28 de septiembre de 2026. Los mensajes describen cada paso.

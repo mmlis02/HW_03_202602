@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.config import BASE, cargar_config, ruta  # noqa: E402
+from src.config import BASE, archivo, cargar_config  # noqa: E402
 from src.riesgo import distribucion_entidades, por_grupo, universo  # noqa: E402
 
 
@@ -17,7 +17,7 @@ def main():
     cfg = cargar_config()
     rc = cfg["riesgo"]
     out = BASE / rc["salidas"]
-    df = pd.read_parquet(ruta(cfg, "processed") / "procesos_validados.parquet")
+    df = pd.read_parquet(archivo(cfg, "procesos_validados"))
     u, conteo = universo(df, rc["metodos_competitivos"])
     dep = por_grupo(u, "departamento")
     ent = por_grupo(u, "comprador_id", "comprador_nombre_limpio")

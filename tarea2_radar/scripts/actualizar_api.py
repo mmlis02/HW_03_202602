@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.api_oece import ClienteOECE  # noqa: E402
-from src.config import BASE, cargar_config, ruta  # noqa: E402
+from src.config import BASE, archivo, cargar_config, ruta  # noqa: E402
 
 
 def main():
@@ -52,7 +52,7 @@ def main():
             break
         n += 1
     df = pd.DataFrame(filas).drop_duplicates("ocid")
-    df.to_parquet(ruta(cfg, "processed") / "novedades_api.parquet", index=False)
+    df.to_parquet(archivo(cfg, "novedades_api"), index=False)
     log(f"Resumen API: {len(df)} procesos únicos | páginas {n} ({de_cache} de caché) | pedidos HTTP {cliente.pedidos} | "
         f"{cliente.bytes / 1e6:.1f} MB descargados | {time.time() - inicio:.1f} s")
 

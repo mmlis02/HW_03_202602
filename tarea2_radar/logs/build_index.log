@@ -10,3 +10,4 @@
 2026-09-28T18:34:25 Índice t2_procesos_e5small: {'a_indexar': 20101, 'ya_estaban': 20101, 'insertados_o_actualizados': 0, 'borrados': 0, 'total': 20101} | 7.4 s
 2026-09-28T19:02:19    2/2 procesos guardados
 2026-09-28T19:02:19 Índice t2_procesos_e5small: {'a_indexar': 19616, 'ya_estaban': 19614, 'insertados_o_actualizados': 2, 'borrados': 487, 'total': 19616} | 5.7 s
+2026-09-28T19:24:39 Índice t2_procesos_e5small: {'a_indexar': 19616, 'ya_estaban': 19616, 'insertados_o_actualizados': 0, 'borrados': 0, 'total': 19616} | 4.8 s

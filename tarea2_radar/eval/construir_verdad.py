@@ -14,7 +14,7 @@ import pandas as pd
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.config import BASE, ruta, cargar_config  # noqa: E402
+from src.config import BASE, archivo, cargar_config  # noqa: E402
 from src.territorio import clave  # noqa: E402
 
 
@@ -39,7 +39,7 @@ def filtrar(d: pd.DataFrame, f: dict) -> pd.DataFrame:
 def main():
     cfg = cargar_config()
     defs = yaml.safe_load(open(BASE / "eval" / "definiciones.yaml", encoding="utf-8"))
-    d = pd.read_parquet(ruta(cfg, "processed") / "procesos_validados.parquet")
+    d = pd.read_parquet(archivo(cfg, "procesos_validados"))
     d = d[d["incluir_en_analisis"]].copy()
     d["clave_desc"] = d["descripcion_limpia"].map(clave)
     relevantes, filas = {}, []

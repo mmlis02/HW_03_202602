@@ -13,3 +13,8 @@ def cargar_config(ruta: Path = BASE / "config.yaml") -> dict:
 
 def ruta(cfg: dict, clave: str) -> Path:
     return BASE / cfg["rutas"][clave]
+
+
+def archivo(cfg: dict, clave: str) -> Path:
+    """Ruta absoluta de cfg['archivos'][clave] (datos que pasan de una etapa a otra)."""
+    return BASE / cfg["archivos"][clave]

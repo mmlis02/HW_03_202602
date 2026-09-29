@@ -24,7 +24,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.adquisicion import aplanar, leer_records  # noqa: E402
-from src.config import cargar_config, ruta  # noqa: E402
+from src.config import archivo, cargar_config, ruta  # noqa: E402
 
 # REGLA de deduplicación: de todas las filas con el mismo ocid se conserva la de compiledRelease
 # MÁS RECIENTE (fecha_compilado), porque el compiledRelease es el estado consolidado del proceso y
@@ -60,7 +60,7 @@ def main():
         registrar(f"{zip_path.name}: {n} records, {n_rel} releases listadas ({time.time() - t0:.1f} s)")
 
     todas = pd.DataFrame(filas)
-    todas.to_parquet(proc / "procesos_por_mes.parquet", index=False)
+    todas.to_parquet(archivo(cfg, "procesos_por_mes"), index=False)
 
     # --- Duplicados ENTRE meses (sobre el conjunto de los 3 meses) ---
     meses_por_ocid = todas.groupby("ocid")["mes_archivo"].agg(lambda s: sorted(set(s)))
@@ -74,7 +74,7 @@ def main():
                    .drop_duplicates("ocid", keep="first")
                    .assign(meses_en_que_aparece=lambda d: d["ocid"].map(lambda x: ",".join(meses_por_ocid[x])))
                    .sort_values("ocid").reset_index(drop=True))
-    unicos.to_parquet(proc / "procesos.parquet", index=False)
+    unicos.to_parquet(archivo(cfg, "procesos"), index=False)
 
     rep = {
         "fecha": datetime.now().isoformat(timespec="seconds"),

@@ -8,6 +8,15 @@ rutas:
   manifiesto_descargas: data/manifiesto_descargas.json
   logs: logs
 
+# Archivos de datos que pasan de una etapa a otra (relativos a la carpeta de la tarea).
+# Los reportes y logs usan nombres fijos dentro de las carpetas de `rutas`.
+archivos:
+  procesos_por_mes: data/processed/procesos_por_mes.parquet      # Fase 1: una fila por record y archivo
+  procesos: data/processed/procesos.parquet                      # Fase 1: una fila por ocid
+  novedades_api: data/processed/novedades_api.parquet            # Fase 1: API (septiembre)
+  procesos_validados: data/processed/procesos_validados.parquet  # Fase 2: corpus validado
+  novedades_validadas: data/processed/novedades_validadas.parquet
+
 oece:
   base: "https://contratacionesabiertas.oece.gob.pe"
   # Descargas masivas: /api/v1/file/{fuente}/{formato}/{año}/{mes}/  y la huella en .../sha/...
@@ -236,10 +245,92 @@ app:
     archivo mensual cerrado). No están validados como el corpus y NO entran en los indicadores,
     el mapa ni el buscador. El departamento se asignó por la misma entidad en junio–agosto.
   rutas:
-    procesos: data/processed/procesos_validados.parquet
-    novedades: data/processed/novedades_validadas.parquet
     geojson: data/outputs/departamentos.geojson
     reporte_calidad: data/processed/reporte_calidad.md
     calidad_json: data/processed/reporte_calidad.json
     riesgo_resumen: data/outputs/riesgo_resumen.json
     evaluacion: eval/resultados/evaluacion_motor_con_ia.json
+  zona_horaria: America/Lima
+  # Parámetros de la barra lateral
+  barra:
+    umbral_min: 0.70
+    umbral_max: 0.95
+    umbral_paso: 0.005
+    monto_paso: 10000.0
+  # Textos de la interfaz (todo lo que ve el usuario vive aquí, no en app.py)
+  textos:
+    icono: "🗺️"
+    cargando_motor: "Cargando el buscador (modelo de embeddings e índice)..."
+    moneda: "S/ {x:,.0f}"
+    sin_valor: "—"
+    barra_titulo: "Filtros"
+    barra_ayuda: "Filtran la tabla, el mapa y los indicadores sin llamar a la IA. También se aplican a la caja de preguntas."
+    f_departamento: "Departamento"
+    f_categoria: "Categoría"
+    categorias: ["Bienes", "Servicios", "Obras"]
+    f_monto_min: "Monto mínimo (S/)"
+    f_monto_max: "Monto máximo (S/)"
+    f_monto_max_ayuda: "0 = sin tope"
+    f_fecha: "Fecha de publicación"
+    f_umbral: "Umbral de similitud (preguntas)"
+    f_umbral_ayuda: "Por debajo de este valor el buscador se abstiene sin llamar a la IA. Calibrado: {umbral}."
+    k_procesos: "Procesos"
+    k_monto: "Monto total"
+    k_departamentos: "Departamentos"
+    k_riesgo: "Un solo postor (riesgo)"
+    k_riesgo_nota: "{uno} de {den:,} adjudicaciones competitivas. Alerta, no prueba."
+    mapa_colorear: "Colorear por"
+    mapa_opciones: ["Número de procesos", "Monto (S/)"]
+    mapa_etiquetas: {procesos: "Procesos", monto: "Monto (S/)"}
+    mapa_fuente: "Límites: IGN (Datos Abiertos), simplificados. Ubicación = departamento de la entidad compradora."
+    preguntar_intro: "Pregunta en lenguaje natural. La IA separa los **filtros** (lugar, monto, fecha, categoría) del **tema**; los filtros se aplican exactos y el tema se busca por significado. También se aplican los filtros de la barra lateral."
+    preguntar_label: "Tu pregunta"
+    preguntar_boton: "Buscar"
+    preguntar_buscando: "Buscando procesos..."
+    preguntar_sin_indice: "No se pudo usar el buscador: ejecuta `python build_index.py` una vez. ({error})"
+    filtros_titulo: "Filtros que extrajo la IA (verifícalos)"
+    filtros_columnas: {campo: "Campo", ia: "Extraído por la IA", aplicado: "Aplicado"}
+    filtros_campos: {departamento: "Departamento", categoria: "Categoría", monto_min: "Monto mínimo", monto_max: "Monto máximo", fecha_desde: "Desde", fecha_hasta: "Hasta"}
+    filtros_barra_dep: "Departamentos (barra)"
+    filtros_barra_cat: "Categorías (barra)"
+    tema_buscado: "Tema buscado por significado: «{tema}» · procesos que cumplen los filtros: {n:,}"
+    filtro_descartado: "Filtro descartado: {aviso}"
+    m_estado: "Estado"
+    m_similitud: "Similitud máxima"
+    m_umbral: "Umbral: {umbral}"
+    m_costo: "Costo"
+    m_llamadas: "Llamadas a la IA"
+    sin_resultados_nota: "**{respuesta}** (no es una abstención: los filtros no dejan ningún proceso)"
+    abstencion: "**El buscador se abstuvo ({motivo}).** {respuesta}"
+    respuesta_ia: "**Respuesta de la IA (léela completa):**\n\n{respuesta}"
+    ocids_eliminados: "Se eliminaron {n} ocid citados que no estaban entre los procesos encontrados."
+    procesos_titulo: "Procesos recuperados"
+    sin_monto: "sin monto"
+    col_citado: "Citado"
+    tabla_nota: "{n:,} procesos. Haz clic en una columna para ordenar. Monto −1 = sin monto publicado."
+    tabla_descargar: "Descargar CSV"
+    tabla_archivo: "procesos_filtrados.csv"
+    dist_agrupar: "Agrupar por"
+    dist_dimensiones: {categoria_es: "Categoría", departamento_mostrar: "Departamento", mes: "Mes", metodo: "Método de contratación"}
+    dist_medida: "Medida"
+    dist_medidas: ["Procesos", "Monto (S/)"]
+    riesgo_definicion: "**Indicador:** entre los procesos **adjudicados** de **método competitivo**, porcentaje que recibió **exactamente un postor** (bandera *R018 Single bid received*, Open Contracting Partnership 2024). Se excluyen los métodos no competitivos (contratación directa, convenios, régimen especial...), donde un solo postor es lo esperado, y los procesos **sin dato** de número de postores."
+    riesgo_sin_universo: "Con los filtros actuales no hay adjudicaciones competitivas con dato de postores."
+    riesgo_tasa: "Tasa (con filtros)"
+    riesgo_denominador: "Adjudicaciones competitivas con dato"
+    riesgo_sin_dato: "Sin dato de postores (excluidas)"
+    riesgo_excluidas: "Excluidas por método no competitivo: {n:,} ({detalle})"
+    riesgo_por_dep: "Por departamento"
+    riesgo_top: "Las {top} entidades con mayor proporción (mínimo {minimo} procesos)"
+    riesgo_sin_entidades: "Con los filtros actuales ninguna entidad llega a {minimo} procesos."
+    riesgo_columnas: {nombre: "Entidad compradora", un_postor: "Con un postor", tasa_un_postor: "Tasa", ic95_inf: "IC95 inf.", ic95_sup: "IC95 sup."}
+    riesgo_ic_nota: "IC95 = intervalo de confianza de Wilson: con pocos procesos la tasa es muy incierta. Solo se muestran entidades públicas, nunca personas."
+    riesgo_minimo_titulo: "¿Por qué un mínimo de {minimo} procesos por entidad?"
+    riesgo_minimo_texto: "Procesos por entidad (percentiles): {percentiles}. Con un mínimo bajo, una entidad con 1 proceso y 1 postor aparece con 100 %."
+    calidad_corpus: "Procesos en el corpus"
+    calidad_analisis: "Procesos en el análisis"
+    calidad_advertencias: "Con alguna advertencia"
+    novedades_conteo: "{n:,} procesos de septiembre 2026 ({sin} sin departamento)."
+    costos_precios: "Precios: {fuente} (verificados el {fecha}); igual a toda hora."
+    costos_llamadas: "Llamadas a la IA registradas"
+    costos_total: "Costo total"

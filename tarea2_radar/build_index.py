@@ -10,7 +10,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.config import BASE, cargar_config, ruta  # importar src primero: habilita el paquete comun/
+from src.config import BASE, archivo, cargar_config, ruta  # importar src primero: habilita el paquete comun/
 from comun.embeddings import crear_embedder  # noqa: E402
 from src.indice import abrir, indexar
 
@@ -25,7 +25,7 @@ def main():
         print(linea)
         log_f.write(linea + "\n")
 
-    df = pd.read_parquet(ruta(cfg, "processed") / "procesos_validados.parquet")
+    df = pd.read_parquet(archivo(cfg, "procesos_validados"))
     emb = crear_embedder(cfg, base=BASE)
     col = abrir(cfg)
     t0 = time.time()

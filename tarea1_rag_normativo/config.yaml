@@ -299,3 +299,37 @@ app:
     motor_v2: eval/resultados/evaluacion_motor_con_ia_sin_umbral_prompt_v2.json
     motor_v3: eval/resultados/evaluacion_motor_con_ia_sin_umbral_prompt_v3.json
     comparacion_embeddings: eval/resultados/comparacion_embeddings.json
+  # Textos de la interfaz (todo lo que ve el usuario vive aquí, no en app.py)
+  textos:
+    icono: "⚖️"
+    m_abstuvo: "¿Se abstuvo?"
+    si: "Sí"
+    no: "No"
+    m_similitud: "Similitud máxima"
+    ayuda_umbral: "Umbral de abstención: {umbral}"
+    m_costo: "Costo de la consulta"
+    m_tokens: "Tokens (entrada / salida)"
+    sin_valor: "—"
+    fuente_encabezado: "{doc} — pág. {pagina} — similitud {similitud:.3f}"
+    modificado_por: "modificado por {norma}"
+    modelo_latencia: "Modelo: {modelo} · latencia {latencia:.2f} s"
+    sin_llm: "— (no se llamó a la IA)"
+    buscando: "Buscando en los documentos..."
+    eval_titulo_motor: "Motor completo: abstención por umbral (sin IA) y final (con IA)"
+    eval_columna_corrida: "Corrida"
+    eval_prefijo_umbral: "umbral"
+    eval_prefijo_final: "final"
+    eval_corridas:
+      - {nombre: "Prompt v1 (umbral 0.840)", clave: motor_v1, con_umbral: true}
+      - {nombre: "Prompt v2 (diagnóstico: el LLM ve las 25)", clave: motor_v2, con_umbral: false}
+      - {nombre: "Prompt v3 — en uso (diagnóstico: el LLM ve las 25)", clave: motor_v3, con_umbral: false}
+    eval_opciones: "**Opciones de umbral con el prompt v3, en uso** (umbral elegido para el modelo local: {umbral})"
+    eval_barrido: "Barrido del umbral (sin IA)"
+    eval_puntajes: "Similitud top-1 de las 25 preguntas de evaluación"
+    eval_embeddings: "Comparación de embeddings (Fase 4)"
+    eval_fragmentos: "Fragmentos y recuperación (Fase 2)"
+    costos_precios: "Precios: {fuente} (verificados el {fecha}). OpenAI cobra igual a toda hora; la tabla de franjas horarias está en config.yaml."
+    costos_llamadas: "Llamadas registradas"
+    costos_total: "Costo total"
+    costos_fallidas: "Llamadas fallidas"
+    costos_ultimas: "Últimas 20 llamadas"
