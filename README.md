@@ -717,7 +717,7 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
 |---|---|---|---|
 | R1a. Mismo ocid repetido | 0 | deduplicación por ocid en la Fase 1 | — |
 | R1b. Mismo tender_id con distinto ocid (proceso registrado dos veces) | 4 filas (2 procesos) | se conserva el de compiledRelease más reciente; la copia queda con `incluir_en_analisis=False` | 2 excluidos con motivo |
-| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente`; **la copia de cada re-registro del mismo día (C) se excluye del análisis** (373 copias) | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
+| R1c. Misma nomenclatura y entidad, distinto ocid (posible reconvocatoria) | 2,241 filas en 1,072 grupos | **se conservan** con advertencia; `tipo_repeticion` y `es_version_vigente`; **las copias del mismo día (misma fecha y descripción que otro registro del grupo) se excluyen del análisis**: 858 copias (A: 486, C: 371, D: 1) | A reconvocatoria confirmada: 647 · C re-registro mismo día: 365 · B ítems distintos (no es repetición): 44 · D indeterminado: 16 grupos |
 | R2. Monto faltante o cero | 2,167 (monto nulo 0, monto 0: 2,120, moneda extranjera sin conversión a soles: 47) | se recupera con el monto adjudicado; el resto `monto_valido=False` (fuera de sumas de monto, dentro de conteos) | 38 recuperados (tasa 1.8%); 2,129 con advertencia |
 | R2c. amount_PEN = 0 con monto en soles > 0 | 113 | se usa el monto en soles de la convocatoria | corregidos |
 | R2b. Moneda extranjera | 334 (USD 303, EUR 23, GBP 8) | `monto_pen` = amount_PEN publicado por OECE | 271/334 convertidos; 63 con amount_PEN = 0 (cuentan en R2) |
@@ -734,15 +734,15 @@ python scripts/validar_datos.py      # → procesos_validados.parquet, reporte_c
 | | Procesos |
 |---|---|
 | Procesos en el corpus (una fila por ocid) | 20,476 |
-| − Excluidos: re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción) | 373 |
+| − Excluidos: re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción) | 858 |
 | − Excluidos: mismo tender_id que otro ocid (registro duplicado) | 2 |
-| **= Procesos para el análisis** (conteos e indicador de riesgo) | **20,101** |
-| de ellos con monto válido (entran a las sumas de monto) | 18,226 |
-| de ellos sin monto (cuentan como proceso, no suman monto) | 1,875 |
+| **= Procesos para el análisis** (conteos e indicador de riesgo) | **19,616** |
+| de ellos con monto válido (entran a las sumas de monto) | 17,762 |
+| de ellos sin monto (cuentan como proceso, no suman monto) | 1,854 |
 
 3,956 procesos tienen alguna advertencia (columna `advertencias`).
 
-Los **montos totales** del tablero suman solo los procesos con monto válido, y el tablero indica junto al total cuántos procesos quedan fuera por no tener monto.
+Los **montos totales** del tablero suman solo los procesos con monto válido; junto al total se indica cuántos quedan fuera por no tener monto y cuánto corresponde a convocatorias anteriores de procesos reconvocados.
 
 ### Ubicación: qué campo se usa y cómo se normaliza
 
@@ -779,8 +779,9 @@ Los **montos totales** del tablero suman solo los procesos con monto válido, y 
 | **D. Indeterminado** | 16 | fechas distintas, sin estado fallido previo | — |
 
 **Qué se hizo:** **no se borra ninguno.** Todos quedan con la advertencia "posible reconvocatoria o re-registro", el `tipo_repeticion` y `es_version_vigente` (la versión más reciente del grupo; en B todas son vigentes).
-- **Re-registros del mismo día (C):** son **el mismo proceso contado dos veces**. La copia se conserva con su marca, pero se **excluye de conteos, montos e indicador de riesgo** (373 copias), igual que los 2 duplicados por `tender_id`.
-- **Reconvocatorias confirmadas (A):** se cuentan todas, porque cada convocatoria es un procedimiento oficial distinto. La versión anterior queda marcada como no vigente.
+- **Copias del mismo día, en cualquier grupo:** si dos o más registros del grupo tienen **la misma fecha de publicación y la misma descripción**, son **el mismo proceso contado dos veces**. Se conserva uno (el de `compiledRelease` más reciente) y las copias se **excluyen de conteos, montos e indicador de riesgo**, igual que los 2 duplicados por `tender_id`. En total son **858 copias**: 371 en grupos de re-registro (C), **486 dentro de reconvocatorias confirmadas (A)** y 1 en D.
+  - *Cómo se detectó que hacía falta generalizar la regla:* al revisar los montos más altos del tablero apareció la Municipalidad Provincial de Tocache 4 veces con la misma obra de S/ 353 millones. Era una reconvocatoria (la primera versión quedó NULO el 16/07) registrada **3 veces el mismo día** (20/08). La primera versión de la regla solo excluía copias en los grupos de tipo C.
+- **Reconvocatorias confirmadas (A):** cada convocatoria distinta se cuenta, porque es un procedimiento oficial. La anterior queda marcada como no vigente. En los montos, el tablero indica junto al total cuánto corresponde a esas convocatorias anteriores (S/ 676 millones en 251 procesos), para no sobreestimar lo que se compra.
 
 ### Mapa
 
@@ -827,7 +828,7 @@ Esta sección se escribió y se subió al repositorio **antes** de programar y e
 
 ```bash
 cd tarea2_radar
-python build_index.py                         # OFFLINE: indexa 20.101 descripciones (≈ 6 min; 2.a corrida 7 s)
+python build_index.py                         # OFFLINE: indexa 19.616 descripciones (≈ 6 min la primera vez; luego solo cambios)
 python eval/construir_verdad.py               # hoja de respuestas desde eval/definiciones.yaml (sin buscador)
 python eval/evaluar_recuperacion.py           # Recall@k con filtros correctos vs solo embeddings (sin IA)
 python eval/barrido_umbral.py                 # barrido del umbral (sin IA)
@@ -854,9 +855,9 @@ Un embedding resume el **significado** de un texto en un vector. No sabe que 200
 
 | | Con filtros | Solo embeddings |
 |---|---|---|
-| Recall@5 | **0,94** | 0,63 |
-| Precisión@5 | **0,53** | 0,26 |
-| De los 5 primeros, % que cumple departamento, monto, fecha y categoría pedidos | **100 %** | **33 %** |
+| Recall@5 | **0.94** | 0.69 |
+| Precisión@5 | **0.49** | 0.24 |
+| De los 5 primeros, % que cumple departamento, monto, fecha y categoría pedidos | **100%** | **32%** |
 
 ### Resultados con IA (corrida del 28/09/2026, 25 preguntas, 49 llamadas, US$0.0080)
 
@@ -891,11 +892,151 @@ Como los filtros de la IA fueron idénticos a los correctos, la diferencia viene
 - **Sin resultados:** Z01 terminó en `sin_resultados` (1/1), y ninguna pregunta fuera del tema terminó ahí por filtros inventados.
 - **Citas por `ocid`:** 0 `ocid` inventados; 14/16 respuestas citan al menos un proceso relevante (fallan Q04 y Q13, por el buscador).
 
-**Fallas de la defensa 2 (F03 y F07, las trampas cercanas).** Para "aviones de combate F-35" y "submarinos nucleares", la IA respondió **con honestidad en el texto**: "No se identifica… una compra de aviones de combate F-35. El proceso más cercano es… una aeronave Learjet". Pero marcó `fuera_de_tema = false`. Según la regla fijada, **cuentan como falla**: el sistema muestra una respuesta, aunque diga que no hay lo pedido.
+**Limitación conocida: F03 y F07 (trampas cercanas).**
+- **Qué pasó:** para "aviones de combate F-35" y "submarinos nucleares", **la IA reconoce en el texto que no hay coincidencia**: "No se identifica… una compra de aviones de combate F-35; el proceso más cercano es… una aeronave Learjet". Pero **no marca** `fuera_de_tema`.
+- **Cómo cuenta:** la regla estricta fijada antes de la corrida solo mira el campo estructurado, así que **lo cuenta como error**. El sistema muestra una respuesta, aunque su texto diga que no hay lo pedido.
+- **Decisión:** se dejó el prompt como está. Ajustarlo con estas mismas preguntas aumentaría el sobreajuste, y probablemente haría que Q13 pasara a abstención incorrecta.
+- **Mitigación en la app:** la respuesta de la IA se muestra **completa en una caja neutra** (no verde) titulada "Respuesta de la IA, léela completa", con una advertencia visible: la IA puede indicar que ningún proceso coincide exactamente.
 
-**Corrección posterior a la corrida (declarada):**
-- **Q13:** la regex de Q13 incluía por error 6 compras de **combustible para ambulancias**. Lo detectó la IA al responder. Se corrigió la hoja (17 relevantes) y se recalcularon las métricas **sin nuevas llamadas** (`--desde-csv`). Antes de la corrección, Recall con filtros de la IA = 0,94 y citas relevantes = 15/16.
-- **Bug corregido:** el valor interno "sin monto" (−1) llegaba al prompt y aparecía como "S/ −1.00" en una respuesta. Ahora se muestra "sin monto publicado".
+**Corrección de Q13, hecha DESPUÉS de ver los resultados.** La regex de Q13 ("adquisición… ambulancia") incluía por error 6 compras de **combustible para ambulancias**. Lo detectó la IA, que respondió "los más parecidos se refieren a combustible para ambulancias, no a la adquisición de vehículos". Se corrigió la hoja (`excluir: COMBUSTIBLE|DIESEL`) y se recalcularon las métricas **sin nuevas llamadas** (`--desde-csv`), con las mismas extracciones y respuestas de la IA:
+
+| Métrica (16 preguntas dentro) | Antes de corregir Q13 | Después de corregir Q13 |
+|---|---|---|
+| Procesos relevantes de Q13 | 23 | 17 (15 tras excluir copias del mismo día) |
+| Recall@1 — filtros correctos / de la IA | 0,75 / 0,88 | 0,75 / 0,88 |
+| Recall@3 — filtros correctos / de la IA | 0,94 / 0,94 | 0,94 / **0,88** |
+| Recall@5 — filtros correctos / de la IA | 0,94 / 0,94 | 0,94 / **0,88** |
+| Respuestas que citan al menos un proceso relevante | 15/16 | **14/16** |
+| Abstención final a 0,830 (correctas / incorrectas) | 6/8 / 0/16 | 6/8 / 0/16 (sin cambio) |
+
+La corrección **empeora** las métricas con filtros de la IA: con la hoja errada, Q13 parecía un acierto cuando en realidad el buscador traía combustible. Las cifras "después" son las válidas. Además, tras excluir las copias del mismo día (Fase 2), se recalculó todo otra vez sin cambios en estas métricas.
+
+**Bug corregido:** el valor interno "sin monto" (−1) llegaba al prompt y aparecía como "S/ −1.00" en una respuesta. Ahora se muestra "sin monto publicado".
+
+## Tarea 2 — Pipeline
+
+```mermaid
+flowchart TB
+    subgraph OFF["OFFLINE (scripts/ y build_index.py)"]
+        A["OECE descargas masivas<br/>3 ZIP JSON OCDS jun–ago 2026<br/>verificados con SHA-256"] --> B["Records → 1 fila por ocid<br/>(288.548 releases = 20.476 procesos)"]
+        A2["API /search (sep. 2026)<br/>pausas · reintentos · caché"] --> N["Novedades recientes<br/>(aparte, fuera de indicadores)"]
+        B --> C["Validación (R1–R6)<br/>repetidos · montos · descripciones<br/>comillas '¿' · tildes"]
+        IGN["IGN límites<br/>departamentos y distritos"] --> D
+        C --> D["Ubicación de la entidad compradora<br/>→ 25 departamentos (metadato)"]
+        D --> E["procesos_validados.parquet<br/>19.616 en el análisis"]
+        E --> F["Embeddings e5-small (descripción)<br/>+ metadatos: departamento, monto,<br/>fecha, categoría, ocid"]
+        F --> G[("ChromaDB")]
+        E --> RI["Indicador un solo postor<br/>(R018, competitivos)"]
+        IGN --> GJ["GeoJSON liviano"]
+    end
+    subgraph ON["ONLINE (app.py → src/motor.py)"]
+        Q["Pregunta"] --> X["IA extrae FILTROS<br/>(departamento, montos, fechas, categoría)"]
+        SB["Barra lateral (sin IA)"] --> Y
+        X --> Y["Intersección de filtros"]
+        Y --> Z{"¿0 procesos?"}
+        Z -- sí --> SR["sin_resultados"]
+        Z -- no --> S["Búsqueda semántica SOLO<br/>entre los filtrados"]
+        G -.-> S
+        S --> T{"DEFENSA 1: similitud ≥ 0,830<br/>(después de filtrar)"}
+        T -- no --> AB["abstención (sin IA de redacción)"]
+        T -- sí --> L["IA redacta citando ocid<br/>DEFENSA 2: fuera_de_tema"]
+        L --> V["Validación de ocid citados"]
+    end
+```
+
+## Tarea 2 — Fase 4: tablero Streamlit
+
+```bash
+cd tarea2_radar
+streamlit run app.py
+```
+
+- **Lee solo archivos precalculados:** `procesos_validados.parquet`, `novedades_validadas.parquet`, `departamentos.geojson` y los reportes. **Nunca** descarga datos ni construye el índice; si el índice falta, avisa. Los datos se cargan con `@st.cache_data` y el motor con `@st.cache_resource`.
+- **Barra lateral, sin IA:** departamento, categoría, rango de monto, rango de fechas y umbral de similitud. Filtra con pandas la tabla, el mapa, los indicadores y la distribución, y también se aplica a la caja de preguntas (intersección con los filtros de la IA).
+- **Encabezado de indicadores**, que se actualiza con los filtros: número de procesos, **monto total** (con la nota de cuántos procesos sin monto excluye y cuánto corresponde a convocatorias anteriores de procesos reconvocados), número de departamentos y **% de adjudicaciones con un solo postor** (con "alerta, no prueba").
+- **Pestañas:**
+  - **Mapa:** coroplético por departamento, por número de procesos o monto, con leyenda y *tooltips*. Usa el GeoJSON del IGN, sin mapas de fondo por internet.
+  - **Preguntar:** RAG híbrido. Muestra la **tabla de filtros que extrajo la IA** (extraído frente a aplicado) para verificarlos, el tema buscado por significado, el estado (respondido / sin resultados / abstención / error), la similitud frente al umbral, el costo, la **respuesta completa en una caja neutra con advertencia** y los procesos recuperados con su similitud y si fueron citados.
+  - **Tabla:** ordenable, con descarga en CSV.
+  - **Distribución:** procesos o monto por categoría, departamento, mes o método.
+  - **Riesgo:** ver la Fase 5.
+  - **Calidad de datos:** los conteos del reporte de la Fase 2.
+  - **Novedades recientes (sep.):** marcadas como tales, fuera de indicadores, mapa y buscador.
+  - **Costos:** log de llamadas a la IA.
+- **Selección vacía:** si ningún proceso cumple los filtros, cada vista muestra un aviso y los indicadores quedan en 0 o "—", sin errores. Probado con `AppTest` (Tumbes con monto mínimo de S/ 1.000 millones).
+- **Verificación de arquitectura:** `grep -nE "^\s*(import|from)\s+(streamlit|plotly)" tarea2_radar/src/*.py comun/*.py` no encuentra nada: el motor no conoce la interfaz.
+
+## Tarea 2 — Fase 5: indicador de riesgo "un solo postor"
+
+```bash
+python scripts/calcular_riesgo.py   # → data/outputs/riesgo_departamentos.csv, riesgo_entidades.csv, riesgo_top_entidades.csv, riesgo_resumen.json
+```
+
+> ⚠️ **Una bandera roja es una razón para mirar con más atención, NO es evidencia de irregularidad ni de corrupción.** Un solo postor puede deberse a mercados pequeños, requisitos técnicos muy específicos, zonas alejadas o baja difusión. El indicador muestra **entidades públicas**, nunca personas. El tablero repite este aviso en la pestaña y junto al indicador.
+
+**Lecturas previas:**
+- **Open Contracting Partnership (2024), *Red Flags in Public Procurement*, indicador R018 "Single bid received":** un proceso se marca si "el número de postores es 1 y el método de contratación es competitivo". La guía advierte que "el indicador señala un riesgo, no es evidencia de conducta ilícita", y que si una bandera aparece en casi todos los procesos probablemente hay muchos falsos positivos.
+- **Ojo Público, *Funes*:** los "postores únicos" están entre sus hallazgos principales, pero Funes los usa **dentro de un modelo que pondera varios escenarios de riesgo**, no como prueba aislada.
+
+**Definición aplicada:**
+- **Universo (denominador):** procesos del análisis **adjudicados** (con al menos una adjudicación), de **método competitivo** y **con dato** de número de postores (`tender.numberOfTenderers`).
+- **Métodos competitivos:** según la Ley 32069, art. 54 (del corpus de la Tarea 1): licitación pública, concurso público, sus modalidades abreviadas, subasta inversa electrónica y comparación de precios, más la adjudicación selectiva y simplificada del régimen anterior.
+- **Por qué se excluyen los no competitivos:** en ellos un solo postor es lo esperado. En estos datos, la contratación directa tiene 86 % de un solo postor, la contratación internacional 100 % y el régimen especial 75 %. Mezclarlos inflaría el indicador sin revelar nada.
+
+| Paso | Procesos |
+|---|---|
+| Procesos del análisis adjudicados | 13,945 |
+| − Excluidos por método no competitivo | 2,110 (Contratación Directa 1,121, Regímen Especial 370, Convenio 321, Contratación Internacional 215, Adjudicación Abreviada 69, Procedimiento Especial de Contratación 9, Contratos Estandarizados 4, Procedimiento Especial de Contratación-Nueva Convocatoria por Desierto 1) |
+| = Adjudicaciones competitivas | 11,835 |
+| − **Sin dato de número de postores (excluidos del denominador)** | **2** |
+| **= Denominador** | **11,833** |
+| Con un solo postor | 134 (**1.13%**) |
+
+Los 2.750 procesos sin `numberOfTenderers` de la Fase 2 casi nunca tienen adjudicación; entre las adjudicaciones competitivas, solo 2 no tienen el dato.
+
+**Mínimo de procesos por entidad: 10**, justificado con la distribución. La mitad de las entidades tiene 3 procesos o menos (percentiles de procesos por entidad: {'25': 1, '50': 3, '75': 6, '90': 12, '95': 19, '99': 45}):
+
+| Mínimo | Entidades en el ranking | Procesos cubiertos | Peso de un solo caso | Tasa máxima observada |
+|---|---|---|---|---|
+| 1 | 2,005 (100%) | 11,833 (100%) | 100% | 100% |
+| 5 | 686 (34%) | 9,200 (78%) | 20% | 40% |
+| 10 | 289 (14%) | 6,613 (56%) | 10% | 20% |
+| 15 | 157 (8%) | 5,092 (43%) | 7% | 20% |
+| 20 | 100 (5%) | 4,136 (35%) | 5% | 20% |
+| 30 | 44 (2%) | 2,797 (24%) | 3% | 20% |
+
+- **Sin mínimo:** una entidad con 1 proceso y 1 postor aparece con **100 %**, que es ruido.
+- **Con 10** (≈ percentil 90 de procesos por entidad): quedan 289 entidades con el 56 % de los procesos, y un solo caso pesa 10 %. Para superar ese 10 % hacen falta al menos 2 casos.
+- **Con 5:** 2 casos ya dan 40 %.
+- **Con 20 o 30:** el ranking se reduce a 100 o 44 entidades sin cambiar la tasa máxima.
+
+**Top 10 de entidades** (mínimo 10 procesos; IC95 = intervalo de confianza de Wilson):
+
+| # | Entidad compradora | Departamento | Procesos | Con un postor | Tasa | IC95 |
+|---|---|---|---|---|---|---|
+| 1 | PETROLEOS DEL PERU S.A. | LIMA | 30 | 6 | 20.0% | 9.5%–37.3% |
+| 2 | INSTITUTO NACIONAL DE SALUD DEL NIÑO - SAN BORJA | LIMA | 26 | 5 | 19.2% | 8.5%–37.9% |
+| 3 | GOBIERNO REGIONAL DE JUNIN - UNIDAD TERRITORIAL DE SALUD JAUJA | JUNIN | 11 | 2 | 18.2% | 5.1%–47.7% |
+| 4 | SUPERINTENDENCIA DE BANCA, SEGUROS Y AFP | LIMA | 14 | 2 | 14.3% | 4.0%–39.9% |
+| 5 | GOBIERNO REGIONAL DE TACNA-HOSPITAL HIPOLITO UNANUE | TACNA | 15 | 2 | 13.3% | 3.7%–37.9% |
+| 6 | INSTITUTO NACIONAL DE SALUD DEL NIÑO | LIMA | 18 | 2 | 11.1% | 3.1%–32.8% |
+| 7 | MINISTERIO DE ECONOMIA Y FINANZAS | LIMA | 10 | 1 | 10.0% | 1.8%–40.4% |
+| 8 | INSTITUTO PERUANO DEL DEPORTE | LIMA | 10 | 1 | 10.0% | 1.8%–40.4% |
+| 9 | EMPRESA REGIONAL DE SERVICIO PUBLICO DE ELECTRICIDAD DEL CENTRO SA ELECTROCENTRO S.A. | JUNIN | 10 | 1 | 10.0% | 1.8%–40.4% |
+| 10 | GOBIERNO REGIONAL DE LA LIBERTAD - INST.REG.DE ENFERMEDADES NEOPLASICAS LUIS PINILLOS GANOZA | LA LIBERTAD | 10 | 1 | 10.0% | 1.8%–40.4% |
+
+- **Puestos 7 a 10:** son las **4 entidades que empatan con 10 %**, con **1 solo caso** en 10 procesos e intervalos muy amplios (1,8 %–40 %). No queda ninguna empatada fuera del top. **No hay que leerlas como "más riesgosas"**: un solo caso no permite distinguirlas de la tasa global (1,1 %).
+- **Los 3 primeros:** Petroperú (6 de 30), el INSN San Borja (5 de 26) y una unidad de salud de Jauja (2 de 11). Son los únicos con al menos 2 casos y más de 10 % de tasa: **razones para revisar esos procesos, no conclusiones**.
+
+**Por departamento** (primeros 5 de 25; todos tienen al menos 40 procesos, así que no hace falta un mínimo):
+
+| Departamento | Adjudicaciones competitivas | Con un postor | Tasa | IC95 |
+|---|---|---|---|---|
+| Loreto | 316 | 10 | 3.2% | 1.7%–5.7% |
+| Tumbes | 40 | 1 | 2.5% | 0.4%–12.9% |
+| Lima | 2,567 | 60 | 2.3% | 1.8%–3.0% |
+| San Martín | 234 | 5 | 2.1% | 0.9%–4.9% |
+| Madre de Dios | 149 | 3 | 2.0% | 0.7%–5.8% |
 
 ## Estructura
 

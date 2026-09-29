@@ -48,3 +48,7 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-28T23:49:08+00:00,gpt-6-luna,1187,0,136,2.072,0.00018670,00:00-24:00,True,,Compra de submarinos nucleares
 2026-09-28T23:49:10+00:00,gpt-6-luna,625,0,62,1.269,0.00009350,00:00-24:00,True,,[filtros] ¿Qué requisitos pide el RNP para inscribirme como proveedor?
 2026-09-28T23:49:12+00:00,gpt-6-luna,1365,0,91,1.613,0.00018200,00:00-24:00,True,,¿Qué requisitos pide el RNP para inscribirme como proveedor?
+2026-09-29T00:04:25+00:00,gpt-6-luna,630,0,57,2.055,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-29T00:04:28+00:00,gpt-6-luna,1610,0,215,2.286,0.00026850,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-09-29T00:04:30+00:00,gpt-6-luna,621,0,55,1.367,0.00008960,00:00-24:00,True,,[filtros] Compra de aviones de combate F-35
+2026-09-29T00:04:32+00:00,gpt-6-luna,1201,0,195,2.373,0.00021760,00:00-24:00,True,,Compra de aviones de combate F-35

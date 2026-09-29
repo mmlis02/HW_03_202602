@@ -1,0 +1,87 @@
+{
+  "procesos_analisis": 19616,
+  "adjudicados": 13945,
+  "excluidos_no_competitivos": 2110,
+  "excluidos_por_metodo": {
+    "Contratación Directa": 1121,
+    "Regímen Especial": 370,
+    "Convenio": 321,
+    "Contratación Internacional": 215,
+    "Adjudicación Abreviada": 69,
+    "Procedimiento Especial de Contratación": 9,
+    "Contratos Estandarizados": 4,
+    "Procedimiento Especial de Contratación-Nueva Convocatoria por Desierto": 1
+  },
+  "competitivos_adjudicados": 11835,
+  "sin_dato_postores": 2,
+  "denominador": 11833,
+  "un_postor": 134,
+  "tasa_global": 0.0113,
+  "min_procesos_entidad": 10,
+  "percentiles_procesos_por_entidad": {
+    "25": 1,
+    "50": 3,
+    "75": 6,
+    "90": 12,
+    "95": 19,
+    "99": 45
+  },
+  "distribucion_minimos": [
+    {
+      "minimo": 1,
+      "entidades": 2005,
+      "pct_entidades": 1.0,
+      "procesos_cubiertos": 11833,
+      "pct_procesos": 1.0,
+      "peso_de_un_caso": 1.0,
+      "tasa_maxima": 1.0
+    },
+    {
+      "minimo": 5,
+      "entidades": 686,
+      "pct_entidades": 0.342,
+      "procesos_cubiertos": 9200,
+      "pct_procesos": 0.777,
+      "peso_de_un_caso": 0.2,
+      "tasa_maxima": 0.4
+    },
+    {
+      "minimo": 10,
+      "entidades": 289,
+      "pct_entidades": 0.144,
+      "procesos_cubiertos": 6613,
+      "pct_procesos": 0.559,
+      "peso_de_un_caso": 0.1,
+      "tasa_maxima": 0.2
+    },
+    {
+      "minimo": 15,
+      "entidades": 157,
+      "pct_entidades": 0.078,
+      "procesos_cubiertos": 5092,
+      "pct_procesos": 0.43,
+      "peso_de_un_caso": 0.067,
+      "tasa_maxima": 0.2
+    },
+    {
+      "minimo": 20,
+      "entidades": 100,
+      "pct_entidades": 0.05,
+      "procesos_cubiertos": 4136,
+      "pct_procesos": 0.35,
+      "peso_de_un_caso": 0.05,
+      "tasa_maxima": 0.2
+    },
+    {
+      "minimo": 30,
+      "entidades": 44,
+      "pct_entidades": 0.022,
+      "procesos_cubiertos": 2797,
+      "pct_procesos": 0.236,
+      "peso_de_un_caso": 0.033,
+      "tasa_maxima": 0.2
+    }
+  ],
+  "entidades_en_ranking": 289,
+  "empates_en_el_corte_del_top": 4
+}

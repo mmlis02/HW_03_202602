@@ -175,10 +175,12 @@ class MotorRadar:
         return None if not partes else partes[0] if len(partes) == 1 else {"$and": partes}
 
     def responder(self, pregunta: str, filtros_barra: dict | None = None, aplicar_umbral: bool = True,
-                  filtros_forzados: dict | None = None) -> ResultadoRadar:
-        """filtros_forzados: solo para la evaluación (usa los filtros correctos de la hoja, sin extraerlos)."""
+                  filtros_forzados: dict | None = None, umbral: float | None = None) -> ResultadoRadar:
+        """filtros_forzados: solo para la evaluación (usa los filtros correctos de la hoja, sin extraerlos).
+        umbral: si se indica (p. ej. desde la barra lateral), reemplaza al de config.yaml."""
         m = self.cfg["mensajes"]
-        r = ResultadoRadar(pregunta=pregunta, umbral=self.cfg["motor"]["umbral_similitud"], filtros_barra=filtros_barra or {})
+        r = ResultadoRadar(pregunta=pregunta, umbral=umbral if umbral is not None else self.cfg["motor"]["umbral_similitud"],
+                           filtros_barra=filtros_barra or {})
         if not pregunta or not pregunta.strip():
             r.estado, r.error = "error", m["pregunta_vacia"]
             return r
@@ -266,9 +268,9 @@ class MotorRadar:
 _MOTOR: MotorRadar | None = None
 
 
-def responder(pregunta: str, filtros_barra: dict | None = None) -> dict:
+def responder(pregunta: str, filtros_barra: dict | None = None, umbral: float | None = None) -> dict:
     """Función única que usan las interfaces (dashboard, línea de comandos)."""
     global _MOTOR
     if _MOTOR is None:
         _MOTOR = MotorRadar()
-    return _MOTOR.responder(pregunta, filtros_barra).a_dict()
+    return _MOTOR.responder(pregunta, filtros_barra, umbral=umbral).a_dict()

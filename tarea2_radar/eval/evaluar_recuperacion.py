@@ -64,7 +64,8 @@ def main():
                     top = res[:k]
                     fila[f"hit@{k}"] = int(any(r["ocid"] in relev for r in top))
                     fila[f"prec@{k}"] = round(sum(r["ocid"] in relev for r in top) / k, 3)
-                    fila[f"cumple@{k}"] = round(sum(cumple(r["metadatos"], f) for r in top) / k, 3) if f else ""
+                    # sobre los resultados devueltos (si el filtro deja menos de k procesos, se divide por los que hay)
+                    fila[f"cumple@{k}"] = round(sum(cumple(r["metadatos"], f) for r in top) / max(1, len(top)), 3) if f else ""
                 fila["top3"] = " | ".join(f"{r['metadatos']['departamento']} S/{r['metadatos']['monto_pen']:,.0f} "
                                           f"{r['descripcion'][:50]}" for r in res[:3])
                 filas.append(fila)

@@ -5,20 +5,20 @@
     "recall@5": 0.938,
     "recall@8": 0.938,
     "precision@1": 0.75,
-    "precision@3": 0.583,
-    "precision@5": 0.5,
+    "precision@3": 0.562,
+    "precision@5": 0.487,
     "precision@8": 0.398,
     "cumplen_condiciones@5": 1.0
   },
   "solo_embeddings": {
     "recall@1": 0.375,
     "recall@3": 0.562,
-    "recall@5": 0.625,
+    "recall@5": 0.688,
     "recall@8": 0.75,
     "precision@1": 0.375,
     "precision@3": 0.292,
-    "precision@5": 0.25,
-    "precision@8": 0.203,
-    "cumplen_condiciones@5": 0.333
+    "precision@5": 0.238,
+    "precision@8": 0.195,
+    "cumplen_condiciones@5": 0.32
   }
 }

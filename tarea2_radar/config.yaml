@@ -180,3 +180,66 @@ mensajes:
   abstencion_sin_citas: "La respuesta generada no citaba ningún proceso válido; por seguridad no se muestra."
   pregunta_vacia: "Escribe una pregunta."
   error_api: "No se pudo obtener respuesta del modelo de lenguaje. Intenta de nuevo en unos minutos."
+
+# ---------------------------------------------------------------------------
+# Fase 5: indicador de riesgo "un solo postor" (bandera R018 de Open Contracting Partnership)
+# ---------------------------------------------------------------------------
+riesgo:
+  # Solo procedimientos COMPETITIVOS (OCP R018; Ley 32069 art. 54: licitación pública, concurso público,
+  # sus modalidades abreviadas, subasta inversa electrónica, comparación de precios; más adjudicación
+  # selectiva/simplificada del régimen anterior). Contratación directa (art. 55), convenios entre entidades,
+  # régimen especial, contratación internacional y otros quedan FUERA: un solo postor es lo esperado ahí.
+  metodos_competitivos:
+    - Licitación Pública
+    - Licitación Pública Abreviada
+    - Licitación Pública Abreviada Homologación
+    - Concurso Público Abreviado
+    - Concurso Público de Servicios
+    - Concurso Público para Consultoría
+    - Concurso Público Abreviado Homologación
+    - Concurso Público Abreviado Séptima DCF Ley N°32069
+    - Subasta Inversa Electrónica
+    - Comparación de Precios
+    - Adjudicación Selectiva
+    - Adjudicación Simplificada
+  # Mínimo de procesos por entidad para entrar al ranking (justificado con la distribución; ver README)
+  min_procesos_entidad: 10
+  top_entidades: 10
+  salidas: data/outputs
+  aviso: >-
+    Una bandera roja es una razón para mirar con más atención, NO es evidencia de irregularidad ni
+    de corrupción. Un solo postor puede deberse a mercados pequeños, requisitos técnicos muy
+    específicos, zonas alejadas o baja difusión. Este indicador no identifica a personas.
+
+# ---------------------------------------------------------------------------
+# Fase 4: tablero Streamlit (solo textos y rutas; lee archivos precalculados)
+# ---------------------------------------------------------------------------
+app:
+  titulo: "Radar de compras públicas"
+  subtitulo: "¿Qué está comprando el Estado y dónde? Procesos de contratación de OECE (OCDS), junio–agosto 2026."
+  periodo: "junio–agosto 2026"
+  pestanas: ["Mapa", "Preguntar", "Tabla", "Distribución", "Riesgo: un solo postor", "Calidad de datos", "Novedades recientes (sep.)", "Costos"]
+  sin_datos: "Ningún proceso cumple los filtros elegidos. Amplía la selección en la barra lateral."
+  nota_monto: "El monto total suma solo los procesos con monto publicado; excluye {n:,} procesos sin monto."
+  nota_reconvocatorias: "Incluye {s} de convocatorias anteriores de procesos reconvocados ({n:,}); sin ellas: {t}."
+  nota_riesgo_kpi: "Adjudicaciones competitivas con un solo postor (bandera R018 de Open Contracting). Es una alerta, no una prueba."
+  ejemplos:
+    - "Obras de agua potable y saneamiento en Cusco por más de un millón de soles"
+    - "Compras de combustible en Junín"
+    - "Servicios de seguridad y vigilancia en Piura"
+    - "Compra de aviones de combate F-35"
+  explicacion_ia: >-
+    Lee también el texto de la IA: puede indicar que ningún proceso coincide exactamente con lo que
+    pediste (solo hay parecidos) aunque el sistema lo muestre como respuesta.
+  novedades_aviso: >-
+    NOVEDADES RECIENTES: procesos de septiembre de 2026 traídos por la API (mes en curso, aún sin
+    archivo mensual cerrado). No están validados como el corpus y NO entran en los indicadores,
+    el mapa ni el buscador. El departamento se asignó por la misma entidad en junio–agosto.
+  rutas:
+    procesos: data/processed/procesos_validados.parquet
+    novedades: data/processed/novedades_validadas.parquet
+    geojson: data/outputs/departamentos.geojson
+    reporte_calidad: data/processed/reporte_calidad.md
+    calidad_json: data/processed/reporte_calidad.json
+    riesgo_resumen: data/outputs/riesgo_resumen.json
+    evaluacion: eval/resultados/evaluacion_motor_con_ia.json

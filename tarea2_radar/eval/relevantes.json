@@ -24,8 +24,6 @@
   "ocds-dgv273-seacev3-2026-200904-6"
  ],
  "Q03": [
-  "ocds-dgv273-seacev3-1221237",
-  "ocds-dgv273-seacev3-1221255",
   "ocds-dgv273-seacev3-1223565",
   "ocds-dgv273-seacev3-1223659",
   "ocds-dgv273-seacev3-1223661",
@@ -34,7 +32,6 @@
   "ocds-dgv273-seacev3-1228980",
   "ocds-dgv273-seacev3-1229087",
   "ocds-dgv273-seacev3-1231391",
-  "ocds-dgv273-seacev3-1231404",
   "ocds-dgv273-seacev3-1232264",
   "ocds-dgv273-seacev3-1232286",
   "ocds-dgv273-seacev3-1232341",
@@ -45,9 +42,7 @@
   "ocds-dgv273-seacev3-2026-10568-1",
   "ocds-dgv273-seacev3-2026-10568-2",
   "ocds-dgv273-seacev3-2026-10568-3",
-  "ocds-dgv273-seacev3-2026-10568-4",
-  "ocds-dgv273-seacev3-2026-1703-7",
-  "ocds-dgv273-seacev3-2026-1703-9"
+  "ocds-dgv273-seacev3-2026-10568-4"
  ],
  "Q04": [
   "ocds-dgv273-seacev3-1221137",
@@ -83,7 +78,6 @@
   "ocds-dgv273-seacev3-1226428",
   "ocds-dgv273-seacev3-1226451",
   "ocds-dgv273-seacev3-1226762",
-  "ocds-dgv273-seacev3-1226783",
   "ocds-dgv273-seacev3-1227570",
   "ocds-dgv273-seacev3-1228191",
   "ocds-dgv273-seacev3-1228499",
@@ -207,7 +201,6 @@
   "ocds-dgv273-seacev3-1226323",
   "ocds-dgv273-seacev3-1226333",
   "ocds-dgv273-seacev3-1226697",
-  "ocds-dgv273-seacev3-1226738",
   "ocds-dgv273-seacev3-1226853",
   "ocds-dgv273-seacev3-1226875",
   "ocds-dgv273-seacev3-1226916",
@@ -308,7 +301,6 @@
   "ocds-dgv273-seacev3-1224201",
   "ocds-dgv273-seacev3-1224333",
   "ocds-dgv273-seacev3-1224389",
-  "ocds-dgv273-seacev3-1224536",
   "ocds-dgv273-seacev3-1224745",
   "ocds-dgv273-seacev3-1225254",
   "ocds-dgv273-seacev3-1225280",
@@ -376,8 +368,6 @@
  ],
  "Q13": [
   "ocds-dgv273-seacev3-1221209",
-  "ocds-dgv273-seacev3-1222816",
-  "ocds-dgv273-seacev3-1225528",
   "ocds-dgv273-seacev3-1225814",
   "ocds-dgv273-seacev3-1226149",
   "ocds-dgv273-seacev3-1230123",
@@ -414,7 +404,6 @@
   "ocds-dgv273-seacev3-1245553"
  ],
  "Q16": [
-  "ocds-dgv273-seacev3-1240574",
   "ocds-dgv273-seacev3-1249114"
  ],
  "Z01": [],

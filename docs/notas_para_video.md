@@ -316,3 +316,28 @@ Se abre en http://localhost:8501; se cierra con Ctrl+C. Consejo: abrirla **antes
   - Para "aviones de combate F-35" y "submarinos nucleares", la IA dijo en el texto "no hay compras de eso", pero no marcó la casilla de "fuera de tema". Con la regla que fijé antes, cuenta como error.
   - Mi hoja de respuestas tenía un error (contaba "combustible para ambulancias" como compra de ambulancias) y **la IA lo detectó**. Lo corregí y lo declaro.
 - **Costo de toda la evaluación con IA:** US$0,008.
+
+**Corrección posterior en la Fase 2 (vale la pena contarla):** al revisar los montos más altos del tablero vi la misma obra de S/ 353 millones de Tocache contada 4 veces: una convocatoria anulada y su reconvocatoria registrada 3 veces el mismo día. Generalicé la regla: **toda copia del mismo día (misma fecha y descripción) se excluye**, en cualquier grupo. Quedan **19.616 procesos** para el análisis.
+
+## Tarea 2 · Fase 4 — El tablero
+
+**Qué hice**
+- **Una app con 8 pestañas:** mapa, preguntas, tabla descargable, distribución, riesgo, calidad de datos, novedades de septiembre y costos.
+- **Arriba, 4 números que cambian con los filtros:** procesos, monto total, departamentos y el % con un solo postor.
+  - Junto al monto aclaro que **no incluye 1.854 procesos sin monto**, y cuánto corresponde a convocatorias anteriores de procesos reconvocados.
+- **Los filtros de la izquierda no usan IA:** filtran la tabla directamente, así que son instantáneos y gratis.
+- **La caja de preguntas muestra qué filtros entendió la IA** (por ejemplo: Cusco, Obras, más de S/ 1.000.000), para que el usuario los revise.
+- **La respuesta de la IA aparece completa en una caja neutra** y con una advertencia. Así, si la IA dice "ninguno coincide exactamente" (como con los F-35), el usuario lo ve, aunque el sistema la haya contado como respuesta.
+- **Si la selección no deja ningún proceso**, la app avisa y no se cae.
+
+## Tarea 2 · Fase 5 — Indicador de riesgo: un solo postor
+
+**Qué hice**
+- **Leí las dos referencias:**
+  - la guía de Open Contracting Partnership define el indicador como "1 postor en un procedimiento competitivo" y repite que **una bandera no es una prueba**;
+  - Funes, de Ojo Público, lo usa junto con otros indicadores.
+- **Solo cuento procedimientos competitivos** (según el art. 54 de la Ley 32069, que ya tenía en la Tarea 1). En una contratación directa, un solo postor es lo normal: ahí sale 86 %, y mezclarlo inflaría el indicador.
+- **Resultado:** 134 de 11.833 adjudicaciones competitivas tuvieron un solo postor (1,1 %). Solo 2 procesos no tenían el dato; los saqué del cálculo y lo informo.
+- **Mínimo de 10 procesos por entidad:** la mitad de las entidades tiene 3 procesos o menos, y sin mínimo una entidad con 1 solo proceso aparecería con "100 %". Con 10, un caso pesa 10 %.
+- **Muestro el intervalo de confianza:** con pocos procesos, el porcentaje es muy incierto. Las 4 últimas del top 10 tienen un solo caso, así que no se puede decir que sean "más riesgosas".
+- **El aviso se repite en la app y debe decirse en el video:** "una bandera roja es una razón para mirar con más atención, **no es evidencia de irregularidad**". Solo aparecen entidades públicas, nunca personas.

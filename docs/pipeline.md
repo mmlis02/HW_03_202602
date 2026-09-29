@@ -32,3 +32,35 @@ flowchart TB
         V --> LOG["logs/costos_llm.csv<br/>tokens, latencia, costo según la hora"]
     end
 ```
+
+## Tarea 2 — Radar de compras
+
+```mermaid
+flowchart TB
+    subgraph OFF["OFFLINE (scripts/ y build_index.py)"]
+        A["OECE descargas masivas<br/>3 ZIP JSON OCDS jun–ago 2026<br/>verificados con SHA-256"] --> B["Records → 1 fila por ocid<br/>(288.548 releases = 20.476 procesos)"]
+        A2["API /search (sep. 2026)<br/>pausas · reintentos · caché"] --> N["Novedades recientes<br/>(aparte, fuera de indicadores)"]
+        B --> C["Validación (R1–R6)<br/>repetidos · montos · descripciones<br/>comillas '¿' · tildes"]
+        IGN["IGN límites<br/>departamentos y distritos"] --> D
+        C --> D["Ubicación de la entidad compradora<br/>→ 25 departamentos (metadato)"]
+        D --> E["procesos_validados.parquet<br/>19.616 en el análisis"]
+        E --> F["Embeddings e5-small (descripción)<br/>+ metadatos: departamento, monto,<br/>fecha, categoría, ocid"]
+        F --> G[("ChromaDB")]
+        E --> RI["Indicador un solo postor<br/>(R018, competitivos)"]
+        IGN --> GJ["GeoJSON liviano"]
+    end
+    subgraph ON["ONLINE (app.py → src/motor.py)"]
+        Q["Pregunta"] --> X["IA extrae FILTROS<br/>(departamento, montos, fechas, categoría)"]
+        SB["Barra lateral (sin IA)"] --> Y
+        X --> Y["Intersección de filtros"]
+        Y --> Z{"¿0 procesos?"}
+        Z -- sí --> SR["sin_resultados"]
+        Z -- no --> S["Búsqueda semántica SOLO<br/>entre los filtrados"]
+        G -.-> S
+        S --> T{"DEFENSA 1: similitud ≥ 0,830<br/>(después de filtrar)"}
+        T -- no --> AB["abstención (sin IA de redacción)"]
+        T -- sí --> L["IA redacta citando ocid<br/>DEFENSA 2: fuera_de_tema"]
+        L --> V["Validación de ocid citados"]
+    end
+```
+

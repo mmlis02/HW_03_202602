@@ -73,19 +73,25 @@ def validar(df: pd.DataFrame, terr: Territorio, vcfg: dict) -> tuple[pd.DataFram
         if tipo != "B_items_distintos_misma_nomenclatura":  # en B son compras distintas: todas vigentes
             d.loc[x.index[:-1], "es_version_vigente"] = False
     advertir(d["tipo_repeticion"] != "", "posible reconvocatoria o re-registro (misma nomenclatura y entidad)")
-    # Re-registro del mismo día = el MISMO proceso contado dos veces: la copia (no vigente) se conserva
-    # con su marca, pero se excluye de conteos, montos e indicador de riesgo (igual que R1b).
-    copia_c = (d["tipo_repeticion"] == "C_reregistro_mismo_dia") & ~d["es_version_vigente"] & d["incluir_en_analisis"]
+    # Re-registro del mismo día = el MISMO proceso contado dos veces. En CUALQUIER grupo (no solo tipo C:
+    # p. ej. una reconvocatoria registrada 3 veces el mismo día), los registros con la misma fecha de
+    # publicación y la misma descripción que otro se consideran copias: se conserva el de compiledRelease
+    # más reciente y las copias se excluyen de conteos, montos e indicador de riesgo (igual que R1b).
+    en_grupo = d[(d["grupo_repeticion"] != "") & d["incluir_en_analisis"]].copy()
+    en_grupo["_dia"] = en_grupo["fecha_publicacion_dt"].dt.date
+    orden = en_grupo.sort_values(["fecha_compilado", "n_releases"], ascending=False)
+    copia_c = pd.Series(False, index=d.index)
+    copia_c[orden[orden.duplicated(["grupo_repeticion", "_dia", "descripcion"], keep="first")].index] = True
     d.loc[copia_c, "incluir_en_analisis"] = False
-    d.loc[copia_c, "motivo_exclusion"] = "re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción); se conserva la versión vigente"
-    # Limitación conocida: en B, "descripciones distintas" incluye descripciones del MISMO proceso cortadas
-    # de forma distinta (p. ej. "UISICION DE AGUJA..." vs "ADQUISICION DE AGUJA..."), así que B no garantiza ítems distintos.
+    d.loc[copia_c, "motivo_exclusion"] = "re-registro del mismo día (misma nomenclatura, entidad, fecha y descripción); se conserva uno"
+    copias_por_tipo = d.loc[copia_c, "tipo_repeticion"].value_counts().to_dict()
     rep["R1c_misma_nomenclatura_y_entidad"] = {
         "casos": int(len(grupos)), "grupos": int(grupos.groupby(["comprador_id", "nomenclatura"]).ngroups),
         "grupos_por_tipo": tipos,
         "versiones_anteriores": int((~d["es_version_vigente"]).sum()),
         "copias_C_excluidas_del_analisis": int(copia_c.sum()),
-        "accion": "se CONSERVAN todas con advertencia (tipo_repeticion, es_version_vigente); las copias de re-registros del mismo día (C) se excluyen del análisis"}
+        "copias_excluidas_por_tipo_de_grupo": copias_por_tipo,
+        "accion": "se CONSERVAN todas con advertencia (tipo_repeticion, es_version_vigente); las copias del mismo día (misma fecha y descripción, en cualquier grupo) se excluyen del análisis"}
 
     # ---------------- R2: monto faltante o cero ----------------------------------------------
     # amount_PEN de OECE solo si es > 0 (en algunos procesos en soles OECE publica amount_PEN = 0 con monto > 0)
