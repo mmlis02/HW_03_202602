@@ -5,7 +5,7 @@ Proyecto para una MYPE peruana que quiere venderle al Estado:
 - **Tarea 1 — RAG normativo** (`tarea1_rag_normativo/`): responde preguntas sobre la Ley N.° 32069 y el D.S. N.° 001-2026-EF citando documento y página, y se abstiene cuando la respuesta no está en el corpus.
 - **Tarea 2 — Radar RAG** (`tarea2_radar/`): datos abiertos de contrataciones de OECE (OCDS) validados, ubicados en un mapa por departamento y consultables en lenguaje natural con filtros más búsqueda semántica.
 
-El enunciado completo está en [docs/enunciado.md](docs/enunciado.md). Las notas para el video están en [docs/notas_para_video.md](docs/notas_para_video.md).
+El enunciado completo está en [docs/enunciado.md](docs/enunciado.md).
 
 > **Video (máx. 12 min):** _[enlace pendiente — pegar aquí el enlace de YouTube / Drive]_
 >
@@ -1148,7 +1148,7 @@ En SEACE, los **participantes** (empresas inscritas en el procedimiento) y los *
 ```
 ├── README.md · requirements.txt · .env.example · .githooks/pre-commit (bloquea claves en commits)
 ├── comun/                      # motor compartido por ambas tareas: embeddings, costos por hora, llamada al LLM
-├── docs/                       # enunciado, pipeline.md (diagramas), notas_para_video.md, revision_requisitos.md
+├── docs/                       # enunciado, pipeline.md (diagramas), revision_requisitos.md
 ├── tarea1_rag_normativo/
 │   ├── config.yaml             # TODOS los parámetros, prompts y textos de la Tarea 1
 │   ├── build_index.py          # proceso OFFLINE
