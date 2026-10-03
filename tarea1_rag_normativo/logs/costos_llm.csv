@@ -147,3 +147,9 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 
 "
 2026-09-28T23:18:37+00:00,gpt-6-luna,,,,0.847,,,False,"AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-[oculta]. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'code': ",¿Cuándo se declara desierto un procedimiento?
+2026-10-03T00:45:56+00:00,gpt-6-luna,1270,0,77,4.603,0.00016550,00:00-24:00,True,,¿En cuántos días me tienen que pagar después de la conformidad?
+2026-10-03T00:46:11+00:00,gpt-6-luna,1270,0,84,4.047,0.00016900,00:00-24:00,True,,¿En cuántos días me tienen que pagar después de la conformidad?
+2026-10-03T00:53:53+00:00,gpt-6-luna,1270,1267,81,3.305,0.00005347,00:00-24:00,True,,¿En cuántos días me tienen que pagar después de la conformidad?
+2026-10-03T00:56:49+00:00,gpt-6-luna,1270,1267,84,3.182,0.00005497,00:00-24:00,True,,¿En cuántos días me tienen que pagar después de la conformidad?
+2026-10-03T00:56:52+00:00,gpt-6-luna,1295,0,94,2.477,0.00017650,00:00-24:00,True,,¿Procede una medida cautelar para paralizar una obra de infraestructura hidráulica?
+2026-10-03T00:56:55+00:00,gpt-6-luna,1189,0,101,2.043,0.00016940,00:00-24:00,True,,¿Qué porcentaje máximo de mi contrato puedo subcontratar?

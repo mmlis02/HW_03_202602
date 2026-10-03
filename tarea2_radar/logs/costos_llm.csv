@@ -56,3 +56,5 @@ fecha_hora_utc,modelo,tokens_entrada,tokens_entrada_cache,tokens_salida,latencia
 2026-09-29T00:10:39+00:00,gpt-6-luna,1610,1607,213,2.39,0.00012287,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
 2026-09-29T00:11:37+00:00,gpt-6-luna,630,0,57,1.534,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
 2026-09-29T00:11:40+00:00,gpt-6-luna,1610,1607,291,2.533,0.00016187,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-10-03T00:55:18+00:00,gpt-6-luna,630,0,57,2.585,0.00009150,00:00-24:00,True,,[filtros] Obras de agua potable y saneamiento en Cusco por más de un millón de soles
+2026-10-03T00:55:23+00:00,gpt-6-luna,1610,0,320,4.906,0.00032100,00:00-24:00,True,,Obras de agua potable y saneamiento en Cusco por más de un millón de soles

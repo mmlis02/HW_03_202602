@@ -303,8 +303,8 @@ app:
   textos:
     icono: "⚖️"
     m_abstuvo: "¿Se abstuvo?"
-    si: "Sí"
-    no: "No"
+    "si": "Sí"
+    "no": "No"
     m_similitud: "Similitud máxima"
     ayuda_umbral: "Umbral de abstención: {umbral}"
     m_costo: "Costo de la consulta"
